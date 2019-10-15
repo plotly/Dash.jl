@@ -2,3 +2,7 @@ name = "Dashboards"
 uuid = "9024f26f-ba4d-4e0a-965a-ad5b1da667aa"
 authors = ["war "]
 version = "0.1.0"
+
+[deps]
+HTTP = "cd3eb016-35fb-5094-929b-558a96fad6f3"
+JSON2 = "2535ab7d-5cd8-5a07-80ac-9b1792aadce3"
