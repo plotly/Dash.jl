@@ -1,6 +1,6 @@
 module Dashboards
 import HTTP, JSON2
-include("scripts.jl")
+include("Components.jl")
 const components_packages = (
     dash_renderer = "/dash/dash-renderer/dash_renderer/",
     dash_core_components = "/dash-core-components/dash_core_components/",
@@ -25,9 +25,7 @@ function index(req::HTTP.Request)
         show_undo_redo = false
     )
     
-    scripts = join(map(SCRIPTS) do pair
-        """<script src="/_dash-component-suites/$(pair.second.package)/$(pair.second.file)?v=$(pair.second.version)"></script>"""
-    end, "")
+    scripts = Components.@components_js_include
     
 
 
@@ -48,37 +46,12 @@ function index(req::HTTP.Request)
         </body>
     </html>""")
 end
-function component_suites(req::HTTP.Request)
-    dump(req.target)
-    target = HTTP.URI(req.target)
-    parts = split(target.path, "/")
-    
-    if length(parts) < 4
-        return HTTP.Response(404)
-    end
-    
-    package = Symbol(parts[3])
-    
-    if !haskey(components_packages, package)
-        return HTTP.Response(404)
-    end
-    
-    filename = (@__DIR__) * "/../lib" * components_packages[package] * parts[4]
-    
-    try    
-        response = HTTP.Response(200)
-        response.body = read(filename)
-        push!(response.headers, "Content-Type" => "application/javascript")    
-        return response
-    catch
-        return HTTP.Response(404)
-    end
-    
-end
 
 const DASH_ROUTER = HTTP.Router()
 HTTP.@register(DASH_ROUTER, "GET", "/", index)
-HTTP.@register(DASH_ROUTER, "GET", "/_dash-component-suites/*", component_suites)
+Components.@register_js_sources(DASH_ROUTER, "")
+
+
 test() = HTTP.serve(DASH_ROUTER, HTTP.Sockets.localhost, 8080)
 
 end # module
