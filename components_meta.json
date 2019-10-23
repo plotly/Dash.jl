@@ -4,11 +4,10 @@
         "package_name" : "dash_renderer",
         "source_path" : "/lib/dash/dash-renderer/dash_renderer/",
         "scripts" : [
-            "react@16.8.6.min.js",
-            "react-dom@16.8.6.min.js",
-            "prop-types@15.7.2.min.js",
-            "dash_renderer.min.js"
-            
+            "react@16.8.6.js",
+            "react-dom@16.8.6.js",
+            "prop-types@15.7.2.js",
+            "dash_renderer.dev.js"                        
         ],
         "has_components" : false
     },
