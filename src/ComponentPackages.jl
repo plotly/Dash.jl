@@ -4,6 +4,8 @@ module ComponentPackages
 
     include("ComponentMetas.jl")
     using .ComponentMetas
+    #using .Components
+    
     const ROOT_PATH = (@__DIR__) * "/.."
     const META_FILENAME = ROOT_PATH * "/components_meta.json"    
 
@@ -43,28 +45,19 @@ module ComponentPackages
 
 
     
-    macro register_js_sources(target, prefix)
+    macro register_js_sources(path, prefix)
         registers = []
         for package in values(_components_packages)            
             for script in package.scripts
                 filename = ROOT_PATH * package.source_path * script                
                 part = quote
-                    if $(target) == "/" * $(prefix)* "_dash-component-suites/" * $(package.package_name) * "/" * $(script)
-                        return HTTP.Response(200, ["Content-Type" => "application/javascript"], body = read($(filename)))
-                    end
-                    HTTP.@register(
-                        $(router),
-                         "GET", 
-                         "/" * $(prefix)* "_dash-component-suites/" * $(package.package_name) * "/" * $(script),                                            
-                          function (req::HTTP.Request)
-                             try
-                                return HTTP.Response(200, ["Content-Type" => "application/javascript"], body = read($(filename)))
-                             catch
-                                return HTTP.Respose(404)
-                             end                            
-                          end 
-                        )    
-                
+                    if $(path) == "/" * $(prefix)* "_dash-component-suites/" * $(package.package_name) * "/" * $(script)
+                        try
+                            return HTTP.Response(200, ["Content-Type" => "application/javascript"], body = read($(filename)))
+                        catch
+                            return HTTP.Respose(404)
+                        end
+                    end                                    
                 end            
                 push!(registers, part)
             end
@@ -123,5 +116,120 @@ module ComponentPackages
         end        
     end
 
+    function make_component(package, component)
+        maker_name = Symbol(lowercase(package.name),"_", lowercase(component.name))
+        props = collect(keys(component.properties))
+        
+        makers = Vector{Expr}()
+        push!(makers,esc(quote
+            export $(maker_name)
+            function $(maker_name)(;$(map(x->Expr(:kw, :($(x)), nothing), props)...))
+                result = Component($(component.name), $(package.package_name), Dict{Symbol, Any}())
+                    $(map(props) do prop
+                        :(
+                            if !isnothing($(prop))
+                                push!(result.props, ($(string(prop)))=>$(prop))
+                            end
+                        )                            
+                    end...
+                    )
+                return result
+            end                        
+        end))
+        if any(x->x==:children, props)
+            props_nochildren = filter(x->x!=:children, props)
+            push!(makers,esc(quote
+                function $(maker_name)(children::Any; $(map(x->Expr(:kw, :($(x)), nothing), props_nochildren)...))
+                    result = Component($(component.name), $(package.package_name), Dict{Symbol, Any}())
+                        $(map(props) do prop
+                            :(
+                                if !isnothing($(prop))
+                                    push!(result.props, ($(string(prop)))=>$(prop))
+                                end
+                            )                            
+                        end...
+                        )
+                    return result
+                end
+                function $(maker_name)(children_maker::Function; $(map(x->Expr(:kw, :($(x)), nothing), props_nochildren)...))
+                    result = Component($(component.name), $(package.package_name), Dict{Symbol, Any}())
+                        children = children_maker()
+                        $(map(props) do prop
+                            :(
+                                if !isnothing($(prop))
+                                    push!(result.props, ($(string(prop)))=>$(prop))
+                                end
+                            )                            
+                        end...
+                        )
+                    return result
+                end                        
+        end))
+        end
+        
+        return quote
+            $(makers...)
+        end    
+    end
 
+    macro reg_components()
+        components_code::Vector{Expr} = []
+        for package in values(_components_packages)
+            if package.has_components
+                components = ComponentPackages.load_package_components(package.name)
+                for component in values(components)
+                    push!(components_code, make_component(package, component))                    
+                end
+            end            
+        end
+        return quote 
+            $(components_code...)
+        end
+        #=
+        @capture(expr, pack_.comp_(props__)) || error("expected <struct_name>:<package>.<component>(<properties>...)")
+        
+        components = ComponentPackages.load_package_components(pack)
+        if !haskey(components, comp)
+            error("undefined component $(comp) in package $(pack)")
+        end
+        component = components[comp]
+                
+        for prop in props@
+            if !haskey(component.properties, prop)
+                error("undefined property $(prop) for component $(name)")
+            end
+        end
+        
+        namespace = ComponentPackages.package_namespace(pack)
+        type_name = string(comp)
+        props_tuple = :(NamedTuple{$(props...,), Tuple{$(map(x->:(Any), props)...)}})
+        
+    
+        if any(x->x==:children, props)
+            children_prop = :(children::Any)
+            filter!(x->x!=:children, props)        
+            return esc(quote
+                struct $(name) <: Dashboards.Components.ComponentContainer
+                    type::String
+                    namespace::String
+                    props::$(props_tuple)                
+                    function $(name)(children::Any = nothing; $(map(v->Expr(:kw, :($(v)), nothing), props)...))
+                        new($(type_name), $(namespace), (children = children, $(map(v->:($(v)=$(v)), props)...),))
+                    end
+                end
+                            
+            end)        
+        else
+            return esc(quote
+                struct $(name) <: Dashboards.Components.Component
+                    type::String
+                    namespace::String
+                    props::$(props_tuple)
+                    function $(name)(;$(map(v->Expr(:kw, :($(v)), nothing), props)...))
+                        new($(type_name), $(namespace), ($(map(v->:($(v)=$(v)), props)...),))
+                    end
+                end            
+            end)
+        end=#    
+    end
 end

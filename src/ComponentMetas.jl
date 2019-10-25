@@ -68,6 +68,7 @@ module ComponentMetas
             shape = () -> :(Dict{Symbol, Any}),
             exact = () -> :(Dict{Symbol, Any})
         )
+        return :Any
         type_name = Symbol(js_type["name"])
         if !haskey(mapping, type_name)
             @show type_name
