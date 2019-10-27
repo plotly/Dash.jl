@@ -217,17 +217,17 @@ end
 function test()
     app = Dash("Test") do
         html_div() do
-            (
-                dcc_input(id="graphTitle", value="Let's Dance!", type = "text"),
-                html_div(id="outputID"),
-                html_div(id="outputID2"),
-                dcc_graph(id="graph",
-                    figure = (
-                        data = [(x = [1,2,3], y = [3,2,8], type="bar")],
-                        layout = Dict(:title => "Graph")
-                    )
+        
+            dcc_input(id="graphTitle", value="Let's Dance!", type = "text"),
+            html_div(id="outputID"),
+            html_div(id="outputID2"),
+            dcc_graph(id="graph",
+                figure = (
+                    data = [(x = [1,2,3], y = [3,2,8], type="bar")],
+                    layout = Dict(:title => "Graph")
                 )
-            )            
+            )
+                    
         end
     end
     callback!(app, callid"{graphTitle.type} graphTitle.value => outputID.children, outputID2.children") do type, value
@@ -235,10 +235,6 @@ function test()
     end
     h = make_handler(app)
     HTTP.serve(h, HTTP.Sockets.localhost, 8080)
-end
-
-macro tst(s::String)
-    s[1:3]
 end
 
 end # module
