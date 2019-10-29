@@ -2,4 +2,7 @@
 *.jl.*.cov
 *.jl.mem
 deps/deps.jl
+deps/build.log
 .vscode
+components/*
+lib/*

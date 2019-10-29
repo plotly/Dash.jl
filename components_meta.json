@@ -25,12 +25,12 @@
         "source_path" : "/components/dash-core-components/dash_core_components/",
         "scripts" : {
             "dev" : [
-                "plotly-1.50.0.min.js",
+                "plotly-1.50.1.min.js",
                 "highlight.pack.js",
                 "dash_core_components.min.js"
             ],
             "prod" : [
-                "plotly-1.50.0.min.js",
+                "plotly-1.50.1.min.js",
                 "highlight.pack.js",
                 "dash_core_components.min.js"
             ]

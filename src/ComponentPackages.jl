@@ -58,7 +58,7 @@ module ComponentPackages
                     try
                         return HTTP.Response(200, ["Content-Type" => "application/javascript"], body = read(filename))
                     catch
-                        return HTTP.Respose(404)
+                        return HTTP.Response(404)
                     end
                 end                
             end            
