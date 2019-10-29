@@ -1,9 +1,0 @@
-[submodule "lib/dash"]
-	path = lib/dash
-	url = https://github.com/plotly/dash.git
-[submodule "components/dash-core-components"]
-	path = components/dash-core-components
-	url = https://github.com/plotly/dash-core-components.git
-[submodule "components/dash-html-components"]
-	path = components/dash-html-components
-	url = https://github.com/plotly/dash-html-components.git
