@@ -9,40 +9,108 @@ import .ComponentPackages
 using .ComponentMetas
 using .Components
 
-export Dash, Component, ComponentContainer, @use, <|, @props_str, @callid_str, callback!
+export Dash, Component, @use, <|, @props_str, @callid_str, CallbackId, callback!, make_handler
 
 ComponentPackages.@reg_components()
+
+@doc """
+    module Dashboards
+
+Julia backend for [Plotly Dash](https://github.com/plotly/dash)
+
+# Examples
+```julia
+import HTTP
+using Dashboards
+app = Dash("Test", external_stylesheets=["https://codepen.io/chriddyp/pen/bWLwgP.css"]) do
+    html_div() do
+        dcc_input(id="graphTitle", value="Let's Dance!", type = "text"),
+        html_div(id="outputID"),            
+        dcc_graph(id="graph",
+            figure = (
+                data = [(x = [1,2,3], y = [3,2,8], type="bar")],
+                layout = Dict(:title => "Graph")
+            )
+        )
+                
+    end
+end
+callback!(app, callid"{graphTitle.type} graphTitle.value => outputID.children") do type, value
+    "You've entered: '\$(value)' into a '\$(type)' input control"
+end
+callback!(app, callid"graphTitle.value => graph.figure") do value
+    (
+        data = [
+            (x = [1,2,3], y = abs.(randn(3)), type="bar"),
+            (x = [1,2,3], y = abs.(randn(3)), type="scatter", mode = "lines+markers", line = (width = 4,))                
+        ],
+        layout = (title = value,)
+    )
+end
+handle = make_handler(app, debug = true)
+HTTP.serve(handle, HTTP.Sockets.localhost, 8080)
+```
+
+# Available components
+$(ComponentPackages.component_doc_list())
+""" Dashboards
 
 const IdProp = Tuple{Symbol, Symbol}
 
 struct CallbackId
-    input ::Vector{IdProp}
     state ::Vector{IdProp}
+    input ::Vector{IdProp}
     output ::Vector{IdProp}
 end
 
 Base.convert(::Type{Vector{IdProp}}, v::IdProp) = [v]
 
-CallbackId(;input ::Union{Vector{IdProp}, IdProp},  output ::Union{Vector{IdProp}, IdProp}, state ::Union{Vector{IdProp}, IdProp} = Vector{IdProp}()) = CallbackId(input, state, output)
+CallbackId(;input ::Union{Vector{IdProp}, IdProp},  output ::Union{Vector{IdProp}, IdProp}, state ::Union{Vector{IdProp}, IdProp} = Vector{IdProp}()) = CallbackId(state, input, output)
 
 struct Callback
     func ::Function
     id ::CallbackId
 end
 
+"""
+    struct Dash <: Any
+
+Representation of Dash application
+"""
 struct Dash
     name ::String
     layout ::Component
     callbacks ::Dict{Symbol, Callback}
     external_stylesheets ::Vector{String}
-    routes_prefix ::String
-    function Dash(name::String, layout::Component; external_stylesheets ::Vector{String} = Vector{String}(), routes_prefix="")
-        new(name, layout, Dict{Symbol, Callback}(), external_stylesheets, routes_prefix)
+    url_base_pathname ::String
+   
+    function Dash(name::String, layout::Component; external_stylesheets ::Vector{String} = Vector{String}(), url_base_pathname="/")
+        new(name, layout, Dict{Symbol, Callback}(), external_stylesheets, url_base_pathname)
     end    
 end
+"""
+    Dash(layout_maker::Function, name::String; external_stylesheets ::Vector{String} = Vector{String}(), url_base_pathname::String="/")::Dash
 
-function Dash(layout::Function, name::String;  external_stylesheets ::Vector{String} = Vector{String}(), routes_prefix="")
-    Dash(name, layout(), external_stylesheets=external_stylesheets, routes_prefix=routes_prefix)
+Construct a Dash app using callback for layout creation
+
+# Arguments
+- `layout_maker::Function` - function for layout creation. Must has signature ()::Component
+- `name::String` - Dashboard name
+- `external_stylesheets::Vector{String} = Vector{String}()` - vector of external css urls 
+- `url_base_pathname::String="/"` - base url path for dashboard, default "/" 
+
+
+# Examples
+```jldoctest
+julia> app = Dash("Test") do
+    html_div() do
+        html_h1("Test Dashboard")
+    end
+end
+```
+"""
+function Dash(layout_maker::Function, name::String;  external_stylesheets ::Vector{String} = Vector{String}(), url_base_pathname="/")
+    Dash(name, layout_maker(), external_stylesheets=external_stylesheets, url_base_pathname=url_base_pathname)
 end
 
 function parse_props(s)
@@ -60,10 +128,21 @@ function parse_props(s)
         return make_prop(part)
     end    
 end
+
 macro props_str(s)        
     return parse_props(s)
 end
+"""
+    @callid_str"
 
+Macro for crating Dash CallbackId.
+Parse string in form "[{State1[, ...]}] Input1[, ...] => Output1[, ...]"
+
+#Examples
+```julia
+    id1 = callid"{inputDiv.children} input.value => output1.value, output2.value"
+```
+"""
 macro callid_str(s)
     rex = r"(\{(?<state>.*)\})?(?<input>.*)=>(?<output>.*)"ms
     m = match(rex, s)
@@ -73,7 +152,7 @@ macro callid_str(s)
     input = parse_props(strip(m[:input]))
     output = parse_props(strip(m[:output]))
     state = isnothing(m[:state]) ? Vector{IdProp}() : parse_props(strip(m[:state]))
-    return CallbackId(input, state, output) 
+    return CallbackId(state, input, output) 
 end
 
 idprop_string(idprop::IdProp) = "$(idprop[1]).$(idprop[2])"
@@ -87,7 +166,38 @@ function output_string(id::CallbackId)
     join(map(idprop_string, id.output), "...") *
     ".."
 end
+"""
+    callback!(func::Function, app::Dash, id::CallbackId)
 
+Create a callback that updates the output by calling function `func`.
+
+#Examples
+```julia
+app = Dash("Test") do
+    html_div() do
+        dcc_input(id="graphTitle", value="Let's Dance!", type = "text"),
+        html_div(id="outputID"),
+        html_div(id="outputID2")
+
+    end
+end
+callback!(app, CallbackId(
+    state = [(:graphTitle, :type)],
+    input = [(:graphTitle, :value)],
+    output = [(:outputID, :children), (:outputID2, :children)]
+    )
+    ) do stateType, inputValue
+    return (stateType * "..." * inputValue, inputValue)
+end
+```
+You can use macro `callid` string macro for make CallbackId : 
+```julia
+callback!(app, callid"{graphTitle.type} graphTitle.value => outputID.children, outputID2.children") do stateType, inputValue
+
+    return (stateType * "..." * inputValue, inputValue)
+end
+```    
+"""
 function callback!(func::Function, app::Dash, id::CallbackId)
     
     for out in id.output
@@ -101,7 +211,7 @@ function callback!(func::Function, app::Dash, id::CallbackId)
     push!(app.callbacks, out_symbol => Callback(func, id))
 end
 
-function index_page(app::Dash)
+function index_page(app::Dash; debug = false)
     metas = ["""<meta http-equiv="X-UA-Compatible" content="IE=edge">""", """<meta charset="UTF-8">"""]
     title = app.name
     css = join(map(app.external_stylesheets) do s 
@@ -117,14 +227,14 @@ function index_page(app::Dash)
         </div>
     """
     config = (
-        url_base_pathname = nothing,
-        requests_pathname_prefix = "/$(app.routes_prefix)",
+        url_base_pathname = "$(app.url_base_pathname)",
+        requests_pathname_prefix = "$(app.url_base_pathname)",
         ui = true,
-        props_check = true,
+        props_check = debug,
         show_undo_redo = false
     )
     
-    scripts = ComponentPackages.@components_js_include
+    scripts = ComponentPackages.components_js_include(app.url_base_pathname, debug = debug)
 
     """<!DOCTYPE html>
     <html>
@@ -190,20 +300,42 @@ function process_callback(app::Dash, body::String)
 
 end
 
-function make_handler(app::Dash)
+
+"""
+    make_handler(app::Dash; debug = false)
+
+Make handler for routing Dash application in HTTP package 
+
+#Arguments
+- `app::Dash` - Dash application
+- `debug::Bool = false` - Enable/disable all the dev tools
+
+#Examples
+```jldoctest
+julia> app = Dash("Test") do
+    html_div() do
+        html_h1("Test Dashboard")
+    end
+end
+julia> handler = make_handler(app)
+julia> HTTP.serve(handler, HTTP.Sockets.localhost, 8080)
+```
+
+"""
+function make_handler(app::Dash; debug::Bool = false)
     function (req::HTTP.Request)
         uri = HTTP.URI(req.target)
-        ComponentPackages.@register_js_sources(uri.path, app.routes_prefix)
-        if uri.path == "/"
-            return HTTP.Response(200, index_page(app)) 
+        ComponentPackages.@register_js_sources(uri.path, app.url_base_pathname)
+        if uri.path == "$(app.url_base_pathname)"
+            return HTTP.Response(200, index_page(app, debug = debug)) 
         end
-        if uri.path == "/$(app.routes_prefix)_dash-layout"
+        if uri.path == "$(app.url_base_pathname)_dash-layout"
             return HTTP.Response(200, ["Content-Type" => "application/json"], body = JSON2.write(app.layout)) 
         end
-        if uri.path == "/$(app.routes_prefix)_dash-dependencies"
+        if uri.path == "$(app.url_base_pathname)_dash-dependencies"
             return HTTP.Response(200, ["Content-Type" => "application/json"], body = dependencies_json(app)) 
         end
-        if uri.path == "/$(app.routes_prefix)_dash-update-component" && req.method == "POST"            
+        if uri.path == "$(app.url_base_pathname)_dash-update-component" && req.method == "POST"            
             return HTTP.Response(200, ["Content-Type" => "application/json"],
                 body = JSON2.write(
                     process_callback(app, String(req.body))
@@ -215,12 +347,10 @@ function make_handler(app::Dash)
 end
 
 function test()
-    app = Dash("Test") do
+    app = Dash("Test", external_stylesheets=["https://codepen.io/chriddyp/pen/bWLwgP.css"]) do
         html_div() do
-        
             dcc_input(id="graphTitle", value="Let's Dance!", type = "text"),
-            html_div(id="outputID"),
-            html_div(id="outputID2"),
+            html_div(id="outputID"),            
             dcc_graph(id="graph",
                 figure = (
                     data = [(x = [1,2,3], y = [3,2,8], type="bar")],
@@ -230,11 +360,20 @@ function test()
                     
         end
     end
-    callback!(app, callid"{graphTitle.type} graphTitle.value => outputID.children, outputID2.children") do type, value
-        return ("$(type)....$(value)", value)
+    callback!(app, callid"{graphTitle.type} graphTitle.value => outputID.children") do type, value
+        "You've entered: '$(value)' into a '$(type)' input control"
     end
-    h = make_handler(app)
-    HTTP.serve(h, HTTP.Sockets.localhost, 8080)
+    callback!(app, callid"graphTitle.value => graph.figure") do value
+        (
+            data = [
+                (x = [1,2,3], y = abs.(randn(3)), type="bar"),
+                (x = [1,2,3], y = abs.(randn(3)), type="scatter", mode = "lines+markers", line = (width = 4,))                
+            ],
+            layout = (title = value,)
+        )
+    end
+    handle = make_handler(app, debug = true)
+    HTTP.serve(handle, HTTP.Sockets.localhost, 8080)
 end
 
 end # module

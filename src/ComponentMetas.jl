@@ -9,8 +9,7 @@ module ComponentMetas
     struct ComponentPropertyMeta
         name ::String
         required ::Bool
-        description ::String
-        type ::Union{Symbol, Expr}
+        description ::String        
     end
 
     struct ComponentMeta
@@ -21,7 +20,7 @@ module ComponentMetas
     
     
 
-    Base.show(io::IO, meta::ComponentPropertyMeta) = println(io, "$(meta.name)::$(eval(meta.type))$(meta.required ? "" : " [optional]") - $(meta.description)")
+    Base.show(io::IO, meta::ComponentPropertyMeta) = println(io, "$(meta.name)$(meta.required ? "" : "[optional]") - $(meta.description)")
     
     function Base.show(io::IO, meta::ComponentMeta)
 
@@ -34,51 +33,10 @@ module ComponentMetas
         end        
     end
 
-    function js_prop_types_mapping(js_type)
-        mapping = (
-            array = () -> :(Vector{Any}),
-            bool = () -> :Bool,
-            number = () -> :Number,
-            string = () -> :(String),
-            object = () -> :(Dict{Symbol, Any}),
-            any = () -> :(Union{Bool, Number, String, Dict{Symbol, Any}, Vector}),
-            element = () -> :(Dashboards.Components.Component),
-            node = () -> :(Union{Dashboards.Components.Component, Vector{Dashboards.Components.Component}, String, Number}),
-            enum = () -> :(Union{Bool, Number, String}), #TODO special type
-            union = function()
-                sub_types = map(js_type["value"]) do t
-                    js_prop_types_mapping(t)
-                end       
-                return quote
-                    $(eval(:(Union{$(sub_types...)})))
-                end
-            end,
-            arrayOf = function()
-                sub_type = js_prop_types_mapping(js_type["value"])
-                return quote
-                    $(eval(:(Vector{$(sub_type)})))
-                end
-            end,
-            objectOf = function()
-                sub_type = js_prop_types_mapping(js_type["value"])
-                return quote
-                    $(eval(:(Dict{Symbol, $(sub_type)})))
-                end
-            end,
-            shape = () -> :(Dict{Symbol, Any}),
-            exact = () -> :(Dict{Symbol, Any})
-        )
-        return :Any
-        type_name = Symbol(js_type["name"])
-        if !haskey(mapping, type_name)
-            @show type_name
-            return :Any
-        else
-            return mapping[type_name]()
-        end        
-    end
+    
 
     function is_prop_valid(prop_meta)
+        
         if !haskey(prop_meta, "type") && !haskey(prop_meta, "flowType")
             return false
         end
@@ -98,9 +56,9 @@ module ComponentMetas
     function parse_props(raw_props::OrderedDict)
         result = OrderedDict{Symbol, ComponentPropertyMeta}()
         for (name, prop_meta) in raw_props
-            if is_prop_valid(prop_meta)
+            if !isnothing(match(r"^[a-zA-Z_][a-zA-Z0-9_]+$", name)) && is_prop_valid(prop_meta)
                 push!(result, 
-                Symbol(name) => ComponentPropertyMeta(name, prop_meta["required"], prop_meta["description"], js_prop_types_mapping(prop_meta["type"]))
+                Symbol(name) => ComponentPropertyMeta(name, prop_meta["required"], prop_meta["description"])
                 )
             end
         end

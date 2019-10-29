@@ -3,8 +3,7 @@ module ComponentPackages
     
 
     include("ComponentMetas.jl")
-    using .ComponentMetas
-    #using .Components
+    using .ComponentMetas    
     
     const ROOT_PATH = (@__DIR__) * "/.."
     const META_FILENAME = ROOT_PATH * "/components_meta.json"    
@@ -12,8 +11,8 @@ module ComponentPackages
     struct ComponentPackage
         name ::String
         package_name ::String
-        source_path ::String        
-        scripts ::Vector{String}
+        source_path ::String
+        scripts ::NamedTuple{(:dev, :prod), Tuple{Vector{String}, Vector{String}}}
         has_components ::Bool  
     end
 
@@ -30,12 +29,13 @@ module ComponentPackages
     
     const _components_packages = @_make_packages
 
-    macro components_js_include(prefix = "")
+    function components_js_include(prefix = ""; debug=false)
+        type = debug ? :dev : :prod
         join(
             map(values(_components_packages)) do p
                 join(
-                    map(p.scripts) do script
-                        """<script src="/$(prefix)_dash-component-suites/$(p.package_name)/$(script)"></script>"""
+                    map(p.scripts[type]) do script
+                        """<script src="$(prefix)_dash-component-suites/$(p.package_name)/$(script)"></script>"""
                     end, "\n"
                 )                
             end
@@ -47,20 +47,22 @@ module ComponentPackages
     
     macro register_js_sources(path, prefix)
         registers = []
-        for package in values(_components_packages)            
-            for script in package.scripts
-                filename = ROOT_PATH * package.source_path * script                
-                part = quote
-                    if $(path) == "/" * $(prefix)* "_dash-component-suites/" * $(package.package_name) * "/" * $(script)
-                        try
-                            return HTTP.Response(200, ["Content-Type" => "application/javascript"], body = read($(filename)))
-                        catch
-                            return HTTP.Respose(404)
-                        end
-                    end                                    
-                end            
-                push!(registers, part)
-            end
+        for package in values(_components_packages)      
+            package_uri = "_dash-component-suites/$(package.package_name)/"
+            package_path = ROOT_PATH * package.source_path
+            part = quote
+                full_package_uri = $(prefix) * $(package_uri)
+                if startswith($(path), full_package_uri)
+                    script_name = replace($(path), full_package_uri=>"")
+                    filename = $(package_path) * script_name
+                    try
+                        return HTTP.Response(200, ["Content-Type" => "application/javascript"], body = read(filename))
+                    catch
+                        return HTTP.Respose(404)
+                    end
+                end                
+            end            
+            push!(registers, part)            
         end
         return esc(quote
             $(registers...)
@@ -85,44 +87,49 @@ module ComponentPackages
         for (script, meta) in raw_meta
             name = match(r"([a-zA-Z0-9_]+)\.react\.js", script).captures[1]
             components[Symbol(name)] = ComponentMeta(name, meta["description"], parse_props(meta["props"]))
+            break
         end
         return components
     end
 
-    function show_packages()
-        println("Components packages:")
+    function component_doc_list()
+        result = ""
         for package in values(_components_packages)
             if package.has_components
-                println("\t$(package.name)")
+                result *= "## Component package: `$(package.name)`:\n"
+                components = load_package_components(Symbol(package.name))
+                names = sort(collect(keys(components)))
+                names = map(names) do name
+                    lowercase("`$(package.name)_$(name)`")
+                end
+                result *= join(names, ", ") * "\n"        
             end
         end
-    end
-
-    function show_package_components(package, component = nothing)
-        package = Symbol(package)
-        component = isnothing(component) ? nothing : Symbol(component)
-        if !haskey(_components_packages, package) || !_components_packages[package].has_components
-            println("Compontents package \"$(package)\" not found")
-        end
-        components = load_package_components(package)
-        if isnothing(component)
-            names = sort(collect(keys(components)))            
-            println("Components in \"$(package)\":")
-            println(join(names, ", "))        
-        elseif !haskey(components, component)
-            println("Component \"$(component)\" not found in \"$(package)\"")
-        else
-            show(components[component])
-        end        
+        return result
     end
 
     function make_component(package, component)
         maker_name = Symbol(lowercase(package.name),"_", lowercase(component.name))
         props = collect(keys(component.properties))
-        
+        add_signs = ""
+        if any(x->x==:children, props)
+            add_signs = """\n    $(maker_name)(children::Any;kwags...)\n    $(maker_name)(children_maker::Function;kwags...)\n"""
+        end
+        docstr = """    $(maker_name)(;kwags...)
+        $(add_signs)
+
+        $(component.description)
+
+        # Arguments
+        $(join(map(values(component.properties)) do prop
+            "- `$(prop.name)` - $(prop.description)"
+        end,"\n"))
+        """
         makers = Vector{Expr}()
         push!(makers,esc(quote
             export $(maker_name)
+            function $(maker_name) end
+            @doc $(docstr) $(maker_name)
             function $(maker_name)(;$(map(x->Expr(:kw, :($(x)), nothing), props)...))
                 result = Component($(component.name), $(package.package_name), Dict{Symbol, Any}())
                     $(map(props) do prop
@@ -178,58 +185,13 @@ module ComponentPackages
             if package.has_components
                 components = ComponentPackages.load_package_components(package.name)
                 for component in values(components)
-                    push!(components_code, make_component(package, component))                    
+                    push!(components_code, make_component(package, component))
                 end
             end            
         end
         return quote 
             $(components_code...)
         end
-        #=
-        @capture(expr, pack_.comp_(props__)) || error("expected <struct_name>:<package>.<component>(<properties>...)")
         
-        components = ComponentPackages.load_package_components(pack)
-        if !haskey(components, comp)
-            error("undefined component $(comp) in package $(pack)")
-        end
-        component = components[comp]
-                
-        for prop in props@
-            if !haskey(component.properties, prop)
-                error("undefined property $(prop) for component $(name)")
-            end
-        end
-        
-        namespace = ComponentPackages.package_namespace(pack)
-        type_name = string(comp)
-        props_tuple = :(NamedTuple{$(props...,), Tuple{$(map(x->:(Any), props)...)}})
-        
-    
-        if any(x->x==:children, props)
-            children_prop = :(children::Any)
-            filter!(x->x!=:children, props)        
-            return esc(quote
-                struct $(name) <: Dashboards.Components.ComponentContainer
-                    type::String
-                    namespace::String
-                    props::$(props_tuple)                
-                    function $(name)(children::Any = nothing; $(map(v->Expr(:kw, :($(v)), nothing), props)...))
-                        new($(type_name), $(namespace), (children = children, $(map(v->:($(v)=$(v)), props)...),))
-                    end
-                end
-                            
-            end)        
-        else
-            return esc(quote
-                struct $(name) <: Dashboards.Components.Component
-                    type::String
-                    namespace::String
-                    props::$(props_tuple)
-                    function $(name)(;$(map(v->Expr(:kw, :($(v)), nothing), props)...))
-                        new($(type_name), $(namespace), ($(map(v->:($(v)=$(v)), props)...),))
-                    end
-                end            
-            end)
-        end=#    
     end
 end

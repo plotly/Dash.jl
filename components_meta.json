@@ -3,32 +3,48 @@
         "name" : "renderer",
         "package_name" : "dash_renderer",
         "source_path" : "/lib/dash/dash-renderer/dash_renderer/",
-        "scripts" : [
-            "react@16.8.6.js",
-            "react-dom@16.8.6.js",
-            "prop-types@15.7.2.js",
-            "dash_renderer.dev.js"                        
-        ],
+        "scripts" : {
+            "dev" : [
+                "react@16.8.6.js",
+                "react-dom@16.8.6.js",
+                "prop-types@15.7.2.js",
+                "dash_renderer.dev.js"
+            ],
+            "prod" : [
+                "react@16.8.6.min.js",
+                "react-dom@16.8.6.min.js",
+                "prop-types@15.7.2.min.js",
+                "dash_renderer.min.js"
+            ]
+        },
         "has_components" : false
     },
     {
         "name" : "dcc",
         "package_name" : "dash_core_components",
         "source_path" : "/components/dash-core-components/dash_core_components/",
-        "scripts" : [
-            "plotly-1.50.0.min.js",
-            "highlight.pack.js",
-            "dash_core_components.min.js"            
-        ],
+        "scripts" : {
+            "dev" : [
+                "plotly-1.50.0.min.js",
+                "highlight.pack.js",
+                "dash_core_components.min.js"
+            ],
+            "prod" : [
+                "plotly-1.50.0.min.js",
+                "highlight.pack.js",
+                "dash_core_components.min.js"
+            ]
+        },
         "has_components" : true
     },
     {
         "name" : "html",
         "package_name" : "dash_html_components",
         "source_path" : "/components/dash-html-components/dash_html_components/",
-        "scripts" : [
-            "dash_html_components.min.js"
-        ],
+        "scripts" : {
+            "dev" : ["dash_html_components.min.js"],
+            "prod" : ["dash_html_components.min.js"]
+        },
         "has_components" : true
     }
 ]

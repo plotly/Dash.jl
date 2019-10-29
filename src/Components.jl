@@ -1,6 +1,9 @@
 module Components
 export Component, ComponentContainer, <|
+
 abstract type AbstractComponent end
+
+
 struct Component <: AbstractComponent
     type ::String
     namespace ::String
