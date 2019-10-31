@@ -273,10 +273,10 @@ function process_callback(app::Dash, body::String)
     end
     args = []
     if haskey(params, :state)
-        append!(args, map(x->x[:value], params.state))
+        append!(args, map(x->:value in x ? x[:value] : nothing, params.state))
     end
     if haskey(params, :inputs)
-        append!(args, map(x->x[:value], params.inputs))
+        append!(args, map(x->:value in x ? x[:value] : nothing, params.inputs))
     end    
     res = app.callbacks[output].func(args...)
     if length(app.callbacks[output].id.output) == 1
