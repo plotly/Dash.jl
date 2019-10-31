@@ -54,8 +54,8 @@ julia> app = Dash("Test app", external_stylesheets = ["https://codepen.io/chridd
         html_div(id = "my-div")        
     end
 end
-julia> callback!(app, callid"my-id.children => my-div.value") do input_value
+julia> callback!(app, callid"my-id.value => my-div.children") do input_value
     "You've entered $(input_value)"
 end
 julia> handler = make_handler(app, debug = true)
-julia> HTTP
+julia> HTTP.serve(handler, HTTP.Sockets.localhost, 8080)
