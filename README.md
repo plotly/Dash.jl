@@ -36,7 +36,7 @@ julia> handler = make_handler(app, debug = true)
 julia> HTTP.serve(handler, HTTP.Sockets.localhost, 8080)
 ```
 * The `Dash` struct represent dashboard application.
-* The constructor for `Dash` struct is `Dash(layout_maker::Function, name::String;  external_stylesheets ::Vector{String} = Vector{String}(), url_base_pathname="/")` where `layout_maker` is a function with signature ()::Component
+* The constructor for `Dash` struct is `Dash(layout_maker::Function, name::String;  external_stylesheets::Vector{String} = Vector{String}(), url_base_pathname="/")` where `layout_maker` is a function with signature ()::Component
 * Unlike the python version where each Dash component is represented as a separate class, all components in Dashboard is represented by struct `Component`. 
 * You can create `Component` specific for concrete Dash component by the set of functions in the form `lowercase(<component package>)_lowercase(<component name>)`. For example, in python html `<div>` element is represented as `HTML.Div` in Dasboards it created using function `html_div`
 * List of all supported components is available in docstring for Dasboards module
@@ -62,7 +62,7 @@ julia> HTTP.serve(handler, HTTP.Sockets.localhost, 8080)
 ```
 * You can make your dashboard interactive by register callbacks for changes in frontend with function `callback!(func::Function, app::Dash, id::CallbackId)`
 * Inputs and outputs (and states, see below) of callback are described by struct `CallbackId` which can easily created by string macro `callid""`
-* `callid""` parse string in form "[{state1 [,...]}] input1[,...] => output1[,...]" where all items is "<element id>.<property name>"
+* `callid""` parse string in form `"[{state1 [,...]}] input1[,...] => output1[,...]"` where all items is `"<element id>.<property name>"`
 * Callback function must have the signature(states..., inputs...) and return data for output
 * Be careful, checks for the identifier and properties have not yet been implemented, so errors in determining callid can lead to errors during request processing
 
