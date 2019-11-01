@@ -83,9 +83,9 @@ struct Dash
     callbacks ::Dict{Symbol, Callback}
     external_stylesheets ::Vector{String}
     url_base_pathname ::String
-   
-    function Dash(name::String, layout::Component; external_stylesheets ::Vector{String} = Vector{String}(), url_base_pathname="/")
-        new(name, layout, Dict{Symbol, Callback}(), external_stylesheets, url_base_pathname)
+    assets_folder ::String
+    function Dash(name::String, layout::Component; external_stylesheets ::Vector{String} = Vector{String}(), url_base_pathname="/", assets_folder::String = "assets")
+        new(name, layout, Dict{Symbol, Callback}(), external_stylesheets, url_base_pathname, assets_folder)
     end    
 end
 """
@@ -98,7 +98,8 @@ Construct a Dash app using callback for layout creation
 - `name::String` - Dashboard name
 - `external_stylesheets::Vector{String} = Vector{String}()` - vector of external css urls 
 - `url_base_pathname::String="/"` - base url path for dashboard, default "/" 
-
+- `assets_folder::String` - a path, relative to the current working directory,
+for extra files to be used in the browser. Default `"assets"`
 
 # Examples
 ```jldoctest
@@ -109,8 +110,8 @@ julia> app = Dash("Test") do
 end
 ```
 """
-function Dash(layout_maker::Function, name::String;  external_stylesheets ::Vector{String} = Vector{String}(), url_base_pathname="/")
-    Dash(name, layout_maker(), external_stylesheets=external_stylesheets, url_base_pathname=url_base_pathname)
+function Dash(layout_maker::Function, name::String;  external_stylesheets ::Vector{String} = Vector{String}(), url_base_pathname="/", assets_folder::String = "assets")
+    Dash(name, layout_maker(), external_stylesheets=external_stylesheets, url_base_pathname=url_base_pathname, assets_folder = assets_folder)
 end
 
 function parse_props(s)
@@ -206,6 +207,18 @@ function callback!(func::Function, app::Dash, id::CallbackId)
         end
     end
 
+    function check_arr(ids) 
+        for id in ids
+            if !Components.is_valid_idprop(app.layout, id)
+                error("Layout hasn't component with id `$(id[1])`` or component with id `$(id[1])` hasn't property `$(id[2])``")
+            end
+        end
+    end
+
+    check_arr(id.state)
+    check_arr(id.input)
+    check_arr(id.output)
+
     out_symbol = Symbol(output_string(id))
         
     push!(app.callbacks, out_symbol => Callback(func, id))
@@ -300,6 +313,15 @@ function process_callback(app::Dash, body::String)
 
 end
 
+function process_assets(app::Dash, path)
+    assets_path = "$(app.url_base_pathname)assets/"
+    filename = joinpath(app.assets_folder, replace(path, assets_path=>""))    
+    try
+        return HTTP.Response(200, [], body = read(filename))
+    catch
+        return HTTP.Response(404)
+    end
+end
 
 """
     make_handler(app::Dash; debug = false)
@@ -335,6 +357,9 @@ function make_handler(app::Dash; debug::Bool = false)
         if uri.path == "$(app.url_base_pathname)_dash-dependencies"
             return HTTP.Response(200, ["Content-Type" => "application/json"], body = dependencies_json(app)) 
         end
+        if startswith(uri.path, "$(app.url_base_pathname)assets/")
+            return process_assets(app, uri.path)
+        end
         if uri.path == "$(app.url_base_pathname)_dash-update-component" && req.method == "POST"            
             return HTTP.Response(200, ["Content-Type" => "application/json"],
                 body = JSON2.write(
@@ -344,36 +369,6 @@ function make_handler(app::Dash; debug::Bool = false)
         end
         return HTTP.Response(404)
     end
-end
-
-function test()
-    app = Dash("Test", external_stylesheets=["https://codepen.io/chriddyp/pen/bWLwgP.css"]) do
-        html_div() do
-            dcc_input(id="graphTitle", value="Let's Dance!", type = "text"),
-            html_div(id="outputID"),            
-            dcc_graph(id="graph",
-                figure = (
-                    data = [(x = [1,2,3], y = [3,2,8], type="bar")],
-                    layout = Dict(:title => "Graph")
-                )
-            )
-                    
-        end
-    end
-    callback!(app, callid"{graphTitle.type} graphTitle.value => outputID.children") do type, value
-        "You've entered: '$(value)' into a '$(type)' input control"
-    end
-    callback!(app, callid"graphTitle.value => graph.figure") do value
-        (
-            data = [
-                (x = [1,2,3], y = abs.(randn(3)), type="bar"),
-                (x = [1,2,3], y = abs.(randn(3)), type="scatter", mode = "lines+markers", line = (width = 4,))                
-            ],
-            layout = (title = value,)
-        )
-    end
-    handle = make_handler(app, debug = true)
-    HTTP.serve(handle, HTTP.Sockets.localhost, 8080)
 end
 
 end # module

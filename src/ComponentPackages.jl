@@ -115,6 +115,9 @@ module ComponentPackages
         if any(x->x==:children, props)
             add_signs = """\n    $(maker_name)(children::Any;kwags...)\n    $(maker_name)(children_maker::Function;kwags...)\n"""
         end
+
+        avaible_props = Set(Symbol.(getproperty.(values(component.properties), :name)))
+
         docstr = """    $(maker_name)(;kwags...)
         $(add_signs)
 
@@ -130,45 +133,43 @@ module ComponentPackages
             export $(maker_name)
             function $(maker_name) end
             @doc $(docstr) $(maker_name)
-            function $(maker_name)(;$(map(x->Expr(:kw, :($(x)), nothing), props)...))
-                result = Component($(component.name), $(package.package_name), Dict{Symbol, Any}())
-                    $(map(props) do prop
-                        :(
-                            if !isnothing($(prop))
-                                push!(result.props, ($(string(prop)))=>$(prop))
-                            end
-                        )                            
-                    end...
-                    )
+            function $(maker_name)(;kwargs...)
+                avaible_props = $(avaible_props)
+                result = Component($(component.name), $(package.package_name), Dict{Symbol, Any}(), avaible_props)
+                for (prop, value) in pairs(kwargs)
+                    if !(prop in avaible_props)
+                        throw(ArgumentError("Invalid property $(string(prop)) for component " * $(string(maker_name))))
+                    end
+                    push!(result.props, prop=>value)
+                end
                 return result
             end                        
         end))
         if any(x->x==:children, props)
             props_nochildren = filter(x->x!=:children, props)
             push!(makers,esc(quote
-                function $(maker_name)(children::Any; $(map(x->Expr(:kw, :($(x)), nothing), props_nochildren)...))
-                    result = Component($(component.name), $(package.package_name), Dict{Symbol, Any}())
-                        $(map(props) do prop
-                            :(
-                                if !isnothing($(prop))
-                                    push!(result.props, ($(string(prop)))=>$(prop))
-                                end
-                            )                            
-                        end...
-                        )
+                function $(maker_name)(children::Any;  kwargs...)
+                    avaible_props = $(avaible_props)
+                    result = Component($(component.name), $(package.package_name), Dict{Symbol, Any}(), avaible_props)
+                    for (prop, value) in pairs(kwargs)
+                        if !(prop in avaible_props)
+                            throw(ArgumentError("Invalid property $(string(prop)) for component " * $(string(maker_name))))
+                        end
+                        push!(result.props, prop=>value)
+                    end
+                    push!(result.props, :children=>children)
                     return result
                 end
-                function $(maker_name)(children_maker::Function; $(map(x->Expr(:kw, :($(x)), nothing), props_nochildren)...))
-                    result = Component($(component.name), $(package.package_name), Dict{Symbol, Any}())
-                        children = children_maker()
-                        $(map(props) do prop
-                            :(
-                                if !isnothing($(prop))
-                                    push!(result.props, ($(string(prop)))=>$(prop))
-                                end
-                            )                            
-                        end...
-                        )
+                function $(maker_name)(children_maker::Function; kwargs...)
+                    avaible_props = $(avaible_props)
+                    result = Component($(component.name), $(package.package_name), Dict{Symbol, Any}(), avaible_props)
+                    for (prop, value) in pairs(kwargs)
+                        if !(prop in avaible_props)
+                            throw(ArgumentError("Invalid property $(string(prop)) for component " * $(string(maker_name))))
+                        end
+                        push!(result.props, prop=>value)
+                    end
+                    push!(result.props, :children=>children_maker())
                     return result
                 end                        
         end))
