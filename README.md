@@ -3,10 +3,13 @@
 Julia backend for [Plotly Dash](https://github.com/plotly/dash)
 It is in its early development phase so any bugs may arise, please report me about issues
 
+
 ## Instalation
 
+Julia version >= 1.2 is required
+
 ```julia
-import Pkg; Pkg.add("https://github.com/waralex/Dashboards.git")
+import Pkg; Pkg.add(Pkg.PackageSpec(url = "https://github.com/waralex/Dashboards.git"))
 ```
 
 ## Usage
