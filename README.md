@@ -36,13 +36,13 @@ julia> handler = make_handler(app, debug = true)
 julia> HTTP.serve(handler, HTTP.Sockets.localhost, 8080)
 ```
 * The `Dash` struct represent dashboard application.
-* The constructor for `Dash` struct is `Dash(layout_maker::Function, name::String;  external_stylesheets::Vector{String} = Vector{String}(), url_base_pathname="/")` where `layout_maker` is a function with signature ()::Component
+* The constructor for `Dash` struct is ``Dash(layout_maker::Function, name::String;  external_stylesheets::Vector{String} = Vector{String}(), url_base_pathname="/", assets_folder::String = "assets")`` where `layout_maker` is a function with signature ()::Component
 * Unlike the python version where each Dash component is represented as a separate class, all components in Dashboard are represented by struct `Component`. 
-* You can create `Component` specific for concrete Dash component by the set of functions in the form `lowercase(<component package>)_lowercase(<component name>)`. For example, in python html `<div>` element is represented as `HTML.Div` in Dasboards it is created using function `html_div`
+* You can create `Component` specific for concrete Dash component by the set of functions in the form ``lowercase(<component package>)_lowercase(<component name>)``. For example, in python html `<div>` element is represented as `HTML.Div` in Dasboards it is created using function `html_div`
 * The list of all supported components is available in docstring for Dasboards module
 * All functions for a component creation have the signature `(;kwargs...)::Component`. List of key arguments specific for the concrete component is available in the docstring for each function
-* Functions for creation components which have `children` property have two additional methods `(children::Any; kwargs...)::Component` and `(children_maker::Function; kwargs..)::Component`. `children` must by string or number or single component or collection of components
-* `make_handler(app::Dash; debug::Bool = false)` makes handler function for using in HTTP package
+* Functions for creation components which have `children` property have two additional methods ``(children::Any; kwargs...)::Component`` and ``(children_maker::Function; kwargs..)::Component``. `children` must by string or number or single component or collection of components
+* ``make_handler(app::Dash; debug::Bool = false)`` makes handler function for using in HTTP package
 
 ### Basic Callback
 ```jldoctest
@@ -60,9 +60,9 @@ end
 julia> handler = make_handler(app, debug = true)
 julia> HTTP.serve(handler, HTTP.Sockets.localhost, 8080)
 ```
-* You can make your dashboard interactive by register callbacks for changes in frontend with function `callback!(func::Function, app::Dash, id::CallbackId)`
+* You can make your dashboard interactive by register callbacks for changes in frontend with function ``callback!(func::Function, app::Dash, id::CallbackId)``
 * Inputs and outputs (and states, see below) of callback are described by struct `CallbackId` which can easily created by string macro `callid""`
-* `callid""` parse string in form `"[{state1 [,...]}] input1[,...] => output1[,...]"` where all items is `"<element id>.<property name>"`
+* `callid""` parse string in form ``"[{state1 [,...]}] input1[,...] => output1[,...]"`` where all items is ``"<element id>.<property name>"``
 * Callback function must have the signature(states..., inputs...) and return data for output
 
 ### States and Multiple Outputs
