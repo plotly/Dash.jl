@@ -30,11 +30,15 @@ function is_valid_idprop(comp::Component, idprop::Tuple{Symbol, Symbol})::Bool
     end
 
     if haskey(comp.props, :children)
-        for child in comp.props[:children]
-            if is_valid_idprop(child, idprop)
-                return true
+        if comp.props[:children] isa Vector || comp.props[:children] isa Tuple
+            for child in comp.props[:children]
+                if child isa Component && is_valid_idprop(child, idprop)
+                    return true
+                end
             end
-        end
+        elseif comp.props[:children] isa Component
+            return is_valid_idprop(comp.props[:children], idprop)
+        end        
     end
     return false
 end

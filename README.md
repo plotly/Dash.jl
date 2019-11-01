@@ -64,7 +64,6 @@ julia> HTTP.serve(handler, HTTP.Sockets.localhost, 8080)
 * Inputs and outputs (and states, see below) of callback are described by struct `CallbackId` which can easily created by string macro `callid""`
 * `callid""` parse string in form `"[{state1 [,...]}] input1[,...] => output1[,...]"` where all items is `"<element id>.<property name>"`
 * Callback function must have the signature(states..., inputs...) and return data for output
-* Be careful, checks for the identifier and properties have not yet been implemented, so errors in determining callid can lead to errors during request processing
 
 ### States and Multiple Outputs
 ```jldoctest

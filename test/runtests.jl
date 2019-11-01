@@ -138,6 +138,20 @@ end
     @test_throws ErrorException callback!(app, callid"{my-id.wrong_prop} my-id.value => my-div.wrong-prop") do value
         return "v_$(value)"
     end
+
+    app = Dash("Test app") do
+        html_div() do
+            dcc_input(id = "my-id", value="initial value", type = "text"),
+            html_div("test2", id = "my-div"),
+            html_div(id = "my-div2") do 
+                html_h1("gggg", id = "my-h")
+            end
+        end
+    end
+    callback!(app, callid"{my-id.type} my-id.value => my-div.children, my-h.children") do state, value
+        return state, value
+    end
+    @test length(app.callbacks) == 1
 end
 
 @testset "handler" begin
