@@ -13,5 +13,5 @@ function from_dash(::Type{PlotlyBase.Plot}, t)
 end
 
 #FIXME It's not elegant, but I didn't find elegant soluiton
-JSON2.write(io::IO, p::Plot; kwargs...) = write(io, JSON.json(p))
+JSON2.write(io::IO, p::PlotlyBase.Plot; kwargs...) = write(io, JSON.json(p))
 end
