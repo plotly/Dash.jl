@@ -3,6 +3,13 @@
 Julia backend for [Plotly Dash](https://github.com/plotly/dash)
 It is in its early development phase so any bugs may arise, please report me about issues
 
+## Version 0.2.5 released
+
+* Now you can use `PlotlyBase.Plot` to work with the `figure` property of the `dcc_graph` component. Examples are: [Plot usage in layout](https://github.com/waralex/DashboardsExamples/blob/master/dash_tutorial/2_dash_layout_4.jl), [Plot usage in callback](https://github.com/waralex/DashboardsExamples/blob/master/dash_tutorial/3_basic_dash_callbacks_2.jl)
+
+* Added `PreventUpdate` exception and `no_update()` function to prevent updates in callback. See [PreventUpdate example](https://github.com/waralex/DashboardsExamples/blob/master/dash_tutorial/4_state_and_prevent_update_3.jl) and [no_update() example](https://github.com/waralex/DashboardsExamples/blob/master/dash_tutorial/4_state_and_prevent_update_3.jl)
+
+* Most of dashboards from [Dash Tutorial](https://dash.plot.ly/) are implemented using Dashboards.jl. See [DashboardsExamples repo](https://github.com/waralex/DashboardsExamples)
 
 ## Instalation
 
