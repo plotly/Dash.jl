@@ -266,3 +266,43 @@ end
     body_str = String(response.body)
     
 end
+
+@testset "PreventUpdate and no_update" begin
+    app = Dash("Test app") do
+        html_div() do
+            html_div(10, id = "my-id"),
+            html_div(id = "my-div")        
+        end
+    end
+    callback!(app, callid"my-id.children => my-div.children") do value
+        throw(PreventUpdate())
+    end
+
+    handler = make_handler(app)
+
+    test_json = """{"output":"my-div.children","changedPropIds":["my-id.children"],"inputs":[{"id":"my-id","property":"children","value":10}]}"""
+        
+    request = HTTP.Request("POST", "/_dash-update-component", [], Vector{UInt8}(test_json))
+    response = handler(request)
+    @test response.status == 200
+    @test length(response.body) == 0
+
+    app = Dash("Test app") do
+        html_div() do
+            html_div(10, id = "my-id"),
+            html_div(id = "my-div"),
+            html_div(id = "my-div2")          
+        end
+    end
+    callback!(app, callid"my-id.children => my-div.children, my-div2.children") do value
+        no_update(), "test"
+    end
+
+    test_json = """{"output":"..my-div.children...my-div2.children..","changedPropIds":["my-id.children"],"inputs":[{"id":"my-id","property":"children","value":10}]}"""
+
+    result = Dashboards.process_callback(app, test_json)
+    @test length(result[:response]) == 1
+    @test haskey(result[:response], Symbol("my-div2"))
+    @test !haskey(result[:response], Symbol("my-div"))
+    @test result[:response][Symbol("my-div2")][:children] == "test"
+end

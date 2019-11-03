@@ -11,7 +11,8 @@ import .Front
 using .ComponentMetas
 using .Components
 
-export Dash, Component, Front, @use, <|, @callid_str, CallbackId, callback!, link_type!, make_handler
+export Dash, Component, Front, @use, <|, @callid_str, CallbackId, callback!,
+ link_type!, make_handler, PreventUpdate, no_update
 
 ComponentPackages.@reg_components()
 
@@ -59,6 +60,10 @@ $(ComponentPackages.component_doc_list())
 
 const IdProp = Tuple{Symbol, Symbol}
 
+struct PreventUpdate <: Exception
+    
+end
+
 struct CallbackId
     state ::Vector{IdProp}
     input ::Vector{IdProp}
@@ -74,9 +79,10 @@ struct Callback
     id ::CallbackId
 end
 
-struct ProperiesType
-
+struct NoUpdate
 end
+
+no_update() = NoUpdate()
 
 """
     struct Dash <: Any
@@ -346,21 +352,27 @@ function process_callback(app::Dash, body::String)
     
     res = app.callbacks[output].func(args...)
     if length(app.callbacks[output].id.output) == 1
-        return Dict(
-            :response => Dict(
-                :props => Dict(
-                    Symbol(app.callbacks[output].id.output[1][2]) => Front.to_dash(res)
+        if !(res isa NoUpdate)
+            return Dict(
+                :response => Dict(
+                    :props => Dict(
+                        Symbol(app.callbacks[output].id.output[1][2]) => Front.to_dash(res)
+                    )
                 )
             )
-        )
+        else
+            return Dict()
+        end
     end
     response = Dict{Symbol, Any}()
     for (ind, out) in enumerate(app.callbacks[output].id.output)
-        push!(response, 
-        Symbol(out[1]) => Dict(
-            Symbol(out[2]) => Front.to_dash(res[ind])
-        )
-        )
+        if !(res[ind] isa NoUpdate)
+            push!(response, 
+            Symbol(out[1]) => Dict(
+                Symbol(out[2]) => Front.to_dash(res[ind])
+            )
+            )
+        end
     end
     return Dict(:response=>response, :multi=>true)
 
@@ -414,11 +426,19 @@ function make_handler(app::Dash; debug::Bool = false)
             return process_assets(app, uri.path)
         end
         if uri.path == "$(app.url_base_pathname)_dash-update-component" && req.method == "POST"            
-            return HTTP.Response(200, ["Content-Type" => "application/json"],
-                body = JSON2.write(
-                    process_callback(app, String(req.body))
+            try
+                return HTTP.Response(200, ["Content-Type" => "application/json"],
+                    body = JSON2.write(
+                        process_callback(app, String(req.body))
+                    )
                 )
-             ) 
+            catch e
+                if e isa PreventUpdate
+                    return HTTP.Response(200)                                    
+                else
+                    throw(e)
+                end
+            end 
         end
         return HTTP.Response(404)
     end
