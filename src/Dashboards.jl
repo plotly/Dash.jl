@@ -338,7 +338,7 @@ function process_callback(app::Dash, body::String)
     end
     convert_values(inputs) = map(inputs) do x
         type = callback_argument_type(app, x.id, x.property)
-        return Front.from_dash(type, x.value)
+        return haskey(x, :value) ? Front.from_dash(type, x.value) : nothing
     end 
     args = []
     if haskey(params, :state)
@@ -432,8 +432,8 @@ function make_handler(app::Dash; debug::Bool = false)
                         process_callback(app, String(req.body))
                     )
                 )
-            catch e
-                if e isa PreventUpdate
+            catch e                                
+                if isa(e,PreventUpdate)                
                     return HTTP.Response(200)                                    
                 else
                     throw(e)
