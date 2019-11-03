@@ -1,7 +1,7 @@
 name = "Dashboards"
 uuid = "9024f26f-ba4d-4e0a-965a-ad5b1da667aa"
 authors = ["Alexandr Romanenko"]
-version = "0.1.0"
+version = "0.2.5"
 
 [deps]
 CodeTracking = "da1fd8a2-8d9e-5ec2-8556-3022fb5608a2"
