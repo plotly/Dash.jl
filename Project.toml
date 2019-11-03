@@ -13,3 +13,6 @@ LibGit2 = "76f85450-5226-5b5a-8eaa-529ad045b433"
 MacroTools = "1914dd2f-81c6-5fcd-8719-6d5c9610ff09"
 PlotlyBase = "a03496cd-edff-5a9b-9e67-9cda94a718b5"
 Test = "8dfed614-e22c-5e08-85e1-65c5234f0b40"
+
+[compat]
+julia = "1.1"
