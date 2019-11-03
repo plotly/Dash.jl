@@ -4,12 +4,14 @@ using MacroTools
 include("ComponentPackages.jl")
 include("ComponentMetas.jl")
 include("Components.jl")
+include("Front.jl")
 
 import .ComponentPackages
+import .Front
 using .ComponentMetas
 using .Components
 
-export Dash, Component, @use, <|, @props_str, @callid_str, CallbackId, callback!, make_handler
+export Dash, Component, Front, @use, <|, @callid_str, CallbackId, callback!, link_type!, make_handler
 
 ComponentPackages.@reg_components()
 
@@ -72,6 +74,10 @@ struct Callback
     id ::CallbackId
 end
 
+struct ProperiesType
+
+end
+
 """
     struct Dash <: Any
 
@@ -84,10 +90,14 @@ struct Dash
     external_stylesheets ::Vector{String}
     url_base_pathname ::String
     assets_folder ::String
+    callable_components ::Dict{Symbol, Component}
+    type_links ::Dict{Symbol, Dict{Symbol, Type}}
     function Dash(name::String, layout::Component; external_stylesheets ::Vector{String} = Vector{String}(), url_base_pathname="/", assets_folder::String = "assets")
-        new(name, layout, Dict{Symbol, Callback}(), external_stylesheets, url_base_pathname, assets_folder)
+        new(name, layout, Dict{Symbol, Callback}(), external_stylesheets, url_base_pathname, assets_folder, Components.collect_with_ids(layout), Dict{Symbol, Dict{Symbol, Type}}())
     end    
 end
+
+
 """
     Dash(layout_maker::Function, name::String; external_stylesheets ::Vector{String} = Vector{String}(), url_base_pathname::String="/")::Dash
 
@@ -114,6 +124,7 @@ function Dash(layout_maker::Function, name::String;  external_stylesheets ::Vect
     Dash(name, layout_maker(), external_stylesheets=external_stylesheets, url_base_pathname=url_base_pathname, assets_folder = assets_folder)
 end
 
+
 function parse_props(s)
     function make_prop(part) 
         m = match(r"^(?<id>[A-Za-z]+[\w\-\:\.]*)\.(?<prop>[A-Za-z]+[\w\-\:\.]*)$", strip(part))
@@ -130,9 +141,6 @@ function parse_props(s)
     end    
 end
 
-macro props_str(s)        
-    return parse_props(s)
-end
 """
     @callid_str"
 
@@ -158,6 +166,14 @@ end
 
 idprop_string(idprop::IdProp) = "$(idprop[1]).$(idprop[2])"
 
+function check_idprop(app::Dash, id::IdProp)
+    if !haskey(app.callable_components, id[1])
+        error("The layout havn't component with id `$(id[1])]`")
+    end
+    if !is_prop_available(app.callable_components[id[1]], id[2])
+        error("The component with id `$(id[1])` havn't property `$(id[2])``")
+    end
+end
 
 function output_string(id::CallbackId)
     if length(id.output) == 1
@@ -167,6 +183,7 @@ function output_string(id::CallbackId)
     join(map(idprop_string, id.output), "...") *
     ".."
 end
+
 """
     callback!(func::Function, app::Dash, id::CallbackId)
 
@@ -199,29 +216,58 @@ callback!(app, callid"{graphTitle.type} graphTitle.value => outputID.children, o
 end
 ```    
 """
-function callback!(func::Function, app::Dash, id::CallbackId)
-    
+function callback!(func::Function, app::Dash, id::CallbackId)    
     for out in id.output
         if any(x->out in x.id.output, values(app.callbacks))
             error("output \"$(out)\" already registered")
         end
     end
 
-    function check_arr(ids) 
-        for id in ids
-            if !Components.is_valid_idprop(app.layout, id)
-                error("Layout hasn't component with id `$(id[1])`` or component with id `$(id[1])` hasn't property `$(id[2])``")
-            end
-        end
-    end
-
-    check_arr(id.state)
-    check_arr(id.input)
-    check_arr(id.output)
-
+    foreach(x->check_idprop(app,x), id.state)
+    foreach(x->check_idprop(app,x), id.input)
+    foreach(x->check_idprop(app,x), id.output)
+    
     out_symbol = Symbol(output_string(id))
         
     push!(app.callbacks, out_symbol => Callback(func, id))
+end
+
+function callback_argument_type(app::Dash, id::AbstractString, prop::AbstractString)::Type
+    id_sym = Symbol(id)
+    prop_sym = Symbol(prop)
+    if haskey(app.type_links, id_sym) && haskey(app.type_links[id_sym], prop_sym)
+        return app.type_links[id_sym][prop_sym]
+    end
+    return Any
+end
+
+function push_link_type!(app::Dash, idprop::IdProp, t::Type)
+    check_idprop(app, idprop)
+    if !haskey(app.type_links, idprop[1])
+        push!(app.type_links, idprop[1] => Dict{Symbol, Type}())
+    end
+    app.type_links[idprop[1]][idprop[2]] = t
+end
+
+function link_type!(app::Dash, idprop::AbstractString, t::Type)
+    m = match(r"^((?<id>[A-Za-z]+[\w\-\:\.]*)|(?<any_id>\*))\.(?<prop>[A-Za-z]+[\w\-\:\.]*)$", strip(idprop))
+    if isnothing(m)
+        error("expected <id>.<property> or *.<property>")
+    end
+    
+    if !isnothing(m[:id])
+        push_link_type!(app, (Symbol(m[:id]), Symbol(m[:prop])), t)
+    elseif !isnothing(m[:any_id])
+        prop = Symbol(m[:prop])
+        for (id, comp) in pairs(app.callable_components)
+            if is_prop_available(comp, prop)
+                push_link_type!(app, (id, prop), t)
+            end
+        end
+    else
+        @assert false "not reachable"
+    end
+
 end
 
 function index_page(app::Dash; debug = false)
@@ -284,19 +330,26 @@ function process_callback(app::Dash, body::String)
     if !haskey(app.callbacks, output)
         return []
     end
+    convert_values(inputs) = map(inputs) do x
+        type = callback_argument_type(app, x.id, x.property)
+        return Front.from_dash(type, x.value)
+    end 
     args = []
     if haskey(params, :state)
-        append!(args, map(x->haskey(x, :value) ? x[:value] : nothing, params.state))
+        append!(args, convert_values(params.state))
+        #append!(args, map(x->haskey(x, :value) ? x[:value] : nothing, params.state))
     end
     if haskey(params, :inputs)
-        append!(args, map(x->haskey(x, :value) ? x[:value] : nothing, params.inputs))
+        append!(args, convert_values(params.inputs))
+        #append!(args, map(x->haskey(x, :value) ? x[:value] : nothing, params.inputs))
     end    
+    
     res = app.callbacks[output].func(args...)
     if length(app.callbacks[output].id.output) == 1
         return Dict(
             :response => Dict(
                 :props => Dict(
-                    Symbol(app.callbacks[output].id.output[1][2]) => res
+                    Symbol(app.callbacks[output].id.output[1][2]) => Front.to_dash(res)
                 )
             )
         )
@@ -305,7 +358,7 @@ function process_callback(app::Dash, body::String)
     for (ind, out) in enumerate(app.callbacks[output].id.output)
         push!(response, 
         Symbol(out[1]) => Dict(
-            Symbol(out[2]) => res[ind]
+            Symbol(out[2]) => Front.to_dash(res[ind])
         )
         )
     end
@@ -370,5 +423,6 @@ function make_handler(app::Dash; debug::Bool = false)
         return HTTP.Response(404)
     end
 end
+
 
 end # module

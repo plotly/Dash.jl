@@ -140,7 +140,7 @@ module ComponentPackages
                     if !(prop in avaible_props)
                         throw(ArgumentError("Invalid property $(string(prop)) for component " * $(string(maker_name))))
                     end
-                    push!(result.props, prop=>value)
+                    push!(result.props, prop=>Front.to_dash(value))
                 end
                 return result
             end                        
@@ -155,9 +155,9 @@ module ComponentPackages
                         if !(prop in avaible_props)
                             throw(ArgumentError("Invalid property $(string(prop)) for component " * $(string(maker_name))))
                         end
-                        push!(result.props, prop=>value)
+                        push!(result.props, prop=>Front.to_dash(value))
                     end
-                    push!(result.props, :children=>children)
+                    push!(result.props, :children=>Front.to_dash(children))
                     return result
                 end
                 function $(maker_name)(children_maker::Function; kwargs...)
@@ -169,7 +169,7 @@ module ComponentPackages
                         end
                         push!(result.props, prop=>value)
                     end
-                    push!(result.props, :children=>children_maker())
+                    push!(result.props, :children=>Front.to_dash(children_maker()))
                     return result
                 end                        
         end))
