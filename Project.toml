@@ -1,10 +1,9 @@
 name = "Dashboards"
 uuid = "9024f26f-ba4d-4e0a-965a-ad5b1da667aa"
 authors = ["Alexandr Romanenko"]
-version = "0.2.6"
+version = "0.1.0"
 
 [deps]
-CodeTracking = "da1fd8a2-8d9e-5ec2-8556-3022fb5608a2"
 DataStructures = "864edb3b-99cc-5e75-8d2d-829cb0a9cfe8"
 HTTP = "cd3eb016-35fb-5094-929b-558a96fad6f3"
 JSON = "682c06a0-de6a-54ab-a142-c8b1cf79cde6"
@@ -16,6 +15,12 @@ Test = "8dfed614-e22c-5e08-85e1-65c5234f0b40"
 
 [compat]
 julia = "1.1"
+DataStructures = "0.17.5"
+HTTP = "0.8.6"
+JSON = "0.21.0"
+JSON2 = "0.3.1"
+MacroTools = "0.5.1"
+PlotlyBase = "0.3.0"
 
 [extras]
 Test = "8dfed614-e22c-5e08-85e1-65c5234f0b40"
