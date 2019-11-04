@@ -1,7 +1,7 @@
 name = "Dashboards"
 uuid = "9024f26f-ba4d-4e0a-965a-ad5b1da667aa"
 authors = ["Alexandr Romanenko"]
-version = "0.2.5"
+version = "0.2.6"
 
 [deps]
 CodeTracking = "da1fd8a2-8d9e-5ec2-8556-3022fb5608a2"
@@ -16,3 +16,9 @@ Test = "8dfed614-e22c-5e08-85e1-65c5234f0b40"
 
 [compat]
 julia = "1.1"
+
+[extras]
+Test = "8dfed614-e22c-5e08-85e1-65c5234f0b40"
+
+[targets]
+test = ["Test"]
