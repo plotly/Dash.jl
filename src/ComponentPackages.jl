@@ -16,6 +16,7 @@ module ComponentPackages
         has_components ::Bool  
     end
 
+    
     macro _make_packages()
         raw_meta = open(META_FILENAME, "r") do f            
             JSON2.read(f, Vector{ComponentPackage})

@@ -70,7 +70,7 @@ module ComponentMetas
         raw_meta = JSON.parsefile(meta_filename, dicttype = OrderedDict{String, Any})
         components = Dict{Symbol, ComponentMeta}()
         for (script, meta) in raw_meta
-            name = match(r"([a-zA-Z0-9_]+)\.react\.js", script).captures[1]
+            name = match(r"([a-zA-Z0-9_]+)(\.react)?\.js", script).captures[1]
             components[Symbol(name)] = ComponentMeta(name, meta["description"], parse_props(meta["props"]))
         end
         return components
