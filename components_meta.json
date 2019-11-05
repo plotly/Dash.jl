@@ -49,7 +49,7 @@
     },
     {
         "name" : "dbc",
-        "package_name" : "dash_bootstrap_components",
+        "package_name" : "dash_bootstrap_components/_components",
         "source_path" : "/components/dash-bootstrap-components/dash_bootstrap_components/_components/",
         "scripts" : {
             "dev" : ["dash_bootstrap_components.min.js"],
