@@ -46,5 +46,15 @@
             "prod" : ["dash_html_components.min.js"]
         },
         "has_components" : true
+    },
+    {
+        "name" : "dbc",
+        "package_name" : "dash_bootstrap_components/_components",
+        "source_path" : "/components/dash-bootstrap-components/dash_bootstrap_components/_components/",
+        "scripts" : {
+            "dev" : ["dash_bootstrap_components.min.js"],
+            "prod" : ["dash_bootstrap_components.min.js"]
+        },
+        "has_components" : true
     }
 ]

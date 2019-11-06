@@ -16,6 +16,12 @@
     "git" : "https://github.com/waralex/dash-html-components.git",
     "path" : "components/dash-html-components",
     "hash" : "3e8ed3d3bdacda4def683807d2735f85b40a3b55"
+},
+{
+    "name" : "dash-bootstrap-components",
+    "git" : "https://github.com/waralex/dash-bootstrap-components.git",
+    "path" : "components/dash-bootstrap-components",
+    "hash" : "4032a7baa14b59fc68ac0768072fb466fecbc1de"
 }
 ]
 
