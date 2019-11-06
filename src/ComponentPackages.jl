@@ -117,7 +117,20 @@ module ComponentPackages
             add_signs = """\n    $(maker_name)(children::Any;kwags...)\n    $(maker_name)(children_maker::Function;kwags...)\n"""
         end
 
-        avaible_props = Set(Symbol.(getproperty.(values(component.properties), :name)))
+        
+        avaible_props = Set{Symbol}()
+        wild_props = Set{Symbol}()
+        for prop in values(component.properties)
+            if endswith(prop.name, "*")
+                push!(wild_props, Symbol(prop.name[1:end-1]))
+            else
+                push!(avaible_props, Symbol(prop.name))
+            end
+        end
+        wild_regs = Regex("^(?<prop>$(join(wild_props, "|")))")
+        
+
+        
 
         docstr = """    $(maker_name)(;kwags...)
         $(add_signs)
@@ -129,20 +142,34 @@ module ComponentPackages
             "- `$(prop.name)` - $(prop.description)"
         end,"\n"))
         """
+
+
+        comp_maker = quote
+            avaible_props = $(avaible_props)
+            wild_props = $(wild_props)
+            wild_regs = $(wild_regs)
+            result = Component($(component.name), $(package.package_name), Dict{Symbol, Any}(), avaible_props, $(wild_props))
+            for (prop, value) in pairs(kwargs)
+                m = match(wild_regs, string(prop))                
+                
+                if (length(wild_props) == 0 || isnothing(m)) && !(prop in avaible_props)
+                    throw(ArgumentError("Invalid property $(string(prop)) for component " * $(string(maker_name))))
+                end
+                
+                push!(result.props, prop=>Front.to_dash(value))
+            end
+        end
+
+
         makers = Vector{Expr}()
         push!(makers,esc(quote
             export $(maker_name)
             function $(maker_name) end
             @doc $(docstr) $(maker_name)
             function $(maker_name)(;kwargs...)
-                avaible_props = $(avaible_props)
-                result = Component($(component.name), $(package.package_name), Dict{Symbol, Any}(), avaible_props)
-                for (prop, value) in pairs(kwargs)
-                    if !(prop in avaible_props)
-                        throw(ArgumentError("Invalid property $(string(prop)) for component " * $(string(maker_name))))
-                    end
-                    push!(result.props, prop=>Front.to_dash(value))
-                end
+                $(comp_maker)
+                
+                
                 return result
             end                        
         end))
@@ -150,26 +177,15 @@ module ComponentPackages
             props_nochildren = filter(x->x!=:children, props)
             push!(makers,esc(quote
                 function $(maker_name)(children::Any;  kwargs...)
-                    avaible_props = $(avaible_props)
-                    result = Component($(component.name), $(package.package_name), Dict{Symbol, Any}(), avaible_props)
-                    for (prop, value) in pairs(kwargs)
-                        if !(prop in avaible_props)
-                            throw(ArgumentError("Invalid property $(string(prop)) for component " * $(string(maker_name))))
-                        end
-                        push!(result.props, prop=>Front.to_dash(value))
-                    end
+                    $(comp_maker)
+                    
+                    
                     push!(result.props, :children=>Front.to_dash(children))
                     return result
                 end
                 function $(maker_name)(children_maker::Function; kwargs...)
-                    avaible_props = $(avaible_props)
-                    result = Component($(component.name), $(package.package_name), Dict{Symbol, Any}(), avaible_props)
-                    for (prop, value) in pairs(kwargs)
-                        if !(prop in avaible_props)
-                            throw(ArgumentError("Invalid property $(string(prop)) for component " * $(string(maker_name))))
-                        end
-                        push!(result.props, prop=>value)
-                    end
+                    $(comp_maker)
+                    
                     push!(result.props, :children=>Front.to_dash(children_maker()))
                     return result
                 end                        

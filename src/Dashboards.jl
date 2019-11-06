@@ -12,9 +12,10 @@ using .ComponentMetas
 using .Components
 
 export Dash, Component, Front, @use, <|, @callid_str, CallbackId, callback!,
- link_type!, make_handler, PreventUpdate, no_update
+ link_type!, make_handler, PreventUpdate, no_update, @prop
 
 ComponentPackages.@reg_components()
+include("utils.jl")
 
 @doc """
     module Dashboards
@@ -94,12 +95,21 @@ struct Dash
     layout ::Component
     callbacks ::Dict{Symbol, Callback}
     external_stylesheets ::Vector{String}
+    external_scripts ::Vector{String}
     url_base_pathname ::String
     assets_folder ::String
     callable_components ::Dict{Symbol, Component}
     type_links ::Dict{Symbol, Dict{Symbol, Type}}
-    function Dash(name::String, layout::Component; external_stylesheets ::Vector{String} = Vector{String}(), url_base_pathname="/", assets_folder::String = "assets")
-        new(name, layout, Dict{Symbol, Callback}(), external_stylesheets, url_base_pathname, assets_folder, Components.collect_with_ids(layout), Dict{Symbol, Dict{Symbol, Type}}())
+    function Dash(name::String, layout::Component;
+        external_stylesheets ::Vector{String} = Vector{String}(),
+        external_scripts ::Vector{String} = Vector{String}(),
+        url_base_pathname="/",
+        assets_folder::String = "assets")
+        new(name, layout, Dict{Symbol, Callback}(),
+            external_stylesheets, external_scripts,
+            url_base_pathname, assets_folder,
+            Components.collect_with_ids(layout), Dict{Symbol, Dict{Symbol, Type}}()
+            )
     end    
 end
 
@@ -113,6 +123,7 @@ Construct a Dash app using callback for layout creation
 - `layout_maker::Function` - function for layout creation. Must has signature ()::Component
 - `name::String` - Dashboard name
 - `external_stylesheets::Vector{String} = Vector{String}()` - vector of external css urls 
+- `external_scripts::Vector{String} = Vector{String}()` - vector of external js scripts urls 
 - `url_base_pathname::String="/"` - base url path for dashboard, default "/" 
 - `assets_folder::String` - a path, relative to the current working directory,
 for extra files to be used in the browser. Default `"assets"`
@@ -126,8 +137,17 @@ julia> app = Dash("Test") do
 end
 ```
 """
-function Dash(layout_maker::Function, name::String;  external_stylesheets ::Vector{String} = Vector{String}(), url_base_pathname="/", assets_folder::String = "assets")
-    Dash(name, layout_maker(), external_stylesheets=external_stylesheets, url_base_pathname=url_base_pathname, assets_folder = assets_folder)
+function Dash(layout_maker::Function, name::String;
+      external_stylesheets ::Vector{String} = Vector{String}(),
+      external_scripts ::Vector{String} = Vector{String}(),
+      url_base_pathname="/",
+      assets_folder::String = "assets")
+    Dash(name, layout_maker(),
+        external_stylesheets=external_stylesheets,
+        external_scripts=external_scripts,
+        url_base_pathname=url_base_pathname,
+        assets_folder = assets_folder
+        )
 end
 
 
@@ -283,6 +303,9 @@ function index_page(app::Dash; debug = false)
         """<link rel="stylesheet" href="$(s)">"""    
     end, "\n"
     )
+    external_scripts = join(map(app.external_scripts) do s 
+        """<script src="$(s)" crossorigin="anonymous"></script>"""
+    end, "\n")
         
     app_entry = """
         <div id="react-entry-point">
@@ -312,6 +335,7 @@ function index_page(app::Dash; debug = false)
             $(app_entry)
             <footer>
             <script id="_dash-config" type="application/json">$(JSON2.write(config))</script>
+            $external_scripts
             $scripts
             <script id="_dash-renderer" type="application/javascript">var renderer = new DashRenderer();</script>
             </footer>

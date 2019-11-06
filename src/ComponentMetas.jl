@@ -56,7 +56,7 @@ module ComponentMetas
     function parse_props(raw_props::OrderedDict)
         result = OrderedDict{Symbol, ComponentPropertyMeta}()
         for (name, prop_meta) in raw_props
-            if !isnothing(match(r"^[a-zA-Z_][a-zA-Z0-9_]+$", name)) && is_prop_valid(prop_meta)
+            if  is_prop_valid(prop_meta)                
                 push!(result, 
                 Symbol(name) => ComponentPropertyMeta(name, prop_meta["required"], prop_meta["description"])
                 )

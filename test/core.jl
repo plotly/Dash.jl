@@ -306,3 +306,15 @@ end
     @test !haskey(result[:response], Symbol("my-div"))
     @test result[:response][Symbol("my-div2")][:children] == "test"
 end
+
+@testset "wildprops" begin
+    app = Dash("Test app", external_stylesheets=["test.css"]) do
+        html_div() do            
+            html_div(;id = "my-div", @prop("data-attr" = "ffff")),
+            html_div(;id = "my-div2", @prop("aria-attr" = "gggg"))    
+        end
+    end
+    callback!(app, callid"my-div.children => my-div2.aria-attr") do v
+    
+    end
+end

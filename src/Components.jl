@@ -10,10 +10,12 @@ struct Component <: AbstractComponent
     namespace ::String
     props ::Dict{Symbol, Any}
     available_props ::Set{Symbol}
+    wildcard_props ::Set{Symbol}
 end
 
 JSON2.@format Component begin
     available_props => (exclude = true,)
+    wildcard_props => (exclude = true,)
 end
 
 function <|(comp::Component, value::Any)
@@ -22,7 +24,16 @@ function <|(comp::Component, value::Any)
 end
 
 hasproperty(c::Component, prop::Symbol) = haskey(c.props, prop)
-is_prop_available(c::Component, prop::Symbol) = prop in c.available_props
+function is_prop_available(c::Component, prop::Symbol) 
+    if length(c.wildcard_props) > 0
+        wild_regs = Regex("^(?<prop>$(join(c.wildcard_props, "|")))")
+        if !isnothing(match(wild_regs, string(prop)))
+            return true
+        end
+    end
+    
+    return prop in c.available_props
+end
 
 function collect_with_ids(comp)
     result = Dict{Symbol, Component}()
