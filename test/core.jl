@@ -318,3 +318,27 @@ end
     
     end
 end
+
+@testset "pass changed props" begin
+    app = Dash("Test app") do
+        html_div() do
+            html_div(10, id = "my-id"),
+            html_div(id = "my-div")        
+        end
+    end
+    callback!(app, callid"my-id.children => my-div.children", pass_changed_props = true) do changed, value
+        @test "my-id.children" in changed
+        return value
+    end
+
+    handler = make_handler(app)
+
+    test_json = """{"output":"my-div.children","changedPropIds":["my-id.children"],"inputs":[{"id":"my-id","property":"children","value":10}]}"""
+        
+    result = Dashboards.process_callback(app, test_json)
+    @show result
+    @test length(result[:response]) == 1
+    
+    @test result[:response][:props][:children] == 10
+
+end

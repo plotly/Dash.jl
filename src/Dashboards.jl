@@ -69,15 +69,20 @@ struct CallbackId
     state ::Vector{IdProp}
     input ::Vector{IdProp}
     output ::Vector{IdProp}
+    
 end
 
 Base.convert(::Type{Vector{IdProp}}, v::IdProp) = [v]
 
-CallbackId(;input ::Union{Vector{IdProp}, IdProp},  output ::Union{Vector{IdProp}, IdProp}, state ::Union{Vector{IdProp}, IdProp} = Vector{IdProp}()) = CallbackId(state, input, output)
+CallbackId(;input ::Union{Vector{IdProp}, IdProp},
+            output ::Union{Vector{IdProp}, IdProp},
+            state ::Union{Vector{IdProp}, IdProp} = Vector{IdProp}()
+            ) = CallbackId(state, input, output)
 
 struct Callback
     func ::Function
     id ::CallbackId
+    pass_changed_props ::Bool
 end
 
 struct NoUpdate
@@ -157,6 +162,7 @@ function parse_props(s)
         if isnothing(m)
             error("expected <id>.<property>[,<id>.<property>...] in $(part)")
         end
+        
         return (Symbol(m[:id]), Symbol(m[:prop]))
     end    
 
@@ -242,7 +248,7 @@ callback!(app, callid"{graphTitle.type} graphTitle.value => outputID.children, o
 end
 ```    
 """
-function callback!(func::Function, app::Dash, id::CallbackId)    
+function callback!(func::Function, app::Dash, id::CallbackId; pass_changed_props = false)    
     for out in id.output
         if any(x->out in x.id.output, values(app.callbacks))
             error("output \"$(out)\" already registered")
@@ -255,7 +261,7 @@ function callback!(func::Function, app::Dash, id::CallbackId)
     
     out_symbol = Symbol(output_string(id))
         
-    push!(app.callbacks, out_symbol => Callback(func, id))
+    push!(app.callbacks, out_symbol => Callback(func, id, pass_changed_props))
 end
 
 function callback_argument_type(app::Dash, id::AbstractString, prop::AbstractString)::Type
@@ -365,6 +371,9 @@ function process_callback(app::Dash, body::String)
         return haskey(x, :value) ? Front.from_dash(type, x.value) : nothing
     end 
     args = []
+    if app.callbacks[output].pass_changed_props
+        push!(args, params[:changedPropIds])
+    end
     if haskey(params, :state)
         append!(args, convert_values(params.state))
         #append!(args, map(x->haskey(x, :value) ? x[:value] : nothing, params.state))
