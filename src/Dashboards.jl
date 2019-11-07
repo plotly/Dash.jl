@@ -394,7 +394,7 @@ function process_callback(app::Dash, body::String)
                 )
             )
         else
-            return Dict()
+            throw(PreventUpdate())
         end
     end
     response = Dict{Symbol, Any}()
@@ -406,6 +406,9 @@ function process_callback(app::Dash, body::String)
             )
             )
         end
+    end
+    if length(response) == 0
+        throw(PreventUpdate())
     end
     return Dict(:response=>response, :multi=>true)
 
@@ -467,7 +470,7 @@ function make_handler(app::Dash; debug::Bool = false)
                 )
             catch e                                
                 if isa(e,PreventUpdate)                
-                    return HTTP.Response(200)                                    
+                    return HTTP.Response(204)                                    
                 else
                     throw(e)
                 end
