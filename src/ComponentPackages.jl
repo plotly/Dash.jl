@@ -79,8 +79,12 @@ module ComponentPackages
             error("undefined package $(package_symbol)")
         end
         package = _components_packages[Symbol(package_name)]
-        source_path = Sys.iswindows() ? replace(package.source_path[2:end-1], "/" =>"\\") : package.source_path 
-        meta_filename = joinpath(ROOT_PATH, source_path, "metadata.json") 
+        
+        meta_filename = joinpath(
+            ROOT_PATH, 
+            Sys.iswindows() ? replace(package.source_path[2:end-1], "/" =>"\\") : package.source_path,
+            "metadata.json"
+        ) 
         return load_components_meta(meta_filename)
         raw_meta = JSON.parsefile(meta_filename, dicttype = OrderedDict{String, Any})
         components = Dict{Symbol, ComponentMeta}()
