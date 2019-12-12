@@ -55,6 +55,9 @@ julia> HTTP.serve(handler, HTTP.Sockets.localhost, 8080)
 * Functions for creation components which have `children` property have two additional methods ``(children::Any; kwargs...)::Component`` and ``(children_maker::Function; kwargs..)::Component``. `children` must by string or number or single component or collection of components
 * ``make_handler(app::Dash; debug::Bool = false)`` makes handler function for using in HTTP package
 
+
+__Once you have run the code to create the Dashboard, go to `http://127.0.0.1:8080` in your browser to view the Dashboard!__
+
 ### Basic Callback
 ```jldoctest
 julia> import HTTP
