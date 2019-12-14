@@ -17,7 +17,7 @@ Julia version >= 1.2 is required.
 It also works in 1.1 now, but I do not plan testing and support for versions under 1.2
 
 ```julia
-import Pkg; Pkg.add(Pkg.PackageSpec(url = "https://github.com/waralex/Dashboards.git"))
+import Pkg; Pkg.add(Pkg.PackageSpec(url = "https://github.com/waralex/Dashboards.jl.git"))
 ```
 
 ## Usage
@@ -54,6 +54,9 @@ julia> HTTP.serve(handler, HTTP.Sockets.localhost, 8080)
 * All functions for a component creation have the signature `(;kwargs...)::Component`. List of key arguments specific for the concrete component is available in the docstring for each function
 * Functions for creation components which have `children` property have two additional methods ``(children::Any; kwargs...)::Component`` and ``(children_maker::Function; kwargs..)::Component``. `children` must by string or number or single component or collection of components
 * ``make_handler(app::Dash; debug::Bool = false)`` makes handler function for using in HTTP package
+
+
+__Once you have run the code to create the Dashboard, go to `http://127.0.0.1:8080` in your browser to view the Dashboard!__
 
 ### Basic Callback
 ```jldoctest
