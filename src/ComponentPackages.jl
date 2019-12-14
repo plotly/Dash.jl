@@ -1,12 +1,12 @@
 module ComponentPackages
     import JSON, JSON2, HTTP
     
-
+    
     include("ComponentMetas.jl")
     using .ComponentMetas    
     
-    const ROOT_PATH = (@__DIR__) * "/.."
-    const META_FILENAME = ROOT_PATH * "/components_meta.json"    
+    const ROOT_PATH = realpath(joinpath( @__DIR__, ".."))
+    const META_FILENAME = joinpath(ROOT_PATH, "components_meta.json")
 
     struct ComponentPackage
         name ::String
@@ -80,7 +80,11 @@ module ComponentPackages
         end
         package = _components_packages[Symbol(package_name)]
         
-        meta_filename = "$(ROOT_PATH)/$(package.source_path)metadata.json"
+        meta_filename = joinpath(
+            ROOT_PATH, 
+            Sys.iswindows() ? replace(package.source_path[2:end-1], "/" =>"\\") : package.source_path,
+            "metadata.json"
+        ) 
         return load_components_meta(meta_filename)
         raw_meta = JSON.parsefile(meta_filename, dicttype = OrderedDict{String, Any})
         components = Dict{Symbol, ComponentMeta}()
