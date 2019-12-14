@@ -217,7 +217,7 @@ function output_string(id::CallbackId)
 end
 
 """
-    callback!(func::Function, app::Dash, id::CallbackId)
+    callback!(func::Function, app::Dash, id::CallbackId; pass_changed_props = false)
 
 Create a callback that updates the output by calling function `func`.
 
@@ -246,7 +246,8 @@ callback!(app, callid"{graphTitle.type} graphTitle.value => outputID.children, o
 
     return (stateType * "..." * inputValue, inputValue)
 end
-```    
+```
+If pass_changed_props is true then the first argument of callback is an array of changed properties
 """
 function callback!(func::Function, app::Dash, id::CallbackId; pass_changed_props = false)    
     for out in id.output
