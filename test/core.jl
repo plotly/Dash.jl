@@ -284,7 +284,7 @@ end
         
     request = HTTP.Request("POST", "/_dash-update-component", [], Vector{UInt8}(test_json))
     response = handler(request)
-    @test response.status == 200
+    @test response.status == 204
     @test length(response.body) == 0
 
     app = Dash("Test app") do
