@@ -1,1 +1,24 @@
-hey
+documentation:
+- "**/*.md"
+
+continuous_integration:
+- "**/*.yml"
+- ".github/workflows/**/*"
+
+root:
+- "./*"
+  
+deps:
+- "deps/*.jl"
+  
+src:
+- "src/*.jl"
+
+test:
+- "test/*"
+- "test/**/*"
+  
+  
+  
+ 
+  
