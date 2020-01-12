@@ -1,13 +1,12 @@
 documentation:
+- "./*.md"
 - "**/*.md"
-
-root:
-- "./*"
 
 enhancement:
 - "src/*.jl"
 - "test/*"
 - "test/**/*"
+- "./*"
   
   
   
