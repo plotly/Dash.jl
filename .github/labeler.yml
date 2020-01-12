@@ -2,10 +2,17 @@ documentation:
 - "./*.md"
 - "**/*.md"
 
-enhancement:
-- "src/*.jl"
+tests:
 - "test/*"
 - "test/**/*"
+
+CI:
+- ".github/*.yml"
+- ".github/workflows/*.yml"
+- "./*.yml"
+
+enhancement:
+- "src/*.jl"
 - "./*"
   
   
