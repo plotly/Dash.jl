@@ -1,20 +1,11 @@
 documentation:
 - "**/*.md"
 
-continuous_integration:
-- "**/*.yml"
-- ".github/workflows/**/*"
-
 root:
 - "./*"
-  
-deps:
-- "deps/*.jl"
-  
-src:
-- "src/*.jl"
 
-test:
+enhancement:
+- "src/*.jl"
 - "test/*"
 - "test/**/*"
   
