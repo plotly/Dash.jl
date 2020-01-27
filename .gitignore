@@ -7,3 +7,4 @@ deps/build.log
 components/*
 lib/*
 Manifest.toml
+.DS_Store
