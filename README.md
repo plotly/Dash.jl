@@ -45,6 +45,7 @@ julia> app = Dash("Test app", external_stylesheets = ["https://codepen.io/chridd
 end
 julia> handler = make_handler(app, debug = true)
 julia> HTTP.serve(handler, HTTP.Sockets.localhost, 8080)
+# Now go to http://127.0.0.1:8080 in your browser to see the Dashboard.
 ```
 * The `Dash` struct represent dashboard application.
 * The constructor for `Dash` struct is ``Dash(layout_maker::Function, name::String;  external_stylesheets::Vector{String} = Vector{String}(), url_base_pathname="/", assets_folder::String = "assets")`` where `layout_maker` is a function with signature ()::Component
