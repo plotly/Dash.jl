@@ -4,6 +4,7 @@ makedocs(
     sitename = "Dashboards",
     format = Documenter.HTML(),
     modules = [Dashboards],
+    doctest = false,
     pages = [
         "index.md",
         "API Docs" => "api.md"

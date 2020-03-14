@@ -83,9 +83,10 @@ module ComponentPackages
         
         meta_filename = joinpath(
             ROOT_PATH, 
-            Sys.iswindows() ? replace(package.source_path[2:end-1], "/" =>"\\") : package.source_path,
+            Sys.iswindows() ? replace(package.source_path[2:end-1], "/" =>"\\") : package.source_path[2:end],
             "metadata.json"
         ) 
+        
         return load_components_meta(meta_filename)
         raw_meta = JSON.parsefile(meta_filename, dicttype = OrderedDict{String, Any})
         components = Dict{Symbol, ComponentMeta}()
@@ -131,10 +132,7 @@ module ComponentPackages
                 push!(avaible_props, Symbol(prop.name))
             end
         end
-        wild_regs = Regex("^(?<prop>$(join(wild_props, "|")))")
-        
-
-        
+        wild_regs = Regex("^(?<prop>$(join(wild_props, "|")))")        
 
         docstr = """    $(maker_name)(;kwags...)
         $(add_signs)

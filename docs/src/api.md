@@ -3,6 +3,9 @@
 ```@index
 ```
 
-```@autodocs
-Modules = [Dashboards]
+```@docs
+Dash
+@callid_str
+callback!
+make_handler
 ```

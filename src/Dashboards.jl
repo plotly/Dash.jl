@@ -221,11 +221,15 @@ end
 
 Create a callback that updates the output by calling function `func`.
 
-#Examples
+If pass_changed_props is true then the first argument of callback is an array of changed properties
+
+# Examples
+
 ```julia
 app = Dash("Test") do
     html_div() do
         dcc_input(id="graphTitle", value="Let's Dance!", type = "text"),
+        dcc_input(id="graphTitle2", value="Let's Dance!", type = "text"),
         html_div(id="outputID"),
         html_div(id="outputID2")
 
@@ -240,14 +244,28 @@ callback!(app, CallbackId(
     return (stateType * "..." * inputValue, inputValue)
 end
 ```
+
 You can use macro `callid` string macro for make CallbackId : 
+
 ```julia
 callback!(app, callid"{graphTitle.type} graphTitle.value => outputID.children, outputID2.children") do stateType, inputValue
 
     return (stateType * "..." * inputValue, inputValue)
 end
 ```
-If pass_changed_props is true then the first argument of callback is an array of changed properties
+
+Using changed_props
+
+```julia
+callback!(app, callid"graphTitle.value, graphTitle2.value => outputID.children", pass_changed_props = true) do changed, input1, input2
+    if "graphTitle.value" in changed
+        return input1
+    else
+        return input2
+    end
+end
+```
+
 """
 function callback!(func::Function, app::Dash, id::CallbackId; pass_changed_props = false)    
     for out in id.output

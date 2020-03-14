@@ -1,7 +1,13 @@
 # Dashboards
 
 Julia backend for [Plotly Dash](https://github.com/plotly/dash)
-It is in its early development phase so any bugs may arise, please report me about issues
+
+## Version 0.2.8 will be released soon
+
+* Integration with travis ci
+* [dash-bootstrap-components](https://github.com/facultyai/dash-bootstrap-components) added with prefix dbc. Examples of use will be soon
+* pass_changed_props argument added to [`callback!`](@ref) function. For details see docs of [`callback!`](@ref)
+
 
 ## Version 0.2.5 released
 
@@ -17,7 +23,7 @@ Julia version >= 1.2 is required.
 It also works in 1.1 now, but I do not plan testing and support for versions under 1.2
 
 ```julia
-import Pkg; Pkg.add(Pkg.PackageSpec(url = "https://github.com/waralex/Dashboards.jl.git"))
+import Pkg; Pkg.add("Dashboards")
 ```
 
 ## Usage
