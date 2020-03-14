@@ -8,3 +8,4 @@ components/*
 lib/*
 Manifest.toml
 .DS_Store
+docs/build
