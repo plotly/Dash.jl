@@ -11,7 +11,7 @@ It is in its early development phase so any bugs may arise, please report me abo
 
 * Most of dashboards from [Dash Tutorial](https://dash.plot.ly/) are implemented using Dashboards.jl. See [DashboardsExamples repo](https://github.com/waralex/DashboardsExamples)
 
-## Instalation
+## Installation
 
 Julia version >= 1.2 is required.
 It also works in 1.1 now, but I do not plan testing and support for versions under 1.2
@@ -45,11 +45,10 @@ julia> app = Dash("Test app", external_stylesheets = ["https://codepen.io/chridd
 end
 julia> handler = make_handler(app, debug = true)
 julia> HTTP.serve(handler, HTTP.Sockets.localhost, 8080)
-# Now go to http://127.0.0.1:8080 in your browser to see the Dashboard.
 ```
 * The `Dash` struct represent dashboard application.
 * The constructor for `Dash` struct is ``Dash(layout_maker::Function, name::String;  external_stylesheets::Vector{String} = Vector{String}(), url_base_pathname="/", assets_folder::String = "assets")`` where `layout_maker` is a function with signature ()::Component
-* Unlike the python version where each Dash component is represented as a separate class, all components in Dashboard are represented by struct `Component`. 
+* Unlike the python version where each Dash component is represented as a separate class, all components in Dashboard are represented by struct `Component`.
 * You can create `Component` specific for concrete Dash component by the set of functions in the form ``lowercase(<component package>)_lowercase(<component name>)``. For example, in python html `<div>` element is represented as `HTML.Div` in Dasboards it is created using function `html_div`
 * The list of all supported components is available in docstring for Dasboards module
 * All functions for a component creation have the signature `(;kwargs...)::Component`. List of key arguments specific for the concrete component is available in the docstring for each function
@@ -108,7 +107,7 @@ julia> HTTP.serve(handler, HTTP.Sockets.localhost, 8080)
 
 ### component creation:
 
-Just like in Python, functions for creating components have keywords arguments, which are the same as in Python. ``html_div(id="my-id", children="Simple text")``. 
+Just like in Python, functions for creating components have keywords arguments, which are the same as in Python. ``html_div(id="my-id", children="Simple text")``.
 For components that have `children` prop, two additional signatures are available. ``(children; kwargs..)`` and ``(children_maker::Function; kwargs...)`` so You can write ``html_div("Simple text", id="my-id")``  for simple elements or avoid the hell of nested brackets with `do` syntax for complex elements:
 
 ```julia
@@ -148,8 +147,8 @@ def update_output(n_clicks, state1, state2):
 ```
 * Dashboards:
 ```julia
-callback!(app, callid"""{state1.value, state2.value} 
-                                   submit-button.n_clicks 
+callback!(app, callid"""{state1.value, state2.value}
+                                   submit-button.n_clicks
                                    => output.children""" ) do state1, state2, n_clicks
 .....
 end
