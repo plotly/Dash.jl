@@ -221,7 +221,7 @@ end
 
 Create a callback that updates the output by calling function `func`.
 
-If pass_changed_props is true then the first argument of callback is an array of changed properties
+If `pass_changed_props` is true then the first argument of callback is an array of changed properties
 
 # Examples
 
@@ -254,7 +254,7 @@ callback!(app, callid"{graphTitle.type} graphTitle.value => outputID.children, o
 end
 ```
 
-Using changed_props
+Using `changed_props`
 
 ```julia
 callback!(app, callid"graphTitle.value, graphTitle2.value => outputID.children", pass_changed_props = true) do changed, input1, input2
