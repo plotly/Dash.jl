@@ -1,4 +1,4 @@
-[![Build Status](https://travis-ci.com/waralex/Dashboards.jl.svg?branch=master)](https://travis-ci.com/waralex/Dashboards.jl) [![](https://img.shields.io/badge/docs-dev-blue.svg)](https://waralex.github.io/Dashboards.jl/dev/)
+[![Build Status](https://travis-ci.com/waralex/Dashboards.jl.svg?branch=master)](https://travis-ci.com/waralex/Dashboards.jl) [![](https://img.shields.io/badge/docs-stable-blue.svg)](https://waralex.github.io/Dashboards.jl/stable/) [![](https://img.shields.io/badge/docs-dev-blue.svg)](https://waralex.github.io/Dashboards.jl/dev/)
 
 # Dashboards
 
