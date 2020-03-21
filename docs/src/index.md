@@ -2,7 +2,7 @@
 
 Julia backend for [Plotly Dash](https://github.com/plotly/dash)
 
-## Version 0.2.8 will be released soon
+## Version 0.2.8 released
 
 * Integration with travis ci
 * [dash-bootstrap-components](https://github.com/facultyai/dash-bootstrap-components) added with prefix dbc. Examples of use will be soon
