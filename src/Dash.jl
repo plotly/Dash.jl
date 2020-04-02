@@ -1,4 +1,4 @@
-module Dashboards
+module Dash
 import HTTP, JSON2
 using MacroTools
 include("ComponentPackages.jl")
@@ -11,22 +11,22 @@ import .Front
 using .ComponentMetas
 using .Components
 
-export Dash, Component, Front, @use, <|, @callid_str, CallbackId, callback!,
+export dash, Component, Front, @use, <|, @callid_str, CallbackId, callback!,
  link_type!, make_handler, PreventUpdate, no_update, @prop
 
 ComponentPackages.@reg_components()
 include("utils.jl")
 
 @doc """
-    module Dashboards
+    module Dash
 
 Julia backend for [Plotly Dash](https://github.com/plotly/dash)
 
 # Examples
 ```julia
 import HTTP
-using Dashboards
-app = Dash("Test", external_stylesheets=["https://codepen.io/chriddyp/pen/bWLwgP.css"]) do
+using Dash
+app = dash("Test", external_stylesheets=["https://codepen.io/chriddyp/pen/bWLwgP.css"]) do
     html_div() do
         dcc_input(id="graphTitle", value="Let's Dance!", type = "text"),
         html_div(id="outputID"),            
@@ -91,11 +91,11 @@ end
 no_update() = NoUpdate()
 
 """
-    struct Dash <: Any
+    struct DashApp <: Any
 
 Representation of Dash application
 """
-struct Dash
+struct DashApp
     name ::String
     layout ::Component
     callbacks ::Dict{Symbol, Callback}
@@ -105,7 +105,7 @@ struct Dash
     assets_folder ::String
     callable_components ::Dict{Symbol, Component}
     type_links ::Dict{Symbol, Dict{Symbol, Type}}
-    function Dash(name::String, layout::Component;
+    function DashApp(name::String, layout::Component;
         external_stylesheets ::Vector{String} = Vector{String}(),
         external_scripts ::Vector{String} = Vector{String}(),
         url_base_pathname="/",
@@ -120,9 +120,9 @@ end
 
 
 """
-    Dash(layout_maker::Function, name::String; external_stylesheets ::Vector{String} = Vector{String}(), url_base_pathname::String="/")::Dash
+    dash(layout_maker::Function, name::String; external_stylesheets ::Vector{String} = Vector{String}(), url_base_pathname::String="/")::Dash
 
-Construct a Dash app using callback for layout creation
+Construct a dash app using callback for layout creation
 
 # Arguments
 - `layout_maker::Function` - function for layout creation. Must has signature ()::Component
@@ -135,19 +135,19 @@ for extra files to be used in the browser. Default `"assets"`
 
 # Examples
 ```jldoctest
-julia> app = Dash("Test") do
+julia> app = dash("Test") do
     html_div() do
         html_h1("Test Dashboard")
     end
 end
 ```
 """
-function Dash(layout_maker::Function, name::String;
+function dash(layout_maker::Function, name::String;
       external_stylesheets ::Vector{String} = Vector{String}(),
       external_scripts ::Vector{String} = Vector{String}(),
       url_base_pathname="/",
       assets_folder::String = "assets")
-    Dash(name, layout_maker(),
+    DashApp(name, layout_maker(),
         external_stylesheets=external_stylesheets,
         external_scripts=external_scripts,
         url_base_pathname=url_base_pathname,
@@ -198,7 +198,7 @@ end
 
 idprop_string(idprop::IdProp) = "$(idprop[1]).$(idprop[2])"
 
-function check_idprop(app::Dash, id::IdProp)
+function check_idprop(app::DashApp, id::IdProp)
     if !haskey(app.callable_components, id[1])
         error("The layout havn't component with id `$(id[1])]`")
     end
@@ -226,7 +226,7 @@ If `pass_changed_props` is true then the first argument of callback is an array 
 # Examples
 
 ```julia
-app = Dash("Test") do
+app = dash("Test") do
     html_div() do
         dcc_input(id="graphTitle", value="Let's Dance!", type = "text"),
         dcc_input(id="graphTitle2", value="Let's Dance!", type = "text"),
@@ -267,7 +267,7 @@ end
 ```
 
 """
-function callback!(func::Function, app::Dash, id::CallbackId; pass_changed_props = false)    
+function callback!(func::Function, app::DashApp, id::CallbackId; pass_changed_props = false)    
     for out in id.output
         if any(x->out in x.id.output, values(app.callbacks))
             error("output \"$(out)\" already registered")
@@ -283,7 +283,7 @@ function callback!(func::Function, app::Dash, id::CallbackId; pass_changed_props
     push!(app.callbacks, out_symbol => Callback(func, id, pass_changed_props))
 end
 
-function callback_argument_type(app::Dash, id::AbstractString, prop::AbstractString)::Type
+function callback_argument_type(app::DashApp, id::AbstractString, prop::AbstractString)::Type
     id_sym = Symbol(id)
     prop_sym = Symbol(prop)
     if haskey(app.type_links, id_sym) && haskey(app.type_links[id_sym], prop_sym)
@@ -292,7 +292,7 @@ function callback_argument_type(app::Dash, id::AbstractString, prop::AbstractStr
     return Any
 end
 
-function push_link_type!(app::Dash, idprop::IdProp, t::Type)
+function push_link_type!(app::DashApp, idprop::IdProp, t::Type)
     check_idprop(app, idprop)
     if !haskey(app.type_links, idprop[1])
         push!(app.type_links, idprop[1] => Dict{Symbol, Type}())
@@ -300,7 +300,7 @@ function push_link_type!(app::Dash, idprop::IdProp, t::Type)
     app.type_links[idprop[1]][idprop[2]] = t
 end
 
-function link_type!(app::Dash, idprop::AbstractString, t::Type)
+function link_type!(app::DashApp, idprop::AbstractString, t::Type)
     m = match(r"^((?<id>[A-Za-z]+[\w\-\:\.]*)|(?<any_id>\*))\.(?<prop>[A-Za-z]+[\w\-\:\.]*)$", strip(idprop))
     if isnothing(m)
         error("expected <id>.<property> or *.<property>")
@@ -321,7 +321,7 @@ function link_type!(app::Dash, idprop::AbstractString, t::Type)
 
 end
 
-function index_page(app::Dash; debug = false)
+function index_page(app::DashApp; debug = false)
     metas = ["""<meta http-equiv="X-UA-Compatible" content="IE=edge">""", """<meta charset="UTF-8">"""]
     title = app.name
     css = join(map(app.external_stylesheets) do s 
@@ -368,7 +368,7 @@ function index_page(app::Dash; debug = false)
     </html>"""
 end
 
-function dependencies_json(app::Dash)
+function dependencies_json(app::DashApp)
     id_prop_named(p::IdProp) = (id = p[1], property = p[2])
     result = map(values(app.callbacks)) do dep
         (inputs = id_prop_named.(dep.id.input),
@@ -379,7 +379,7 @@ function dependencies_json(app::Dash)
     return JSON2.write(result)
 end
 
-function process_callback(app::Dash, body::String)
+function process_callback(app::DashApp, body::String)
     params = JSON2.read(body)
     output = Symbol(params[:output])
     if !haskey(app.callbacks, output)
@@ -433,7 +433,7 @@ function process_callback(app::Dash, body::String)
 
 end
 
-function process_assets(app::Dash, path)
+function process_assets(app::DashApp, path)
     assets_path = "$(app.url_base_pathname)assets/"
     filename = joinpath(app.assets_folder, replace(path, assets_path=>""))    
     try
@@ -444,17 +444,17 @@ function process_assets(app::Dash, path)
 end
 
 """
-    make_handler(app::Dash; debug = false)
+    make_handler(app::DashApp; debug = false)
 
 Make handler for routing Dash application in HTTP package 
 
 #Arguments
-- `app::Dash` - Dash application
+- `app::DashApp` - Dash application
 - `debug::Bool = false` - Enable/disable all the dev tools
 
 #Examples
 ```jldoctest
-julia> app = Dash("Test") do
+julia> app = dash("Test") do
     html_div() do
         html_h1("Test Dashboard")
     end
@@ -464,7 +464,7 @@ julia> HTTP.serve(handler, HTTP.Sockets.localhost, 8080)
 ```
 
 """
-function make_handler(app::Dash; debug::Bool = false)
+function make_handler(app::DashApp; debug::Bool = false)
     function (req::HTTP.Request)
         uri = HTTP.URI(req.target)
         ComponentPackages.@register_js_sources(uri.path, app.url_base_pathname)

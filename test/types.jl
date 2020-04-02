@@ -1,6 +1,6 @@
 import HTTP, JSON2
 using Test
-using Dashboards
+using Dash
 struct TestChild
     a::Int32
     b::Int32
@@ -36,7 +36,7 @@ end
     Front.to_dash(t::TestChild) = "$(t.a)-$(t.b)"
     t = TestChild(10, 20)
     
-    app = Dash("Test app") do
+    app = dash("Test app") do
         html_div() do
             html_div(10, id = "my-id"),
             html_div(id = "my-div")        
@@ -51,10 +51,10 @@ end
     @test app.callbacks[Symbol("my-div.children")].func(10) == TestChild(10, 10)
     
     test_json = """{"output":"my-div.children","changedPropIds":["my-id.children"],"inputs":[{"id":"my-id","property":"children","value":10}]}"""
-    result = Dashboards.process_callback(app, test_json)
+    result = Dash.process_callback(app, test_json)
     @test result[:response][:props][:children] == "10-10"
 
-    app = Dash("Test app") do
+    app = dash("Test app") do
         html_div() do
             html_div(10, id = "my-id"),
             html_div(id = "my_div"),
@@ -70,7 +70,7 @@ end
     @test app.callbacks[Symbol("..my_div.children...my_div2.children..")].func(10) == (TestChild(10, 10), TestChild(15,15))
     
     test_json = """{"output":"..my_div.children...my_div2.children..","changedPropIds":["my-id.children"],"inputs":[{"id":"my-id","property":"children","value":10}]}"""
-    result = Dashboards.process_callback(app, test_json)
+    result = Dash.process_callback(app, test_json)
     
     @test result[:response][:my_div][:children] == "10-10"
     @test result[:response][:my_div2][:children] == "15-15"
@@ -92,7 +92,7 @@ end
         TestChild(parse.(Int32, split(t, "-"))...)
     end
 
-    app = Dash("Test app") do
+    app = dash("Test app") do
         html_div() do
             html_div(TestChild(10,20), id = "my-id"),
             html_div("10-15", id = "my-div"),
@@ -102,14 +102,14 @@ end
     end
     link_type!(app, "my-id.children", TestChild)
     @test length(app.type_links) == 1
-    @test Dashboards.callback_argument_type(app, "my-id", "children") == TestChild
-    @test Dashboards.callback_argument_type(app, "my-id", "id") == Any
-    @test Dashboards.callback_argument_type(app, "my-div", "children") == Any
+    @test Dash.callback_argument_type(app, "my-id", "children") == TestChild
+    @test Dash.callback_argument_type(app, "my-id", "id") == Any
+    @test Dash.callback_argument_type(app, "my-div", "children") == Any
 
     link_type!(app, "*.children", TestChild)
     @test length(app.type_links) == 4
-    @test Dashboards.callback_argument_type(app, "my-id", "children") == TestChild
-    @test Dashboards.callback_argument_type(app, "my-div", "children") == TestChild
+    @test Dash.callback_argument_type(app, "my-id", "children") == TestChild
+    @test Dash.callback_argument_type(app, "my-div", "children") == TestChild
     
     @test_throws ErrorException link_type!(app, "my-wrong.dddd", TestChild)
 
@@ -128,13 +128,13 @@ end
     test_json = """{"output":"output1.children",
     "changedPropIds":["my-id.children"],
     "inputs":[{"id":"my-id","property":"children","value":"5-10"}]}"""
-    result = Dashboards.process_callback(app, test_json)
+    result = Dash.process_callback(app, test_json)
 
     test_json2 = """{"output":"output2.children",
     "changedPropIds":["my-id.children"],
     "inputs":[{"id":"my-id","property":"children","value":"5-10"}],
     "state":[{"id":"my-div","property":"children","value":"15-40"}]
     }"""
-    result = Dashboards.process_callback(app, test_json2)
+    result = Dash.process_callback(app, test_json2)
     
 end

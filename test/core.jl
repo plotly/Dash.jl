@@ -1,6 +1,6 @@
 import HTTP, JSON2
 using Test
-using Dashboards
+using Dash
 @testset "Components" begin
     
     a_comp = html_a("test", id = "test-a")
@@ -42,7 +42,7 @@ end
         end
     end
 
-    ids = Dashboards.Components.collect_with_ids(comp)
+    ids = Dash.Components.collect_with_ids(comp)
     @test haskey(ids, :id0)
     @test ids[:id0].props[:id] == "id0"
     @test haskey(ids, :id1)
@@ -52,7 +52,7 @@ end
 end
 
 @testset "Dash creation" begin
-    app = Dash("test app"; external_stylesheets=["https://test.css"], url_base_pathname = "/") do
+    app = dash("test app"; external_stylesheets=["https://test.css"], url_base_pathname = "/") do
         html_div(id = "test-div")
     end
     @test app.name == "test app"
@@ -87,7 +87,7 @@ end
 end
 
 @testset "callback!" begin
-    app = Dash("Test app") do
+    app = dash("Test app") do
         html_div() do
             dcc_input(id = "my-id", value="initial value", type = "text"),
             html_div(id = "my-div")        
@@ -100,7 +100,7 @@ end
     @test haskey(app.callbacks, Symbol("my-div.children"))
     @test app.callbacks[Symbol("my-div.children")].func("test") == "test"
 
-    app = Dash("Test app") do
+    app = dash("Test app") do
         html_div() do
             dcc_input(id = "my-id", value="initial value", type = "text"),
             html_div(id = "my-div"),
@@ -114,7 +114,7 @@ end
     @test haskey(app.callbacks, Symbol("..my-div.children...my-div2.children.."))
     @test app.callbacks[Symbol("..my-div.children...my-div2.children..")].func("state", "value") == ("state", "value")
 
-    app = Dash("Test app") do
+    app = dash("Test app") do
         html_div() do
             dcc_input(id = "my-id", value="initial value", type = "text"),
             html_div(id = "my-div"),
@@ -162,7 +162,7 @@ end
         return "v_$(value)"
     end
 
-    app = Dash("Test app") do
+    app = dash("Test app") do
         html_div() do
             dcc_input(id = "my-id", value="initial value", type = "text"),
             html_div("test2", id = "my-div"),
@@ -178,7 +178,7 @@ end
 end
 
 @testset "handler" begin
-    app = Dash("Test app", external_stylesheets=["test.css"]) do
+    app = dash("Test app", external_stylesheets=["test.css"]) do
         html_div() do
             dcc_input(id = "my-id", value="initial value", type = "text"),
             html_div(id = "my-div"),
@@ -248,7 +248,7 @@ end
 end
 
 @testset "assets" begin
-    app = Dash("Test app", assets_folder = "assets") do
+    app = dash("Test app", assets_folder = "assets") do
         html_div() do            
             html_img(src = "assets/test.png")             
         end
@@ -268,7 +268,7 @@ end
 end
 
 @testset "PreventUpdate and no_update" begin
-    app = Dash("Test app") do
+    app = dash("Test app") do
         html_div() do
             html_div(10, id = "my-id"),
             html_div(id = "my-div")        
@@ -287,7 +287,7 @@ end
     @test response.status == 204
     @test length(response.body) == 0
 
-    app = Dash("Test app") do
+    app = dash("Test app") do
         html_div() do
             html_div(10, id = "my-id"),
             html_div(id = "my-div"),
@@ -300,7 +300,7 @@ end
 
     test_json = """{"output":"..my-div.children...my-div2.children..","changedPropIds":["my-id.children"],"inputs":[{"id":"my-id","property":"children","value":10}]}"""
 
-    result = Dashboards.process_callback(app, test_json)
+    result = Dash.process_callback(app, test_json)
     @test length(result[:response]) == 1
     @test haskey(result[:response], Symbol("my-div2"))
     @test !haskey(result[:response], Symbol("my-div"))
@@ -308,7 +308,7 @@ end
 end
 
 @testset "wildprops" begin
-    app = Dash("Test app", external_stylesheets=["test.css"]) do
+    app = dash("Test app", external_stylesheets=["test.css"]) do
         html_div() do            
             html_div(;id = "my-div", @prop("data-attr" = "ffff")),
             html_div(;id = "my-div2", @prop("aria-attr" = "gggg"))    
@@ -320,7 +320,7 @@ end
 end
 
 @testset "pass changed props" begin
-    app = Dash("Test app") do
+    app = dash("Test app") do
         html_div() do
             html_div(10, id = "my-id"),
             html_div(id = "my-div")        
@@ -335,7 +335,7 @@ end
 
     test_json = """{"output":"my-div.children","changedPropIds":["my-id.children"],"inputs":[{"id":"my-id","property":"children","value":10}]}"""
         
-    result = Dashboards.process_callback(app, test_json)
+    result = Dash.process_callback(app, test_json)
     @show result
     @test length(result[:response]) == 1
     
