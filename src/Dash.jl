@@ -471,7 +471,7 @@ function make_handler(app::DashApp; debug::Bool = false)
                 if isa(e,PreventUpdate)                
                     return HTTP.Response(204)                                    
                 else
-                    throw(e)
+                    rethrow(e)
                 end
             end 
         end
@@ -480,7 +480,7 @@ function make_handler(app::DashApp; debug::Bool = false)
 end
 
 """
-    run_server(app::DashApp, host = HTTP.Sockets.localhost, port = 8080; debug = false)
+    run_server(app::DashApp, host = HTTP.Sockets.localhost, port = 8080; debug::Bool = false)
 
 Run Dash server
 
