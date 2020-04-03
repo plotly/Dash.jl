@@ -12,7 +12,7 @@ using .ComponentMetas
 using .Components
 
 export dash, Component, Front, @use, <|, @callid_str, CallbackId, callback!,
- link_type!, make_handler, PreventUpdate, no_update, @prop
+ link_type!, run_server, PreventUpdate, no_update, @prop
 
 ComponentPackages.@reg_components()
 include("utils.jl")
@@ -443,27 +443,7 @@ function process_assets(app::DashApp, path)
     end
 end
 
-"""
-    make_handler(app::DashApp; debug = false)
 
-Make handler for routing Dash application in HTTP package 
-
-#Arguments
-- `app::DashApp` - Dash application
-- `debug::Bool = false` - Enable/disable all the dev tools
-
-#Examples
-```jldoctest
-julia> app = dash("Test") do
-    html_div() do
-        html_h1("Test Dashboard")
-    end
-end
-julia> handler = make_handler(app)
-julia> HTTP.serve(handler, HTTP.Sockets.localhost, 8080)
-```
-
-"""
 function make_handler(app::DashApp; debug::Bool = false)
     function (req::HTTP.Request)
         uri = HTTP.URI(req.target)
@@ -499,5 +479,32 @@ function make_handler(app::DashApp; debug::Bool = false)
     end
 end
 
+"""
+    run_server(app::DashApp, host = HTTP.Sockets.localhost, port = 8080; debug = false)
+
+Run Dash server
+
+#Arguments
+- `app` - Dash application
+- `host` - host
+- `port` - port
+- `debug::Bool = false` - Enable/disable all the dev tools
+
+#Examples
+```jldoctest
+julia> app = dash("Test") do
+    html_div() do
+        html_h1("Test Dashboard")
+    end
+end
+julia>
+julia> run_server(handler,  HTTP.Sockets.localhost, 8080)
+```
+
+"""
+function run_server(app::DashApp, host = HTTP.Sockets.localhost, port = 8080; debug = false)
+    handler = make_handler(app, debug = debug);
+    HTTP.serve(handler, host, port)
+end
 
 end # module

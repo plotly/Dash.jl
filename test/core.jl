@@ -192,7 +192,7 @@ end
         return "v_$(value)"
     end
 
-    handler = make_handler(app)
+    handler = Dash.make_handler(app)
 
     request = HTTP.Request("GET", "/")
     response = handler(request)
@@ -254,7 +254,7 @@ end
         end
     end
     @test app.assets_folder == "assets"
-    handler = make_handler(app)
+    handler = Dash.make_handler(app)
     request = HTTP.Request("GET", "/assets/test.png")
     response = handler(request)
     @test response.status == 200
@@ -278,7 +278,7 @@ end
         throw(PreventUpdate())
     end
 
-    handler = make_handler(app)
+    handler = Dash.make_handler(app)
 
     test_json = """{"output":"my-div.children","changedPropIds":["my-id.children"],"inputs":[{"id":"my-id","property":"children","value":10}]}"""
         
@@ -331,7 +331,7 @@ end
         return value
     end
 
-    handler = make_handler(app)
+    handler = Dash.make_handler(app)
 
     test_json = """{"output":"my-div.children","changedPropIds":["my-id.children"],"inputs":[{"id":"my-id","property":"children","value":10}]}"""
         
