@@ -3,9 +3,9 @@ const IdProp = Tuple{Symbol, Symbol}
 struct CallbackId
     state ::Vector{IdProp}
     input ::Vector{IdProp}
-    output ::Vector{IdProp}
-    
+    output ::Vector{IdProp}    
 end
+
 CallbackId(;input ::Union{Vector{IdProp}, IdProp},
             output ::Union{Vector{IdProp}, IdProp},
             state ::Union{Vector{IdProp}, IdProp} = Vector{IdProp}()
@@ -68,14 +68,14 @@ function layout!(app::DashApp, component::Component)
     Components.collect_with_ids!(app.layout, app.callable_components)
 end
 
-get_layout(app::DashApp) = Base.getfield(app, :layout).component
+getlayout(app::DashApp) = Base.getfield(app, :layout).component
 
 function Base.setproperty!(app::DashApp, name::Symbol, value)
     name == :layout ? layout!(app, value) : Base.setfield!(app, name, value)
 end
 
 function Base.getproperty(app::DashApp, name::Symbol)
-    name == :layout ? get_layout(app) : Base.getfield(app, name)
+    name == :layout ? getlayout(app) : Base.getfield(app, name)
 end
 
     
@@ -210,6 +210,23 @@ end
 
 """
 function callback!(func::Function, app::DashApp, id::CallbackId; pass_changed_props = false)    
+    
+    check_callback(func, app, id, pass_changed_props)
+    
+    out_symbol = Symbol(output_string(id))
+        
+    push!(app.callbacks, out_symbol => Callback(func, id, pass_changed_props))
+end
+
+
+function check_callback(func::Function, app::DashApp, id::CallbackId, pass_changed_props)
+
+    
+
+    isempty(id.input) && error("The callback method requires that one or more properly formatted inputs are passed.")
+
+    length(id.output) != length(unique(id.output)) && error("One or more callback outputs have been duplicated; please confirm that all outputs are unique.")
+
     for out in id.output
         if any(x->out in x.id.output, values(app.callbacks))
             error("output \"$(out)\" already registered")
@@ -219,8 +236,13 @@ function callback!(func::Function, app::DashApp, id::CallbackId; pass_changed_pr
     foreach(x->check_idprop(app,x), id.state)
     foreach(x->check_idprop(app,x), id.input)
     foreach(x->check_idprop(app,x), id.output)
-    
-    out_symbol = Symbol(output_string(id))
-        
-    push!(app.callbacks, out_symbol => Callback(func, id, pass_changed_props))
+
+    args_count = length(id.state) + length(id.input)
+    pass_changed_props && (args_count+=1)
+
+    !hasmethod(func, NTuple{args_count, Any}) && error("Callback function don't have method with proper arguments")
+
+    for id_prop in id.input
+        id_prop in id.output && error("Circular input and output arguments were found. Please verify that callback outputs are not also input arguments.")
+    end
 end

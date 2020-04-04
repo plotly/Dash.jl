@@ -12,10 +12,10 @@ import Pkg; Pkg.add("Dash")
 ### Basic application
 
 ```jldoctest
-julia> import HTTP
 julia> using Dash
-julia> app = dash("Test app", external_stylesheets = ["https://codepen.io/chriddyp/pen/bWLwgP.css"]) do
-    html_div() do
+julia> app = dash("Test app", external_stylesheets = ["https://codepen.io/chriddyp/pen/bWLwgP.css"])
+ 
+julia> app.layout = html_div() do
         html_h1("Hello Dash"),
         html_div("Dash.jl: Julia interface for Dash"),
         dcc_graph(
@@ -29,9 +29,7 @@ julia> app = dash("Test app", external_stylesheets = ["https://codepen.io/chridd
             )
         )
     end
-end
-julia> handler = make_handler(app, debug = true)
-julia> HTTP.serve(handler, HTTP.Sockets.localhost, 8080)
+julia> run_server(app, "0.0.0.0", 8080)
 ```
 * The `DashApp` struct represent dashboard application.
 * To make `DashApp` struct use `dash(layout_maker::Function, name::String;  external_stylesheets::Vector{String} = Vector{String}(), url_base_pathname="/", assets_folder::String = "assets")`` where `layout_maker` is a function with signature ()::Component
@@ -47,19 +45,20 @@ __Once you have run the code to create the Dashboard, go to `http://127.0.0.1:80
 
 ### Basic Callback
 ```jldoctest
-julia> import HTTP
+
 julia> using Dash
-julia> app = dash("Test app", external_stylesheets = ["https://codepen.io/chriddyp/pen/bWLwgP.css"]) do
-    html_div() do
+julia> app = dash("Test app", external_stylesheets = ["https://codepen.io/chriddyp/pen/bWLwgP.css"])
+
+julia> app.layout = html_div() do
         dcc_input(id = "my-id", value="initial value", type = "text"),
         html_div(id = "my-div")        
     end
-end
+
 julia> callback!(app, callid"my-id.value => my-div.children") do input_value
     "You've entered $(input_value)"
 end
-julia> handler = make_handler(app, debug = true)
-julia> HTTP.serve(handler, HTTP.Sockets.localhost, 8080)
+julia> run_server(app, "0.0.0.0", 8080)
+
 ```
 * You can make your dashboard interactive by register callbacks for changes in frontend with function ``callback!(func::Function, app::Dash, id::CallbackId)``
 * Inputs and outputs (and states, see below) of callback are described by struct `CallbackId` which can easily created by string macro `callid""`
@@ -68,21 +67,20 @@ julia> HTTP.serve(handler, HTTP.Sockets.localhost, 8080)
 
 ### States and Multiple Outputs
 ```jldoctest
-julia> import HTTP
 julia> using Dash
-julia> app = dash("Test app", external_stylesheets = ["https://codepen.io/chriddyp/pen/bWLwgP.css"]) do
-    html_div() do
+julia> app = dash("Test app", external_stylesheets = ["https://codepen.io/chriddyp/pen/bWLwgP.css"])
+ 
+julia> app.layout = html_div() do
         dcc_input(id = "my-id", value="initial value", type = "text"),
         html_div(id = "my-div"),
         html_div(id = "my-div2")        
     end
-end
+
 julia> callback!(app, callid"{my-id.type} my-id.value => my-div.children, my-div2.children") do state_value, input_value
     "You've entered $(input_value) in input with type $(state_value)",
     "You've entered $(input_value)"
 end
-julia> handler = make_handler(app, debug = true)
-julia> HTTP.serve(handler, HTTP.Sockets.localhost, 8080)
+julia> run_server(app, "0.0.0.0", 8080)
 ```
 * For multiple output callback must return any collection with element for each output
 
@@ -115,11 +113,12 @@ app.layout = html.Div(children=[....])
 
 * Dash.jl:
 ```julia
-app = dash("Test", external_stylesheets=external_stylesheets) do
-   html_div() do
+app = dash("Test", external_stylesheets=external_stylesheets) 
+
+app.layout = html_div() do
     ......
    end
-end
+
 ```
 ### callbacks:
 * python:

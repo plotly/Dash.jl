@@ -163,6 +163,30 @@ end
         return "v_$(value)"
     end
 
+    @test_throws ErrorException callback!(app, callid"{my-id.value} my-id.value => my-id.value") do value
+        return "v_$(value)"
+    end
+
+    @test_throws ErrorException callback!(app, callid"my-div.children, my-id.value => my-id.value") do value
+        return "v_$(value)"
+    end
+    @test_throws ErrorException callback!(app, callid"my-id.value => my-div.children, my-id.value") do value
+        return "v_$(value)"
+    end
+
+    @test_throws ErrorException callback!(app, callid" => my-div2.title, my-id.value") do value
+        return "v_$(value)"
+    end
+
+    @test_throws ErrorException callback!(app, callid"my-id.value => my-div2.title, my-div2.title") do value
+        return "v_$(value)"
+    end
+
+    @test_throws ErrorException callback!(app, callid"my-id.value => my-div2.title") do 
+        return "v_"
+    end
+    
+
     app = dash("Test app") do
         html_div() do
             dcc_input(id = "my-id", value="initial value", type = "text"),

@@ -96,5 +96,5 @@ callback!(app, callid"""basic-interactions.relayoutData => relayout-data.childre
     pretty_json(relayout_data)
 end
 
-run_server(app)
+run_server(app, "0.0.0.0", 8080; debug=true)
 end

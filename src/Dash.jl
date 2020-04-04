@@ -27,7 +27,7 @@ Julia backend for [Plotly Dash](https://github.com/plotly/dash)
 
 # Examples
 ```julia
-import HTTP
+
 using Dash
 app = dash("Test", external_stylesheets=["https://codepen.io/chriddyp/pen/bWLwgP.css"]) do
     html_div() do
@@ -55,7 +55,7 @@ callback!(app, callid"graphTitle.value => graph.figure") do value
     )
 end
 handle = make_handler(app, debug = true)
-HTTP.serve(handle, HTTP.Sockets.localhost, 8080)
+run_server(handle, HTTP.Sockets.localhost, 8080)
 ```
 
 # Available components
