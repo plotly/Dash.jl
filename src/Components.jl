@@ -36,21 +36,28 @@ function is_prop_available(c::Component, prop::Symbol)
 end
 
 function collect_with_ids(comp)
-    result = Dict{Symbol, Component}()
+    result = Dict{Symbol, Component}()    
+    return collect_with_ids!(comp, result)
+end
+
+function collect_with_ids!(comp, dest::Dict{Symbol, Component})
+    empty!(dest)
+    
     if haskey(comp.props, :id)
-        push!(result, Symbol(comp.props[:id])=>comp)
+        push!(dest, Symbol(comp.props[:id])=>comp)
     end
     if haskey(comp.props, :children)
         if comp.props[:children] isa Vector || comp.props[:children] isa Tuple
             for child in comp.props[:children]
                 if child isa Component 
-                    merge!(result, collect_with_ids(child))
+                    merge!(dest, collect_with_ids(child))
                 end
             end
         elseif comp.props[:children] isa Component
-            merge!(result, collect_with_ids(comp.props[:children]))            
+            merge!(dest, collect_with_ids(comp.props[:children]))            
         end        
     end
-    return result
+    return dest
 end
+
 end

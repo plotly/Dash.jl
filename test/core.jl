@@ -114,13 +114,14 @@ end
     @test haskey(app.callbacks, Symbol("..my-div.children...my-div2.children.."))
     @test app.callbacks[Symbol("..my-div.children...my-div2.children..")].func("state", "value") == ("state", "value")
 
-    app = dash("Test app") do
-        html_div() do
+    app = dash("Test app")
+     
+    app.layout = html_div() do
             dcc_input(id = "my-id", value="initial value", type = "text"),
             html_div(id = "my-div"),
             html_div(id = "my-div2")    
         end
-    end
+    
     callback!(app, callid"my-id.value => my-div.children") do value
         return value
     end
@@ -310,8 +311,8 @@ end
 @testset "wildprops" begin
     app = dash("Test app", external_stylesheets=["test.css"]) do
         html_div() do            
-            html_div(;id = "my-div", @prop("data-attr" = "ffff")),
-            html_div(;id = "my-div2", @prop("aria-attr" = "gggg"))    
+            html_div(;id = "my-div", @wildprop("data-attr" = "ffff")),
+            html_div(;id = "my-div2", @wildprop("aria-attr" = "gggg"))    
         end
     end
     callback!(app, callid"my-div.children => my-div2.aria-attr") do v
