@@ -4,7 +4,7 @@ Julia version >= 1.2 is required.
 It also works in 1.1 now, but I do not plan testing and support for versions under 1.2
 
 ```julia
-import Pkg; Pkg.add("Dash")
+import Pkg; Pkg.add(Pkg.PackageSpec(url = "https://github.com/plotly/Dash.jl.git"))
 ```
 
 ## Usage
