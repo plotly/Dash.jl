@@ -115,7 +115,7 @@ module ComponentPackages
     end
 
     function make_component(package, component)
-        maker_name = Symbol(lowercase(package.name),"_", lowercase(component.name))
+        maker_name = Symbol(lowercase(component.name))
         props = collect(keys(component.properties))
         add_signs = ""
         if any(x->x==:children, props)
@@ -200,18 +200,19 @@ module ComponentPackages
     end
 
     macro reg_components()
-        components_code::Vector{Expr} = []
+        components_code = Expr(:toplevel)
         for package in values(_components_packages)
+            module_name = esc(Symbol(uppercase(package.name)))
+            package_module = :(module $module_name end)
             if package.has_components
                 components = ComponentPackages.load_package_components(package.name)
                 for component in values(components)
-                    push!(components_code, make_component(package, component))
+                    push!(package_module.args[3].args, make_component(package, component))
                 end
-            end            
+            end
+            push!(components_code.args, package_module)
+            push!(components_code.args, Expr(:export, module_name))
         end
-        return quote 
-            $(components_code...)
-        end
-        
+        return components_code
     end
 end

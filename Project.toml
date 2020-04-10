@@ -14,13 +14,13 @@ PlotlyBase = "a03496cd-edff-5a9b-9e67-9cda94a718b5"
 Test = "8dfed614-e22c-5e08-85e1-65c5234f0b40"
 
 [compat]
-julia = "1.1"
 DataStructures = "0.17.5"
 HTTP = "0.8.6"
 JSON = "0.21.0"
 JSON2 = "0.3.1"
 MacroTools = "0.5.1"
 PlotlyBase = "0.3.0"
+julia = "1.1"
 
 [extras]
 Test = "8dfed614-e22c-5e08-85e1-65c5234f0b40"
