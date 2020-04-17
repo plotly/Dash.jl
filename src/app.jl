@@ -114,27 +114,86 @@ end
     dash(name::String; external_stylesheets ::Vector{String} = Vector{String}(), url_base_pathname::String="/")
     dash(layout_maker::Function, name::String; external_stylesheets ::Vector{String} = Vector{String}(), url_base_pathname::String="/")
 
-Construct a dash app using callback for layout creation
+Construct a dash app 
 
 # Arguments
 - `layout_maker::Function` - function for layout creation. Must has signature ()::Component
-- `name::String` - Dashboard name
-- `external_stylesheets::Vector{String} = Vector{String}()` - vector of external css urls 
-- `external_scripts::Vector{String} = Vector{String}()` - vector of external js scripts urls 
-- `url_base_pathname::String="/"` - base url path for dashboard, default "/" 
+- `name::String` - The name of your application
 - `assets_folder::String` - a path, relative to the current working directory,
-for extra files to be used in the browser. Default `"assets"`
+        for extra files to be used in the browser. Default ``'assets'``.
 
-# Examples
-```jldoctest
-julia> app = dash("Test") do
-    html_div() do
-        html_h1("Test Dashboard")
-    end
-end
-```
+- `assets_url_path::String` - The local urls for assets will be:
+        ``requests_pathname_prefix * assets_url_path * "/" * asset_path``
+        where ``asset_path`` is the path to a file inside ``assets_folder``.
+        Default ``'assets'`.
+    
+
+- `assets_ignore::String` - [IN DEVELOPMENT] A regex, as a string to pass to ``Regex``, for
+        assets to omit from immediate loading. Ignored files will still be
+        served if specifically requested. You cannot use this to prevent access
+        to sensitive files. 
+    :type assets_ignore: string
+
+-  `assets_external_path::String` - [IN DEVELOPMENT] an absolute URL from which to load assets.
+        Use with ``serve_locally=false``. Dash can still find js and css to
+        automatically load if you also keep local copies in your assets
+        folder that Dash can index, but external serving can improve
+        performance and reduce load on the Dash server.        
+    
+
+- `include_assets_files::Bool` - [IN DEVELOPMENT] Default ``true``, set to ``False`` to prevent
+        immediate loading of any assets. Assets will still be served if
+        specifically requested. You cannot use this to prevent access
+        to sensitive files. 
+    
+
+- `url_base_pathname::String`: A local URL prefix to use app-wide.
+        Default ``'/'``. Both `requests_pathname_prefix` and
+        `routes_pathname_prefix` default to `url_base_pathname`.
+        
+
+- `requests_pathname_prefix::String`: A local URL prefix for file requests.
+        Defaults to `url_base_pathname`, and must end with
+        `routes_pathname_prefix`
+    
+
+- `routes_pathname_prefix::String`: A local URL prefix for JSON requests.
+        Defaults to ``url_base_pathname``, and must start and end
+        with ``'/'``.
+
+- `serve_locally`: [IN DEVELOPMENT] If ``true`` (default), assets and dependencies
+        (Dash and Component js and css) will be served from local URLs.
+        If ``false`` we will use CDN links where available.
+    
+- `meta_tags::Vector{Dict{String, String}}`: html <meta> tags to be added to the index page.
+        Each dict should have the attributes and values for one tag, eg:
+        ``Dict("name"=>"description", "content" => "My App")``
+    
+
+- `index_string::String`: Override the standard Dash index page.
+        Must contain the correct insertion markers to interpolate various
+        content into it depending on the app config and components used.
+        See https://dash.plotly.com/external-resources for details.
+    
+
+- `external_scripts::Vector`: Additional JS files to load with the page.
+        Each entry can be a String (the URL) or a Dict{String, String} with ``src`` (the URL)
+        and optionally other ``<script>`` tag attributes such as ``integrity``
+        and ``crossorigin``.    
+
+- `external_stylesheets::Vector`: Additional CSS files to load with the page.
+        Each entry can be a String (the URL) or a Dict{String, String} with ``href`` (the URL)
+        and optionally other ``<link>`` tag attributes such as ``rel``,
+        ``integrity`` and ``crossorigin``.    
+
+- `suppress_callback_exceptions::Bool`: Default ``false``: check callbacks to
+        ensure referenced IDs exist and props are valid. Set to ``true``
+        if your layout is dynamic, to bypass these checks.
+        
+- `show_undo_redo::Bool`: Default ``false``, set to ``true`` to enable undo
+        and redo buttons for stepping through the history of the app state.
+    
 """
-
 function dash(name::String;
         external_stylesheets = ExternalSrcType[],
         external_scripts  = ExternalSrcType[],
