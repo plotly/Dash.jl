@@ -1,5 +1,25 @@
 const IdProp = Tuple{Symbol, Symbol}
 
+const default_index = """<!DOCTYPE html>
+<html>
+    <head>
+        {%metas%}
+        <title>{%title%}</title>
+        {%favicon%}
+        {%css%}
+    </head>
+    <body>
+        {%app_entry%}
+        <footer>
+            {%config%}
+            {%scripts%}
+            {%renderer%}
+        </footer>
+    </body>
+</html>"""
+
+
+
 struct CallbackId
     state ::Vector{IdProp}
     input ::Vector{IdProp}
@@ -34,6 +54,27 @@ mutable struct Layout
     component::Union{Nothing, Component}
 end
 
+const ExternalSrcType = Union{String, Dict{String, String}}
+
+struct DashConfig
+    external_stylesheets ::Vector{ExternalSrcType}
+    external_scripts ::Vector{ExternalSrcType}
+    url_base_pathname ::Union{String, Nothing} #TODO This looks unused
+    requests_pathname_prefix ::String
+    routes_pathname_prefix ::String
+    assets_folder ::String
+    assets_url_path ::String
+    assets_ignore ::String    
+    serve_locally ::Bool
+    suppress_callback_exceptions ::Bool
+    eager_loading ::Bool
+    meta_tags ::Vector{Dict{String, String}} 
+    index_string ::Union{String, Nothing}
+    assets_external_path ::Union{String, Nothing}
+    include_assets_files ::Bool
+    show_undo_redo ::Bool
+end
+
 """
     struct DashApp <: Any
 
@@ -41,26 +82,13 @@ Representation of Dash application
 """
 struct DashApp
     name ::String
+    config ::DashConfig
     layout ::Layout
     callbacks ::Dict{Symbol, Callback}
-    external_stylesheets ::Vector{String}
-    external_scripts ::Vector{String}
-    url_base_pathname ::String
-    assets_folder ::String
-    callable_components ::Dict{Symbol, Component}
-    function DashApp(name::String;
-        external_stylesheets ::Vector{String} = Vector{String}(),
-        external_scripts ::Vector{String} = Vector{String}(),
-        url_base_pathname="/",
-        assets_folder::String = "assets")
-        
-        new(name, Layout(nothing), Dict{Symbol, Callback}(),
-            external_stylesheets, external_scripts,
-            url_base_pathname, assets_folder,
-            Dict{Symbol, Component}()
-            
-            )
-    end    
+    callable_components ::Dict{Symbol, Component}    
+    
+    DashApp(name::String, config::DashConfig) = new(name, config, Layout(nothing), Dict{Symbol, Callback}(), Dict{Symbol, Component}())
+    
 end
 
 function layout!(app::DashApp, component::Component)
@@ -78,7 +106,7 @@ function Base.getproperty(app::DashApp, name::Symbol)
     name == :layout ? getlayout(app) : Base.getfield(app, name)
 end
 
-    
+
 
 
 
@@ -108,29 +136,86 @@ end
 """
 
 function dash(name::String;
-    external_stylesheets ::Vector{String} = Vector{String}(),
-    external_scripts ::Vector{String} = Vector{String}(),
-    url_base_pathname="/",
-    assets_folder::String = "assets")
-        result = DashApp(name,
-            external_stylesheets=external_stylesheets,
-            external_scripts=external_scripts,
-            url_base_pathname=url_base_pathname,
-            assets_folder = assets_folder
-            )
+        external_stylesheets = ExternalSrcType[],
+        external_scripts  = ExternalSrcType[],
+        url_base_pathname = nothing,        
+        requests_pathname_prefix = nothing,
+        routes_pathname_prefix = nothing,
+        assets_folder = "assets",
+        assets_url_path = "assets",
+        assets_ignore = "",        
+        serve_locally = true,
+        suppress_callback_exceptions = false,
+        eager_loading = false, 
+        meta_tags = Dict{Symbol, String}[], 
+        index_string = default_index, 
+        assets_external_path = nothing, 
+        include_assets_files = true, 
+        show_undo_redo = false
+
+    )
+        
+       
+        config = DashConfig(
+            external_stylesheets,
+            external_scripts,
+            pathname_configs(
+                url_base_pathname,                
+                requests_pathname_prefix,
+                routes_pathname_prefix
+                )...,
+            absolute_assets_path(assets_folder),
+            lstrip(assets_url_path, '/'),
+            assets_ignore,             
+            serve_locally, 
+            suppress_callback_exceptions, 
+            eager_loading, 
+            meta_tags, 
+            index_string, 
+            assets_external_path, 
+            include_assets_files, 
+            show_undo_redo
+        )
+        
+        result = DashApp(name, config)
     return result
 end
 
-function dash(layout_maker::Function, name::String;
-      external_stylesheets ::Vector{String} = Vector{String}(),
-      external_scripts ::Vector{String} = Vector{String}(),
-      url_base_pathname="/",
-      assets_folder::String = "assets")
+function dash(layout_maker ::Function, name;
+        external_stylesheets = ExternalSrcType[],
+        external_scripts  = ExternalSrcType[],
+        url_base_pathname = nothing,        
+        requests_pathname_prefix = nothing,
+        routes_pathname_prefix = nothing,
+        assets_folder = "assets",
+        assets_url_path = "assets",
+        assets_ignore = "",        
+        serve_locally = true,
+        suppress_callback_exceptions = false,
+        eager_loading = false, 
+        meta_tags = Dict{Symbol, String}[], 
+        index_string = default_index, 
+        assets_external_path = nothing, 
+        include_assets_files = true, 
+        show_undo_redo = false
+      )
     result = dash(name,
         external_stylesheets=external_stylesheets,
         external_scripts=external_scripts,
         url_base_pathname=url_base_pathname,
-        assets_folder = assets_folder
+        requests_pathname_prefix = requests_pathname_prefix,
+        routes_pathname_prefix = routes_pathname_prefix,
+        assets_folder = assets_folder,
+        assets_url_path = assets_url_path, 
+        assets_ignore = assets_ignore,        
+        serve_locally = serve_locally,
+        suppress_callback_exceptions = suppress_callback_exceptions,
+        eager_loading = eager_loading,
+        meta_tags = meta_tags,
+        index_string = index_string,
+        assets_external_path = assets_external_path,
+        include_assets_files = include_assets_files,
+        show_undo_redo = show_undo_redo
         )
     layout!(result, layout_maker())
     return result

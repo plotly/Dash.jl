@@ -51,18 +51,6 @@ end
 
 end
 
-@testset "Dash creation" begin
-    app = dash("test app"; external_stylesheets=["https://test.css"], url_base_pathname = "/") do
-        html_div(id = "test-div")
-    end
-    @test app.name == "test app"
-    @test app.external_stylesheets == ["https://test.css"]
-    @test app.url_base_pathname == "/"
-    @test app.layout.type == "Div"
-    @test app.layout.props[:id] == "test-div"
-    @test length(app.callable_components) == 1
-    @test haskey(app.callable_components, Symbol("test-div"))
-end
 
 @testset "callid" begin
     id = callid"id1.prop1 => id2.prop2"
@@ -278,7 +266,7 @@ end
             html_img(src = "assets/test.png")             
         end
     end
-    @test app.assets_folder == "assets"
+    @test app.config.assets_folder == joinpath(pwd(),"assets")
     handler = Dash.make_handler(app)
     request = HTTP.Request("GET", "/assets/test.png")
     response = handler(request)
