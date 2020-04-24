@@ -1,8 +1,8 @@
 make_css_tag(url::String) = """<link rel="stylesheet" href="$(url)">"""
-make_css_tag(dict::Dict{String, String}) = formattag("link", dict, opened = true)
+make_css_tag(dict::Dict{String, String}) = format_tag("link", dict, opened = true)
 
-make_scipt_tag(url::String) = """<script src="$(url)"></script>"""
-make_scipt_tag(dict::Dict{String, String}) = formattag("script", dict)
+make_script_tag(url::String) = """<script src="$(url)"></script>"""
+make_script_tag(dict::Dict{String, String}) = format_tag("script", dict)
 
 function metas_html(app::DashApp)
     meta_tags = app.config.meta_tags
