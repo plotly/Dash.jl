@@ -80,34 +80,49 @@ end
 
 Representation of Dash application
 """
-struct DashApp
+mutable struct DashApp
     name ::String
     config ::DashConfig
-    layout ::Layout
+    layout ::Union{Nothing, Component}
+    devtools ::DevTools
     callbacks ::Dict{Symbol, Callback}
-    callable_components ::Dict{Symbol, Component}    
     
-    DashApp(name::String, config::DashConfig) = new(name, config, Layout(nothing), Dict{Symbol, Callback}(), Dict{Symbol, Component}())
+    DashApp(name::String, config::DashConfig) = new(name, config, nothing, DevTools(dash_env(Bool, "debug", false)), Dict{Symbol, Callback}())
     
 end
 
-function layout!(app::DashApp, component::Component)
-    Base.getfield(app, :layout).component = component
-    Components.collect_with_ids!(app.layout, app.callable_components)
+function setlayout!(app::DashApp, component::Component)
+    app.layout = component
 end
 
-getlayout(app::DashApp) = Base.getfield(app, :layout).component
+getlayout(app::DashApp) = app.component
 
-function Base.setproperty!(app::DashApp, name::Symbol, value)
-    name == :layout ? layout!(app, value) : Base.setfield!(app, name, value)
+function setdebug!(app::DashApp; debug = nothing, ui = nothing,
+            props_check = nothing,
+            serve_dev_bundles = nothing,
+            hot_reload = nothing,
+            hot_reload_interval = nothing,
+            hot_reload_watch_interval = nothing,
+            hot_reload_max_retry = nothing,
+            silence_routes_logging = nothing,
+            prune_errors = nothing)
+    @env_default!(debug, Bool, true)
+    app.dev_tools = DevTools(
+        debug;
+        props_check = props_check,
+        serve_dev_bundles = serve_dev_bundles,
+        hot_reload = hot_reload,
+        hot_reload_interval = hot_reload_interval,
+        hot_reload_watch_interval = hot_reload_watch_interval,
+        hot_reload_max_retry = hot_reload_max_retry,
+        silence_routes_logging = silence_routes_logging,
+        prune_errors = prune_errors
+    )
 end
 
-function Base.getproperty(app::DashApp, name::Symbol)
-    name == :layout ? getlayout(app) : Base.getfield(app, name)
-end
+getdevtools(app::DashApp) = app.devtools
 
-
-
+getconfig(app::DashApp) = app.config
 
 
 """
@@ -194,27 +209,26 @@ Construct a dash app
         and redo buttons for stepping through the history of the app state.
     
 """
-function dash(name::String;
+function dash(name::String = dash_env("dash_name", "");
         external_stylesheets = ExternalSrcType[],
         external_scripts  = ExternalSrcType[],
-        url_base_pathname = nothing,        
-        requests_pathname_prefix = nothing,
-        routes_pathname_prefix = nothing,
+        url_base_pathname = dash_env("url_base_pathname"),        
+        requests_pathname_prefix = dash_env("requests_pathname_prefix"),
+        routes_pathname_prefix = dash_env("routes_pathname_prefix"),
         assets_folder = "assets",
         assets_url_path = "assets",
         assets_ignore = "",        
         serve_locally = true,
-        suppress_callback_exceptions = false,
+        suppress_callback_exceptions = dash_env(Bool, "suppress_callback_exceptions", false),
         eager_loading = false, 
         meta_tags = Dict{Symbol, String}[], 
         index_string = default_index, 
-        assets_external_path = nothing, 
-        include_assets_files = true, 
+        assets_external_path = dash_env("assets_external_path"), 
+        include_assets_files = dash_env(Bool, "include_assets_files", true), 
         show_undo_redo = false
 
     )
-        
-       
+                    
         config = DashConfig(
             external_stylesheets,
             external_scripts,
@@ -240,22 +254,22 @@ function dash(name::String;
     return result
 end
 
-function dash(layout_maker ::Function, name;
+function dash(layout_maker ::Function, name::String = dash_env("dash_name", "");
         external_stylesheets = ExternalSrcType[],
         external_scripts  = ExternalSrcType[],
-        url_base_pathname = nothing,        
-        requests_pathname_prefix = nothing,
-        routes_pathname_prefix = nothing,
+        url_base_pathname = dash_env("url_base_pathname"),        
+        requests_pathname_prefix = dash_env("requests_pathname_prefix"),
+        routes_pathname_prefix = dash_env("routes_pathname_prefix"),
         assets_folder = "assets",
         assets_url_path = "assets",
         assets_ignore = "",        
         serve_locally = true,
-        suppress_callback_exceptions = false,
+        suppress_callback_exceptions = dash_env(Bool, "suppress_callback_exceptions", false),
         eager_loading = false, 
         meta_tags = Dict{Symbol, String}[], 
         index_string = default_index, 
-        assets_external_path = nothing, 
-        include_assets_files = true, 
+        assets_external_path = dash_env("assets_external_path"), 
+        include_assets_files = dash_env(Bool, "include_assets_files", true), 
         show_undo_redo = false
       )
     result = dash(name,
@@ -284,14 +298,6 @@ end
 
 idprop_string(idprop::IdProp) = "$(idprop[1]).$(idprop[2])"
 
-function check_idprop(app::DashApp, id::IdProp)
-    if !haskey(app.callable_components, id[1])
-        error("The layout havn't component with id `$(id[1])]`")
-    end
-    if !is_prop_available(app.callable_components[id[1]], id[2])
-        error("The component with id `$(id[1])` havn't property `$(id[2])``")
-    end
-end
 
 function output_string(id::CallbackId)
     if length(id.output) == 1
@@ -376,10 +382,6 @@ function check_callback(func::Function, app::DashApp, id::CallbackId, pass_chang
             error("output \"$(out)\" already registered")
         end
     end
-
-    foreach(x->check_idprop(app,x), id.state)
-    foreach(x->check_idprop(app,x), id.input)
-    foreach(x->check_idprop(app,x), id.output)
 
     args_count = length(id.state) + length(id.input)
     pass_changed_props && (args_count+=1)

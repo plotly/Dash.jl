@@ -105,18 +105,3 @@ end
     @test app.config.show_undo_redo == false
     
 end
-
-
-@testset "old Dash creation" begin
-    app = dash("test app"; external_stylesheets=["https://test.css"], url_base_pathname = "/") do
-        html_div(id = "test-div")
-    end
-    @test app.name == "test app"
-    @test app.config.external_stylesheets == ["https://test.css"]
-    @test app.config.url_base_pathname == "/"
-    @test app.layout.type == "Div"
-    @test app.layout.props[:id] == "test-div"
-    @test length(app.callable_components) == 1
-    @test haskey(app.callable_components, Symbol("test-div"))
-end
-

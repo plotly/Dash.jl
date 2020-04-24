@@ -1,31 +1,35 @@
 module Dash
-components = [1,2,3,4,5]
 import HTTP, JSON2
 using MacroTools
+
 include("ComponentPackages.jl")
 include("ComponentMetas.jl")
 include("Components.jl")
 include("Front.jl")
 
-import .ComponentPackages
+
 import .Front
-using .ComponentMetas
+
 using .Components
 
-export dash, Component, Front, @use, <|, @callid_str, CallbackId, callback!,
+export dash, Component, Front, <|, @callid_str, CallbackId, callback!,
 run_server, PreventUpdate, no_update, @wildprop
 
-ComponentPackages.@reg_components()
+
+
+#ComponentPackages.@reg_components()
+include("env.jl")
 include("utils.jl")
+include("resources.jl")
 include("config.jl")
+include("devtools.jl")
 include("app.jl")
 include("index_page.jl")
 include("handlers.jl")
 
 
-macro test()
 
-end
+
 
 @doc """
     module Dash
@@ -65,8 +69,6 @@ handle = make_handler(app, debug = true)
 run_server(handle, HTTP.Sockets.localhost, 8080)
 ```
 
-# Available components
-$(ComponentPackages.component_doc_list())
 """ Dashboards
 
 

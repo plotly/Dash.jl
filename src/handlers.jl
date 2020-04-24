@@ -1,4 +1,23 @@
+struct ResourcesHandler
+    resources ::Dict{String, Dict{String, String}}
+    ResourcesHandler() = new(Dict{String, Dict{String, String}})
+end
 
+function ResourcesHandler(app::DashApp, resources::ResourcesRegistry)
+end
+
+struct HandlerState
+    index_string ::String
+    dependencies_json ::String
+    resources_paths ::Dict{String, Dict{String, String}}
+    HandlerState(index_string, dependencies_json) = new(index_string, dependencies_json, Dict{String, Dict{String, String}}())
+end
+
+function HandlerState(app::DashApp, registry::ResourcesRegistry; debug = false)
+    index_string = index_page(app, debug = debug)
+    dependencies_json = dependencies_json(app)
+
+end
 
 function dependencies_json(app::DashApp)
     id_prop_named(p::IdProp) = (id = p[1], property = p[2])
@@ -74,12 +93,13 @@ function process_assets(app::DashApp, path)
 end
 
 
+
+
 function make_handler(app::DashApp; debug::Bool = false)
     index_string::String = index_page(app, debug = debug)
     
     return function (req::HTTP.Request)
-        uri = HTTP.URI(req.target)
-        ComponentPackages.@register_js_sources(uri.path, app.config.routes_pathname_prefix)
+        uri = HTTP.URI(req.target)        
         if uri.path == "$(app.config.routes_pathname_prefix)"
             return HTTP.Response(200, index_string) 
         end

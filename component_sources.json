@@ -4,25 +4,5 @@
     "git" : "https://github.com/waralex/dash.git",
     "path" : "lib/dash",
     "hash" : "bcf2178a6e1dbc7f050c55be467a2f62a612d9b5"
-},
-{
-    "name" : "dash-core-components",
-    "git" : "https://github.com/waralex/dash-core-components.git",
-    "path" : "components/dash-core-components",
-    "hash" : "4146e2073013a0807e9ea4240cc9baf8ec13ea9c"
-},
-{
-    "name" : "dash-html-components",
-    "git" : "https://github.com/waralex/dash-html-components.git",
-    "path" : "components/dash-html-components",
-    "hash" : "3e8ed3d3bdacda4def683807d2735f85b40a3b55"
-},
-{
-    "name" : "dash-bootstrap-components",
-    "git" : "https://github.com/waralex/dash-bootstrap-components.git",
-    "path" : "components/dash-bootstrap-components",
-    "hash" : "4032a7baa14b59fc68ac0768072fb466fecbc1de"
 }
 ]
-
-
