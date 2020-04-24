@@ -15,7 +15,7 @@ function metas_html(app::DashApp)
     !has_ie_compat && push!(result, "<meta http-equiv=\"X-UA-Compatible\" content=\"IE=edge\">")
     !has_charset && push!(result, "<meta charset=\"UTF-8\">")
 
-    append!(result, formattag.("meta", meta_tags, opened = true))
+    append!(result, format_tag.("meta", meta_tags, opened = true))
     return join(result, "\n        ")
 
 end
@@ -49,66 +49,13 @@ function scripts_html(app::DashApp; debug = false)
     append!(scripts, 
         ComponentPackages.components_js_sources(app.config.requests_pathname_prefix, debug = debug)
     )
-    return join(map(make_scipt_tag, scripts), "\n            ")
+    return join(map(make_script_tag, scripts), "\n            ")
 end
 
 renderer_html() = """<script id="_dash-renderer" type="application/javascript">var renderer = new DashRenderer();</script>"""
 
 favicon_html(app::DashApp) = "" 
 
-#=
-def _walk_assets_directory(self):
-        walk_dir = self.config.assets_folder
-        slash_splitter = re.compile(r"[\\/]+")
-        ignore_str = self.config.assets_ignore
-        ignore_filter = re.compile(ignore_str) if ignore_str else None
-
-        for current, _, files in os.walk(walk_dir):
-            if current == walk_dir:
-                base = ""
-            else:
-                s = current.replace(walk_dir, "").lstrip("\\").lstrip("/")
-                splitted = slash_splitter.split(s)
-                if len(splitted) > 1:
-                    base = "/".join(slash_splitter.split(s))
-                else:
-                    base = splitted[0]
-
-            if ignore_filter:
-                files_gen = (x for x in files if not ignore_filter.search(x))
-            else:
-                files_gen = files
-
-            for f in sorted(files_gen):
-                path = "/".join([base, f]) if base else f
-
-                full = os.path.join(current, f)
-
-                if f.endswith("js"):
-                    self.scripts.append_script(self._add_assets_resource(path, full))
-                elif f.endswith("css"):
-                    self.css.append_css(self._add_assets_resource(path, full))
-                elif f == "favicon.ico":
-                    self._favicon = path
-=#
-
-function find_assets_files(app::DashApp)
-    result = (css = String[], js = String[], favicon = nothing)
-    
-    if app.config.include_assets_files
-        for (base, dirs, files) in walkdir(app.config.assets_folder)
-            if !isempty(files)
-                relative = (base == app.config.assets_folder) ? "" : relpath(base, app.config.assets_folder)
-                relative_uri = join(splitpath(relative), "/") * "/"
-                
-                
-            end
-            
-            
-        end
-    end
-    return result
-end
 
 function index_page(app::DashApp; debug = false)    
     

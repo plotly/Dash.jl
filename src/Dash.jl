@@ -1,5 +1,4 @@
 module Dash
-components = [1,2,3,4,5]
 import HTTP, JSON2
 using MacroTools
 include("ComponentPackages.jl")
@@ -22,10 +21,6 @@ include("app.jl")
 include("index_page.jl")
 include("handlers.jl")
 
-
-macro test()
-
-end
 
 @doc """
     module Dash
