@@ -1,6 +1,6 @@
 using MacroTools
 
-function formattag(name ::String, attributes::Dict{String, String}, inner::String = ""; opened = false, closed = false)
+function format_tag(name ::String, attributes::Dict{String, String}, inner::String = ""; opened = false, closed = false)
     attrs_string = join(
         ["$k=\"$v\"" for (k, v) in attributes],
         " "
@@ -71,4 +71,3 @@ macro callid_str(s)
     state = isnothing(m[:state]) ? Vector{IdProp}() : parse_props(strip(m[:state]))
     return CallbackId(state, input, output) 
 end
-
