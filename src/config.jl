@@ -11,7 +11,7 @@ function pathname_configs(url_base_pathname, requests_pathname_prefix, routes_pa
 
     Note that `requests_pathname_prefix` is the prefix for the AJAX calls that
     originate from the client (the web browser) and `routes_pathname_prefix` is
-    the prefix for the API routes on the backend (this flask server).
+    the prefix for the API routes on the backend (as defined within HTTP.jl).
     `url_base_pathname` will set `requests_pathname_prefix` and
     `routes_pathname_prefix` to the same value.
     If you need these to be different values then you should set

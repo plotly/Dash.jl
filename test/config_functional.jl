@@ -146,7 +146,7 @@ end
     
     @test !isnothing(
         findfirst(
-            Dash.formattag("meta", Dict("type" => "tst", "rel" => "r"), opened = true),
+            Dash.format_tag("meta", Dict("type" => "tst", "rel" => "r"), opened = true),
             index_page)
         )
 
@@ -166,7 +166,7 @@ end
 
     @test !isnothing(
         findfirst(
-            Dash.formattag("meta", Dict("type" => "tst", "rel" => "r"), opened = true),
+            Dash.format_tag("meta", Dict("type" => "tst", "rel" => "r"), opened = true),
             index_page)
         )
 
@@ -179,7 +179,7 @@ end
         )
     @test !isnothing(
             findfirst(
-                Dash.formattag("meta", Dict("http-equiv" => "X-UA-Compatible", "content" => "IE"), opened = true),
+                Dash.format_tag("meta", Dict("http-equiv" => "X-UA-Compatible", "content" => "IE"), opened = true),
                 index_page)
             )
 

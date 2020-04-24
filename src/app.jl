@@ -78,7 +78,9 @@ end
 """
     struct DashApp <: Any
 
-Representation of Dash application
+Representation of Dash application.
+
+Not meant to be constructed directly, use `dash` function instead.
 """
 mutable struct DashApp
     name ::String
@@ -126,13 +128,28 @@ getconfig(app::DashApp) = app.config
 
 
 """
-    dash(name::String; external_stylesheets ::Vector{String} = Vector{String}(), url_base_pathname::String="/")
-    dash(layout_maker::Function, name::String; external_stylesheets ::Vector{String} = Vector{String}(), url_base_pathname::String="/")
+    dash(name::String;
+            external_stylesheets,
+            external_scripts,
+            url_base_pathname,        
+            requests_pathname_prefix,
+            routes_pathname_prefix,
+            assets_folder,
+            assets_url_path,
+            assets_ignore,        
+            serve_locally,
+            suppress_callback_exceptions,
+            eager_loading , 
+            meta_tags, 
+            index_string, 
+            assets_external_path, 
+            include_assets_files, 
+            show_undo_redo     
+        )
 
 Construct a dash app 
 
 # Arguments
-- `layout_maker::Function` - function for layout creation. Must has signature ()::Component
 - `name::String` - The name of your application
 - `assets_folder::String` - a path, relative to the current working directory,
         for extra files to be used in the browser. Default ``'assets'``.
@@ -163,7 +180,7 @@ Construct a dash app
     
 
 - `url_base_pathname::String`: A local URL prefix to use app-wide.
-        Default ``'/'``. Both `requests_pathname_prefix` and
+        Default ``nothing``. Both `requests_pathname_prefix` and
         `routes_pathname_prefix` default to `url_base_pathname`.
         
 
