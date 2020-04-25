@@ -73,6 +73,7 @@ struct DashConfig
     assets_external_path ::Union{String, Nothing}
     include_assets_files ::Bool
     show_undo_redo ::Bool
+    compress ::Bool
 end
 
 """
@@ -87,7 +88,7 @@ struct DashApp
     config ::DashConfig
     layout ::Layout
     callbacks ::Dict{Symbol, Callback}
-    callable_components ::Dict{Symbol, Component}    
+    callable_components ::Dict{Symbol, Component}
     
     DashApp(name::String, config::DashConfig) = new(name, config, Layout(nothing), Dict{Symbol, Callback}(), Dict{Symbol, Component}())
     
@@ -129,7 +130,8 @@ end
             index_string, 
             assets_external_path, 
             include_assets_files, 
-            show_undo_redo     
+            show_undo_redo,
+            compress
         )
 
 Construct a dash app 
@@ -209,7 +211,10 @@ Construct a dash app
         
 - `show_undo_redo::Bool`: Default ``false``, set to ``true`` to enable undo
         and redo buttons for stepping through the history of the app state.
-    
+
+- `compress::Bool`: Default ``true``, controls whether gzip is used to compress 
+        files and data served by HTTP.jl when supported by the client. Set to
+        ``false`` to disable compression completely.
 """
 function dash(name::String;
         external_stylesheets = ExternalSrcType[],
@@ -227,7 +232,8 @@ function dash(name::String;
         index_string = default_index, 
         assets_external_path = nothing, 
         include_assets_files = true, 
-        show_undo_redo = false
+        show_undo_redo = false,
+        compress = true
 
     )
         
@@ -250,7 +256,8 @@ function dash(name::String;
             index_string, 
             assets_external_path, 
             include_assets_files, 
-            show_undo_redo
+            show_undo_redo,
+            compress
         )
         
         result = DashApp(name, config)
@@ -273,7 +280,8 @@ function dash(layout_maker ::Function, name;
         index_string = default_index, 
         assets_external_path = nothing, 
         include_assets_files = true, 
-        show_undo_redo = false
+        show_undo_redo = false,
+        compress = true
       )
     result = dash(name,
         external_stylesheets=external_stylesheets,
@@ -291,7 +299,8 @@ function dash(layout_maker ::Function, name;
         index_string = index_string,
         assets_external_path = assets_external_path,
         include_assets_files = include_assets_files,
-        show_undo_redo = show_undo_redo
+        show_undo_redo = show_undo_redo,
+        compress = compress
         )
     layout!(result, layout_maker())
     return result
