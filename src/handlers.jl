@@ -62,7 +62,6 @@ function process_callback(app::DashApp, body::String)
 
 end
 
-
 function make_response(status, headers, body, compress::Bool)
     message_headers = headers
 
@@ -78,18 +77,18 @@ function make_response(status, headers, body, compress::Bool)
     return response
 end
 
-function process_assets(app::DashApp, path)
+function process_assets(app::DashApp, path, compress::Bool)
     assets_path = "$(app.config.routes_pathname_prefix)" * strip(app.config.assets_url_path, '/') * "/"
     
     filename = joinpath(app.config.assets_folder, replace(path, assets_path=>""))    
     file_contents = read(filename)
-    mimetype = HTTP.sniff(file.contents)
+    mimetype = HTTP.sniff(file_contents)
     headers = ["Content-Type" => mimetype]
 
     use_gzip = compress && occursin(r"text|javascript", mimetype)
 
     try
-        return make_response(status = 200, headers = headers, body = file_contents, compress = use_gzip)
+        return make_response(200, headers, file_contents, use_gzip)
     catch
         return HTTP.Response(404)
     end
