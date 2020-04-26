@@ -11,6 +11,8 @@ styles = (
     ),
 )
 
+
+
 app = dash("Dash Layout", external_stylesheets=external_stylesheets) 
 app.layout = html_div() do
         dcc_graph(

@@ -1,4 +1,28 @@
 using MacroTools
+
+function format_tag(name ::String, attributes::Dict{String, String}, inner::String = ""; opened = false, closed = false)
+    attrs_string = join(
+        ["$k=\"$v\"" for (k, v) in attributes],
+        " "
+    )
+    tag = "<$name $attrs_string"
+    if closed
+        tag *= "/>"
+    elseif opened
+        tag *= ">"
+    else 
+        tag *= ">$inner</$name>"
+    end
+end
+
+function interpolate_string(s::String; kwargs...)
+    result = s
+    for (k, v) in kwargs
+        result = replace(result, "{%$(k)%}" =>  v)
+    end
+    return result
+end
+
 macro wildprop(e)
     if e.head != :(=) || length(e.args) != 2 || !(e.args[1] isa AbstractString) 
         error("expected AbstractString = value")
@@ -23,6 +47,7 @@ function parse_props(s)
         return make_prop(part)
     end    
 end
+
 
 """
     @callid_str"

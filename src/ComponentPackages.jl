@@ -43,6 +43,17 @@ module ComponentPackages
         )
     end
 
+    function components_js_sources(prefix = ""; debug=false)
+        type = debug ? :dev : :prod
+        result = []
+
+        for p in values(_components_packages)
+            for script in p.scripts[type]
+                push!(result, "$(prefix)_dash-component-suites/$(p.package_name)/$(script)")
+            end
+        end    
+        return result            
+    end
 
 
     

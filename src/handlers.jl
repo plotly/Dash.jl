@@ -1,49 +1,4 @@
-function index_page(app::DashApp; debug = false)
-    metas = ["""<meta http-equiv="X-UA-Compatible" content="IE=edge">""", """<meta charset="UTF-8">"""]
-    title = app.name
-    css = join(map(app.external_stylesheets) do s 
-        """<link rel="stylesheet" href="$(s)">"""    
-    end, "\n"
-    )
-    external_scripts = join(map(app.external_scripts) do s 
-        """<script src="$(s)" crossorigin="anonymous"></script>"""
-    end, "\n")
-        
-    app_entry = """
-        <div id="react-entry-point">
-            <div class="_dash-loading">
-                Loading...
-            </div>
-        </div>
-    """
-    config = (
-        url_base_pathname = "$(app.url_base_pathname)",
-        requests_pathname_prefix = "$(app.url_base_pathname)",
-        ui = true,
-        props_check = debug,
-        show_undo_redo = false
-    )
-    
-    scripts = ComponentPackages.components_js_include(app.url_base_pathname, debug = debug)
 
-    """<!DOCTYPE html>
-    <html>
-        <head>
-            $(join(metas, ""))
-            <title>$(title)</title>            
-            $(css)
-        </head>
-        <body>
-            $(app_entry)
-            <footer>
-            <script id="_dash-config" type="application/json">$(JSON2.write(config))</script>
-            $external_scripts
-            $scripts
-            <script id="_dash-renderer" type="application/javascript">var renderer = new DashRenderer();</script>
-            </footer>
-        </body>
-    </html>"""
-end
 
 function dependencies_json(app::DashApp)
     id_prop_named(p::IdProp) = (id = p[1], property = p[2])
@@ -108,8 +63,9 @@ function process_callback(app::DashApp, body::String)
 end
 
 function process_assets(app::DashApp, path)
-    assets_path = "$(app.url_base_pathname)assets/"
-    filename = joinpath(app.assets_folder, replace(path, assets_path=>""))    
+    assets_path = "$(app.config.routes_pathname_prefix)" * strip(app.config.assets_url_path, '/') * "/"
+    
+    filename = joinpath(app.config.assets_folder, replace(path, assets_path=>""))    
     try
         return HTTP.Response(200, [], body = read(filename))
     catch
@@ -119,22 +75,24 @@ end
 
 
 function make_handler(app::DashApp; debug::Bool = false)
-    function (req::HTTP.Request)
+    index_string::String = index_page(app, debug = debug)
+    
+    return function (req::HTTP.Request)
         uri = HTTP.URI(req.target)
-        ComponentPackages.@register_js_sources(uri.path, app.url_base_pathname)
-        if uri.path == "$(app.url_base_pathname)"
-            return HTTP.Response(200, index_page(app, debug = debug)) 
+        ComponentPackages.@register_js_sources(uri.path, app.config.routes_pathname_prefix)
+        if uri.path == "$(app.config.routes_pathname_prefix)"
+            return HTTP.Response(200, index_string) 
         end
-        if uri.path == "$(app.url_base_pathname)_dash-layout"
+        if uri.path == "$(app.config.routes_pathname_prefix)_dash-layout"
             return HTTP.Response(200, ["Content-Type" => "application/json"], body = JSON2.write(app.layout)) 
         end
-        if uri.path == "$(app.url_base_pathname)_dash-dependencies"
+        if uri.path == "$(app.config.routes_pathname_prefix)_dash-dependencies"
             return HTTP.Response(200, ["Content-Type" => "application/json"], body = dependencies_json(app)) 
         end
-        if startswith(uri.path, "$(app.url_base_pathname)assets/")
+        if startswith(uri.path, "$(app.config.routes_pathname_prefix)assets/")
             return process_assets(app, uri.path)
         end
-        if uri.path == "$(app.url_base_pathname)_dash-update-component" && req.method == "POST"            
+        if uri.path == "$(app.config.routes_pathname_prefix)_dash-update-component" && req.method == "POST"            
             try
                 return HTTP.Response(200, ["Content-Type" => "application/json"],
                     body = JSON2.write(
@@ -151,4 +109,5 @@ function make_handler(app::DashApp; debug::Bool = false)
         end
         return HTTP.Response(404)
     end
+    
 end
