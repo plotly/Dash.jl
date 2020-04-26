@@ -99,10 +99,9 @@ end
     @test app_resources.js[end].namespace == "dash_renderer"
     @test app_resources.js[end].relative_path == "dash-renderer/dash_renderer.min.js"
 
-    @test haskey(app_resources.routing, "dash_renderer")
-    @test app_resources.routing["dash_renderer"]["path1.prod.js"] == joinpath("path", "path1.prod.js")
-    @test app_resources.routing["dash_renderer"]["path2.prod.js"] == joinpath("path", "path2.prod.js")
-    @test app_resources.routing["dash_renderer"]["dash-renderer/dash_renderer.min.js"] == joinpath("path", "dash-renderer/dash_renderer.min.js")
+    @test app_resources.routing["dash_renderer/path1.prod.js"] == joinpath("path", "path1.prod.js")
+    @test app_resources.routing["dash_renderer/path2.prod.js"] == joinpath("path", "path2.prod.js")
+    @test app_resources.routing["dash_renderer/dash-renderer/dash_renderer.min.js"] == joinpath("path", "dash-renderer/dash_renderer.min.js")
 
     test_app = dash("test")
     set_debug!(test_app, debug = false, serve_dev_bundles = true)
@@ -123,10 +122,9 @@ end
     @test app_resources.js[end].namespace == "dash_renderer"
     @test app_resources.js[end].relative_path == "dash-renderer/dash_renderer.dev.js"
 
-    @test haskey(app_resources.routing, "dash_renderer")
-    @test app_resources.routing["dash_renderer"]["path1.prod.js"] == joinpath("path", "path1.prod.js")
-    @test app_resources.routing["dash_renderer"]["path2.prod.js"] == joinpath("path", "path2.prod.js")
-    @test app_resources.routing["dash_renderer"]["dash-renderer/dash_renderer.dev.js"] == joinpath("path", "dash-renderer/dash_renderer.dev.js")
+    @test app_resources.routing["dash_renderer/path1.prod.js"] == joinpath("path", "path1.prod.js")
+    @test app_resources.routing["dash_renderer/path2.prod.js"] == joinpath("path", "path2.prod.js")
+    @test app_resources.routing["dash_renderer/dash-renderer/dash_renderer.dev.js"] == joinpath("path", "dash-renderer/dash_renderer.dev.js")
     
     test_app = dash("test")
     set_debug!(test_app, debug = false, props_check = true, serve_dev_bundles = true)
@@ -147,10 +145,9 @@ end
     @test app_resources.js[end].namespace == "dash_renderer"
     @test app_resources.js[end].relative_path == "dash-renderer/dash_renderer.dev.js"
 
-    @test haskey(app_resources.routing, "dash_renderer")
-    @test app_resources.routing["dash_renderer"]["path1.dev.js"] == joinpath("path", "path1.dev.js")
-    @test app_resources.routing["dash_renderer"]["path2.dev.js"] == joinpath("path", "path2.dev.js")
-    @test app_resources.routing["dash_renderer"]["dash-renderer/dash_renderer.dev.js"] == joinpath("path", "dash-renderer/dash_renderer.dev.js")
+    @test app_resources.routing["dash_renderer/path1.dev.js"] == joinpath("path", "path1.dev.js")
+    @test app_resources.routing["dash_renderer/path2.dev.js"] == joinpath("path", "path2.dev.js")
+    @test app_resources.routing["dash_renderer/dash-renderer/dash_renderer.dev.js"] == joinpath("path", "dash-renderer/dash_renderer.dev.js")
 
     test_app = dash("test", serve_locally = false)
 
@@ -167,7 +164,7 @@ end
     @test app_resources.js[end] isa AppExternalResource 
     @test app_resources.js[end].url == "https://dash_renderer.min.js"
 
-    @test !haskey(app_resources.routing, "dash_renderer")
+    @test isempty(app_resources.routing)
 end
 
 @testset "application resources dynamic" begin
@@ -224,11 +221,10 @@ end
     @test length(app_resources.js) == 2
     @test app_resources.js[2].relative_path == "dash-renderer/dash_renderer.min.js"
     
-    @test haskey(app_resources.routing, "dash_renderer")
-    @test app_resources.routing["dash_renderer"]["path1.prod.js"] == joinpath("path", "path1.prod.js")
-    @test app_resources.routing["dash_renderer"]["dash-renderer/dash_renderer.min.js"] == joinpath("path", "dash-renderer/dash_renderer.min.js")
-    @test app_resources.routing["dash_renderer"]["dash-renderer/dash_renderer.dyn.js"] == joinpath("path", "dash-renderer/dash_renderer.dyn.js")
-    @test app_resources.routing["dash_renderer"]["dash-renderer/dash_renderer.eag.js"] == joinpath("path", "dash-renderer/dash_renderer.eag.js")
+    @test app_resources.routing["dash_renderer/path1.prod.js"] == joinpath("path", "path1.prod.js")
+    @test app_resources.routing["dash_renderer/dash-renderer/dash_renderer.min.js"] == joinpath("path", "dash-renderer/dash_renderer.min.js")
+    @test app_resources.routing["dash_renderer/dash-renderer/dash_renderer.dyn.js"] == joinpath("path", "dash-renderer/dash_renderer.dyn.js")
+    @test app_resources.routing["dash_renderer/dash-renderer/dash_renderer.eag.js"] == joinpath("path", "dash-renderer/dash_renderer.eag.js")
     
     test_app = dash("test", eager_loading = true)
 
@@ -306,10 +302,9 @@ end
     @test app_resources.js[2].relative_path == "comp.js"
     @test app_resources.js[end].relative_path == "dash-renderer/dash_renderer.min.js"
 
-    @test haskey(app_resources.routing, "comps")
-    @test app_resources.routing["comps"]["comp.js"] == joinpath("comps_path", "comp.js")
-    @test app_resources.routing["comps"]["comp.dyn.js"] == joinpath("comps_path", "comp.dyn.js")
-    @test app_resources.routing["comps"]["comp.css"] == joinpath("comps_path", "comp.css")
+    @test app_resources.routing["comps/comp.js"] == joinpath("comps_path", "comp.js")
+    @test app_resources.routing["comps/comp.dyn.js"] == joinpath("comps_path", "comp.dyn.js")
+    @test app_resources.routing["comps/comp.css"] == joinpath("comps_path", "comp.css")
     
 end
 

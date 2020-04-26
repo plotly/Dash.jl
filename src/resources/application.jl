@@ -16,7 +16,7 @@ struct AppAssetResource <: AppResource
 end
 
 struct ApplicationResources
-    routing ::Dict{String,Dict{String, String}}
+    routing ::Dict{String, String}
     css ::Vector{AppResource}
     js ::Vector{AppResource}
     favicon ::Union{Nothing, String}
@@ -28,7 +28,7 @@ function ApplicationResources(app::DashApp, registry::ResourcesRegistry)
     css = AppResource[]
     js = AppResource[]
     favicon::Union{Nothing, String} = nothing
-    routing = Dict{String,Dict{String, String}}()
+    routing = Dict{String, String}()
     
     serve_locally = get_setting(app, :serve_locally)
     assets_external_path = get_setting(app, :assets_external_path)
@@ -79,14 +79,14 @@ function ApplicationResources(app::DashApp, registry::ResourcesRegistry)
 end
 
 
-function fill_routing(dest::Dict{String, Dict{String, String}}, pkg::ResourcePkg; dev, serve_locally)
+function fill_routing(dest::Dict{String, String}, pkg::ResourcePkg; dev, serve_locally)
     !serve_locally && return
 
     full_path = (p)->joinpath(pkg.path, lstrip(p, ['/','\\']))
     for resource in pkg.resources
         paths = dev && has_dev_path(resource) ? get_dev_path(resource) : get_relative_path(resource)
         for path in paths
-            get!(dest, pkg.namespace, Dict{String, String}())[path] = full_path(path)
+            dest[pkg.namespace * "/" * path] = full_path(path)
         end
     end
 end
