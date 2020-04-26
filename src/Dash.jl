@@ -13,6 +13,7 @@ import .Front
 using .Components
 
 export dash, Component, Front, <|, @callid_str, CallbackId, callback!,
+set_debug!,
 run_server, PreventUpdate, no_update, @wildprop
 
 
@@ -20,10 +21,11 @@ run_server, PreventUpdate, no_update, @wildprop
 #ComponentPackages.@reg_components()
 include("env.jl")
 include("utils.jl")
-include("resources.jl")
-include("config.jl")
 include("devtools.jl")
 include("app.jl")
+include("resources/registry.jl")
+include("resources/application.jl")
+include("config.jl")
 include("index_page.jl")
 include("handlers.jl")
 

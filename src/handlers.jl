@@ -1,9 +1,14 @@
-struct ResourcesHandler
+struct ResourcesRouter
     resources ::Dict{String, Dict{String, String}}
-    ResourcesHandler() = new(Dict{String, Dict{String, String}})
+    ResourcesRouter() = new(Dict{String, Dict{String, String}})
 end
 
-function ResourcesHandler(app::DashApp, resources::ResourcesRegistry)
+function ResourcesRouter(app::DashApp, resources::ResourcesRegistry)
+    result = ResourcesRouter()
+    !get_setting(app, :serve_locally) && return result      
+
+    eager_loading = get_setting(app, :eager_loading)
+
 end
 
 struct HandlerState

@@ -93,13 +93,13 @@ mutable struct DashApp
     
 end
 
-function setlayout!(app::DashApp, component::Component)
+function set_layout!(app::DashApp, component::Component)
     app.layout = component
 end
 
-getlayout(app::DashApp) = app.component
+get_layout(app::DashApp) = app.component
 
-function setdebug!(app::DashApp; debug = nothing, ui = nothing,
+function set_debug!(app::DashApp; debug = nothing, ui = nothing,
             props_check = nothing,
             serve_dev_bundles = nothing,
             hot_reload = nothing,
@@ -109,7 +109,7 @@ function setdebug!(app::DashApp; debug = nothing, ui = nothing,
             silence_routes_logging = nothing,
             prune_errors = nothing)
     @env_default!(debug, Bool, true)
-    app.dev_tools = DevTools(
+    app.devtools = DevTools(
         debug;
         props_check = props_check,
         serve_dev_bundles = serve_dev_bundles,
@@ -122,9 +122,9 @@ function setdebug!(app::DashApp; debug = nothing, ui = nothing,
     )
 end
 
-getdevtools(app::DashApp) = app.devtools
+get_devsetting(app::DashApp, name::Symbol) = getproperty(app.devtools, name)
 
-getconfig(app::DashApp) = app.config
+get_setting(app::DashApp, name::Symbol) = getproperty(app.config, name)
 
 
 """
