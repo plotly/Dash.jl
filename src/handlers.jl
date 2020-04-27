@@ -96,6 +96,7 @@ function make_handler(app::DashApp; debug::Bool = false)
     index_string::String = index_page(app, debug = debug)
     
     return function (req::HTTP.Request)
+        body::Union{Nothing, String} = nothing
         uri = HTTP.URI(req.target)
 
         # verify that the client accepts compression
@@ -135,7 +136,7 @@ function make_handler(app::DashApp; debug::Bool = false)
                 end
             end 
         end
-        if @isdefined body
+        if !isnothing(body)
             return make_response(200, headers, body, with_gzip)
         end
         return HTTP.Response(404)
