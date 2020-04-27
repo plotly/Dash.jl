@@ -15,9 +15,11 @@ export dash, Component, Front, @use, <|, @callid_str, CallbackId, callback!,
 run_server, PreventUpdate, no_update, @wildprop
 
 ComponentPackages.@reg_components()
-include("app.jl")
-include("handlers.jl")
 include("utils.jl")
+include("config.jl")
+include("app.jl")
+include("index_page.jl")
+include("handlers.jl")
 
 
 @doc """
@@ -90,5 +92,6 @@ function run_server(app::DashApp, host = HTTP.Sockets.localhost, port = 8080; de
     handler = make_handler(app, debug = debug);
     HTTP.serve(handler, host, port)
 end
+
 
 end # module
