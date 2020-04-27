@@ -1,5 +1,5 @@
 module Dash
-import HTTP, JSON2
+import HTTP, JSON2, CodecZlib
 using MacroTools
 include("ComponentPackages.jl")
 include("ComponentMetas.jl")
