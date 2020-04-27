@@ -79,15 +79,13 @@ end
 
 function process_assets(app::DashApp, path, compress::Bool)
     assets_path = "$(app.config.routes_pathname_prefix)" * strip(app.config.assets_url_path, '/') * "/"
-    
-    filename = joinpath(app.config.assets_folder, replace(path, assets_path=>""))    
-    file_contents = read(filename)
-    mimetype = HTTP.sniff(file_contents)
-    headers = ["Content-Type" => mimetype]
-
-    use_gzip = compress && occursin(r"text|javascript", mimetype)
+    filename = joinpath(app.config.assets_folder, replace(path, assets_path=>""))
 
     try
+        file_contents = read(filename)
+        mimetype = HTTP.sniff(file_contents)
+        use_gzip = compress && occursin(r"text|javascript", mimetype)
+        headers = ["Content-Type" => mimetype]
         return make_response(200, headers, file_contents, use_gzip)
     catch
         return HTTP.Response(404)
