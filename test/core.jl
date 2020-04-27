@@ -1,6 +1,7 @@
 import HTTP, JSON2
 using Test
 using Dash
+using Inflate
 @testset "Components" begin
     
     a_comp = html_a("test", id = "test-a")
@@ -354,4 +355,72 @@ end
     
     @test result[:response][:props][:children] == 10
 
+end
+
+@testset "HTTP Compression" begin
+    # test compression of assets
+    app = dash("Test app", assets_folder = "assets") do
+        html_div() do
+            html_div("test")
+        end
+    end
+
+    # verify that JSON is not compressed when compress = true
+    # and Accept-Encoding = "gzip" is not present within request headers
+    handler = Dash.make_handler(app)
+    request = HTTP.Request("GET", "/_dash-dependencies")
+    response = handler(request)
+    @test app.config.compress == true
+    @test String(response.body) == "[]"
+    @test !in("Content-Encoding"=>"gzip", response.headers)
+
+    # verify that JSON is compressed when compress = true
+    # and Accept-Encoding = "gzip" is present within request headers
+    request = HTTP.Request("GET", "/_dash-dependencies", ["Accept-Encoding"=>"gzip"])
+    response = handler(request)
+    @test String(inflate_gzip(response.body)) == "[]"
+    @test String(response.body) != "[]"
+    @test in("Content-Encoding"=>"gzip", response.headers)
+
+    # ensure no compression of assets when Accept-Encoding not passed
+    request = HTTP.Request("GET", "/assets/test.css")
+    response = handler(request)
+    @test String(response.body) == "/* Test */\n"
+    @test !in("Content-Encoding"=>"gzip", response.headers)
+
+    # ensure compression when Accept-Encoding = "gzip"
+    request = HTTP.Request("GET", "/assets/test.css", ["Accept-Encoding"=>"gzip"])
+    response = handler(request)
+    @test String(inflate_gzip(response.body)) == "/* Test */\n"
+    @test String(response.body) != "/* Test */\n"
+    @test in("Content-Encoding"=>"gzip", response.headers)
+
+    # test cases for compress = false
+    app = dash("Test app", assets_folder = "assets", compress=false) do
+        html_div() do
+            html_div("test")
+        end
+    end
+
+    # verify that JSON is not compressed when compress = false
+    # and Accept-Encoding = "gzip" is not present within request headers
+    handler = Dash.make_handler(app)
+    request = HTTP.Request("GET", "/_dash-dependencies")
+    response = handler(request)
+    @test app.config.compress == false
+    @test String(response.body) == "[]"
+    @test !in("Content-Encoding"=>"gzip", response.headers)
+
+    # verify that JSON is NOT compressed when compress = false
+    # and Accept-Encoding = "gzip" is present within request headers
+    request = HTTP.Request("GET", "/_dash-dependencies", ["Accept-Encoding"=>"gzip"])
+    response = handler(request)
+    @test String(response.body) == "[]"
+    @test !in("Content-Encoding"=>"gzip", response.headers)
+
+    # ensure NO compression when Accept-Encoding = "gzip" and compress = false
+    request = HTTP.Request("GET", "/assets/test.css", ["Accept-Encoding"=>"gzip"])
+    response = handler(request)
+    @test String(response.body) == "/* Test */\n"
+    @test !in("Content-Encoding"=>"gzip", response.headers)
 end

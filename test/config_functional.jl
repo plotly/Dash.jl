@@ -67,37 +67,37 @@ end
 
 @testset "assets paths" begin
     app = dash("test app")
-    res = Dash.process_assets(app, "/assets/test.png")
+    res = Dash.process_assets(app, "/assets/test.png", false)
     @test res.status == 200
-    res = Dash.process_assets(app, "/assets/test3.png")
+    res = Dash.process_assets(app, "/assets/test3.png", false)
     @test res.status == 404
-    res = Dash.process_assets(app, "/images/test.png")
+    res = Dash.process_assets(app, "/images/test.png", false)
     @test res.status == 404
 
     app = dash("test app", url_base_pathname = "/test/")
-    res = Dash.process_assets(app, "/assets/test.png")
+    res = Dash.process_assets(app, "/assets/test.png", false)
     @test res.status == 404
-    res = Dash.process_assets(app, "/test/assets/test.png")
+    res = Dash.process_assets(app, "/test/assets/test.png", false)
     @test res.status == 200
-    res = Dash.process_assets(app, "/images/test.png")
+    res = Dash.process_assets(app, "/images/test.png", false)
     @test res.status == 404
 
     app = dash("test app", assets_url_path = "ass")
-    res = Dash.process_assets(app, "/ass/test.png")
+    res = Dash.process_assets(app, "/ass/test.png", false)
     @test res.status == 200
-    res = Dash.process_assets(app, "/ass/test3.png")
+    res = Dash.process_assets(app, "/ass/test3.png", false)
     @test res.status == 404
-    res = Dash.process_assets(app, "/assets/test3.png")
+    res = Dash.process_assets(app, "/assets/test3.png", false)
     @test res.status == 404
-    res = Dash.process_assets(app, "/images/test.png")
+    res = Dash.process_assets(app, "/images/test.png", false)
     @test res.status == 404
 
     app = dash("test app", assets_folder = "images")
-    res = Dash.process_assets(app, "/assets/test.png")
+    res = Dash.process_assets(app, "/assets/test.png", false)
     @test res.status == 404
-    res = Dash.process_assets(app, "/assets/test_images.png")
+    res = Dash.process_assets(app, "/assets/test_images.png", false)
     @test res.status == 200
-    res = Dash.process_assets(app, "/images/test.png")
+    res = Dash.process_assets(app, "/images/test.png", false)
     @test res.status == 404
 end
 

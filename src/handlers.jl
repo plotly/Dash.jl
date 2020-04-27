@@ -86,36 +86,64 @@ function process_callback(app::DashApp, body::String)
 
 end
 
-function process_assets(app::DashApp, path)
+function make_response(status, headers, body, compress::Bool)
+    message_headers = headers
+
+    if compress
+        push!(message_headers, "Content-Encoding" => "gzip")
+        body = transcode(CodecZlib.GzipCompressor, body)
+    end
+
+    response = HTTP.Response(status, body)
+    for header in message_headers
+        HTTP.Messages.setheader(response, header)
+    end
+    return response
+end
+
+function process_assets(app::DashApp, path, compress::Bool)
     assets_path = "$(app.config.routes_pathname_prefix)" * strip(app.config.assets_url_path, '/') * "/"
-    
-    filename = joinpath(app.config.assets_folder, replace(path, assets_path=>""))    
+    filename = joinpath(app.config.assets_folder, replace(path, assets_path=>""))
+
     try
-        return HTTP.Response(200, [], body = read(filename))
+        file_contents = read(filename)
+        mimetype = HTTP.sniff(file_contents)
+        use_gzip = compress && occursin(r"text|javascript", mimetype)
+        headers = ["Content-Type" => mimetype]
+        return make_response(200, headers, file_contents, use_gzip)
     catch
         return HTTP.Response(404)
     end
 end
 
-
-
-
 function make_handler(app::DashApp; debug::Bool = false)
     index_string::String = index_page(app, debug = debug)
     
     return function (req::HTTP.Request)
-        uri = HTTP.URI(req.target)        
+        body::Union{Nothing, String} = nothing
+        uri = HTTP.URI(req.target)
+
+        # verify that the client accepts compression
+        accepts_gz = occursin("gzip", HTTP.header(req, "Accept-Encoding"))
+        # verify that the server was not launched with compress=false
+        with_gzip = accepts_gz && app.config.compress
+
+        headers = []
+        
+        ComponentPackages.@register_js_sources(uri.path, app.config.routes_pathname_prefix)
         if uri.path == "$(app.config.routes_pathname_prefix)"
-            return HTTP.Response(200, index_string) 
+            body = index_page(app, debug = debug)
         end
         if uri.path == "$(app.config.routes_pathname_prefix)_dash-layout"
-            return HTTP.Response(200, ["Content-Type" => "application/json"], body = JSON2.write(app.layout)) 
+            body = JSON2.write(app.layout)
+            push!(headers, "Content-Type" => "application/json")
         end
         if uri.path == "$(app.config.routes_pathname_prefix)_dash-dependencies"
-            return HTTP.Response(200, ["Content-Type" => "application/json"], body = dependencies_json(app)) 
+            body = dependencies_json(app)
+            push!(headers, "Content-Type" => "application/json")
         end
         if startswith(uri.path, "$(app.config.routes_pathname_prefix)assets/")
-            return process_assets(app, uri.path)
+            return process_assets(app, uri.path, with_gzip)
         end
         if uri.path == "$(app.config.routes_pathname_prefix)_dash-update-component" && req.method == "POST"            
             try
@@ -132,7 +160,9 @@ function make_handler(app::DashApp; debug::Bool = false)
                 end
             end 
         end
+        if !isnothing(body)
+            return make_response(200, headers, body, with_gzip)
+        end
         return HTTP.Response(404)
-    end
-    
+    end 
 end
