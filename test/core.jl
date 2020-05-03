@@ -2,6 +2,8 @@ import HTTP, JSON2
 using Test
 using Dash
 using Inflate
+include("TestComponents.jl")
+using .TestComponents
 @testset "Components" begin
     
     a_comp = html_a("test", id = "test-a")
@@ -128,30 +130,6 @@ end
         return "v_$(value)"
     end
 
-    @test_throws ErrorException callback!(app, callid"my-id-wrong.value => my-div2.style") do value
-        return "v_$(value)"
-    end
-
-    @test_throws ErrorException callback!(app, callid"my-id.wrong_prop => my-div2.style") do value
-        return "v_$(value)"
-    end
-
-    @test_throws ErrorException callback!(app, callid"my-id.value => my-div-wrong.style") do value
-        return "v_$(value)"
-    end
-
-    @test_throws ErrorException callback!(app, callid"my-id.value => my-div.wrong-prop") do value
-        return "v_$(value)"
-    end
-
-    @test_throws ErrorException callback!(app, callid"{my-id-wrong.type} my-id.value => my-div.wrong-prop") do value
-        return "v_$(value)"
-    end
-
-    @test_throws ErrorException callback!(app, callid"{my-id.wrong_prop} my-id.value => my-div.wrong-prop") do value
-        return "v_$(value)"
-    end
-
     @test_throws ErrorException callback!(app, callid"{my-id.value} my-id.value => my-id.value") do value
         return "v_$(value)"
     end
@@ -209,34 +187,18 @@ end
     handler = Dash.make_handler(app)
 
     request = HTTP.Request("GET", "/")
-    response = handler(request)
+    response = HTTP.handle(handler, request)
     @test response.status == 200
     body_str = String(response.body)
     
-    @test !isnothing(findfirst("test.css", body_str))
-    @test !isnothing(findfirst("dash_html_components.min.js", body_str))
-    @test !isnothing(findfirst("dash_core_components.min.js", body_str))
-
-    request = HTTP.Request("GET", "/_dash-component-suites/dash_html_components/dash_html_components.min.js")
-    response = handler(request)
-    @test response.status == 200
-
-    request = HTTP.Request("GET", "/_dash-component-suites/dash_core_components/dash_core_components.min.js")
-    response = handler(request)
-    @test response.status == 200
-
-    request = HTTP.Request("GET", "/_dash-component-suites/dash_core_components/dash_wrong_components.min.js")
-    response = handler(request)
-    @test response.status == 404
-
     request = HTTP.Request("GET", "/_dash-layout")
-    response = handler(request)
+    response = HTTP.handle(handler, request)
     @test response.status == 200
     body_str = String(response.body)
     @test body_str == JSON2.write(app.layout)
 
     request = HTTP.Request("GET", "/_dash-dependencies")
-    response = handler(request)
+    response = HTTP.handle(handler, request)
     @test response.status == 200
     body_str = String(response.body)
     resp_json = JSON2.read(body_str)
@@ -254,7 +216,7 @@ end
 
     test_json = """{"output":"my-div.children","changedPropIds":["my-id.value"],"inputs":[{"id":"my-id","property":"value","value":"initial value3333"}]}"""
     request = HTTP.Request("POST", "/_dash-update-component", [], Vector{UInt8}(test_json))
-    response = handler(request)
+    response = HTTP.handle(handler, request)
     @test response.status == 200
     body_str = String(response.body)
     
@@ -270,12 +232,12 @@ end
     @test app.config.assets_folder == joinpath(pwd(),"assets")
     handler = Dash.make_handler(app)
     request = HTTP.Request("GET", "/assets/test.png")
-    response = handler(request)
+    response = HTTP.handle(handler, request)
     @test response.status == 200
     body_str = String(response.body)
     
     request = HTTP.Request("GET", "/assets/wrong.png")
-    response = handler(request)
+    response = HTTP.handle(handler, request)
     @test response.status == 404
     body_str = String(response.body)
     
@@ -297,7 +259,7 @@ end
     test_json = """{"output":"my-div.children","changedPropIds":["my-id.children"],"inputs":[{"id":"my-id","property":"children","value":10}]}"""
         
     request = HTTP.Request("POST", "/_dash-update-component", [], Vector{UInt8}(test_json))
-    response = handler(request)
+    response = HTTP.handle(handler, request)
     @test response.status == 204
     @test length(response.body) == 0
 
@@ -314,7 +276,7 @@ end
 
     test_json = """{"output":"..my-div.children...my-div2.children..","changedPropIds":["my-id.children"],"inputs":[{"id":"my-id","property":"children","value":10}]}"""
 
-    result = Dash.process_callback(app, test_json)
+    result = Dash._process_callback(app, test_json)
     @test length(result[:response]) == 1
     @test haskey(result[:response], Symbol("my-div2"))
     @test !haskey(result[:response], Symbol("my-div"))
@@ -349,7 +311,7 @@ end
 
     test_json = """{"output":"my-div.children","changedPropIds":["my-id.children"],"inputs":[{"id":"my-id","property":"children","value":10}]}"""
         
-    result = Dash.process_callback(app, test_json)
+    result = Dash._process_callback(app, test_json)
     @show result
     @test length(result[:response]) == 1
     
@@ -359,40 +321,21 @@ end
 
 @testset "HTTP Compression" begin
     # test compression of assets
-    app = dash("Test app", assets_folder = "assets") do
-        html_div() do
-            html_div("test")
-        end
-    end
-
-    # verify that JSON is not compressed when compress = true
-    # and Accept-Encoding = "gzip" is not present within request headers
+    app = dash("Test app", assets_folder = "assets_compressed", compress = true)
     handler = Dash.make_handler(app)
-    request = HTTP.Request("GET", "/_dash-dependencies")
-    response = handler(request)
-    @test app.config.compress == true
-    @test String(response.body) == "[]"
-    @test !in("Content-Encoding"=>"gzip", response.headers)
-
-    # verify that JSON is compressed when compress = true
-    # and Accept-Encoding = "gzip" is present within request headers
-    request = HTTP.Request("GET", "/_dash-dependencies", ["Accept-Encoding"=>"gzip"])
-    response = handler(request)
-    @test String(inflate_gzip(response.body)) == "[]"
-    @test String(response.body) != "[]"
-    @test in("Content-Encoding"=>"gzip", response.headers)
 
     # ensure no compression of assets when Accept-Encoding not passed
-    request = HTTP.Request("GET", "/assets/test.css")
-    response = handler(request)
-    @test String(response.body) == "/* Test */\n"
+    request = HTTP.Request("GET", "/assets/bootstrap.css")
+    body = read("assets_compressed/bootstrap.css", String)
+    response = HTTP.handle(handler, request)
+    @test String(response.body) == body
     @test !in("Content-Encoding"=>"gzip", response.headers)
 
     # ensure compression when Accept-Encoding = "gzip"
-    request = HTTP.Request("GET", "/assets/test.css", ["Accept-Encoding"=>"gzip"])
-    response = handler(request)
-    @test String(inflate_gzip(response.body)) == "/* Test */\n"
-    @test String(response.body) != "/* Test */\n"
+    request = HTTP.Request("GET", "/assets/bootstrap.css", ["Accept-Encoding"=>"gzip"])
+    response = HTTP.handle(handler, request)
+    @test String(inflate_gzip(response.body)) == body
+    @test String(response.body) != body
     @test in("Content-Encoding"=>"gzip", response.headers)
 
     # test cases for compress = false
@@ -401,26 +344,4 @@ end
             html_div("test")
         end
     end
-
-    # verify that JSON is not compressed when compress = false
-    # and Accept-Encoding = "gzip" is not present within request headers
-    handler = Dash.make_handler(app)
-    request = HTTP.Request("GET", "/_dash-dependencies")
-    response = handler(request)
-    @test app.config.compress == false
-    @test String(response.body) == "[]"
-    @test !in("Content-Encoding"=>"gzip", response.headers)
-
-    # verify that JSON is NOT compressed when compress = false
-    # and Accept-Encoding = "gzip" is present within request headers
-    request = HTTP.Request("GET", "/_dash-dependencies", ["Accept-Encoding"=>"gzip"])
-    response = handler(request)
-    @test String(response.body) == "[]"
-    @test !in("Content-Encoding"=>"gzip", response.headers)
-
-    # ensure NO compression when Accept-Encoding = "gzip" and compress = false
-    request = HTTP.Request("GET", "/assets/test.css", ["Accept-Encoding"=>"gzip"])
-    response = handler(request)
-    @test String(response.body) == "/* Test */\n"
-    @test !in("Content-Encoding"=>"gzip", response.headers)
 end

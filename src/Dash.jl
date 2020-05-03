@@ -1,9 +1,7 @@
 module Dash
 import HTTP, JSON2, CodecZlib, MD5
 using MacroTools
-
-include("ComponentPackages.jl")
-include("ComponentMetas.jl")
+const ROOT_PATH = realpath(joinpath(@__DIR__, ".."))
 include("Components.jl")
 include("Front.jl")
 
@@ -92,8 +90,31 @@ julia> run_server(handler,  HTTP.Sockets.localhost, 8080)
 ```
 
 """
-function run_server(app::DashApp, host = HTTP.Sockets.localhost, port = 8080; debug = false)
-    handler = make_handler(app, debug = debug);
+function run_server(app::DashApp, host = HTTP.Sockets.localhost, port = 8080;
+            debug = nothing, ui = nothing,
+            props_check = nothing,
+            serve_dev_bundles = nothing,
+            hot_reload = nothing,
+            hot_reload_interval = nothing,
+            hot_reload_watch_interval = nothing,
+            hot_reload_max_retry = nothing,
+            silence_routes_logging = nothing,
+            prune_errors = nothing
+            )
+    @env_default!(debug, Bool, false)
+    set_debug!(app, 
+        debug = debug,
+        props_check = props_check,
+        serve_dev_bundles = serve_dev_bundles,
+        hot_reload = hot_reload,
+        hot_reload_interval = hot_reload_interval,
+        hot_reload_watch_interval = hot_reload_watch_interval,
+        hot_reload_max_retry = hot_reload_max_retry,
+        silence_routes_logging = silence_routes_logging,
+        prune_errors = prune_errors
+    )
+    handler = make_handler(app);
+    @info "started"
     HTTP.serve(handler, host, port)
 end
 

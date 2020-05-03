@@ -316,7 +316,7 @@ function dash(layout_maker ::Function, name::String = dash_env("dash_name", "");
         show_undo_redo = show_undo_redo,
         compress = compress
         )
-    layout!(result, layout_maker())
+    set_layout!(result, layout_maker())
     return result
 end
 

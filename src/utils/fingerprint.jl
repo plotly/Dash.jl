@@ -5,7 +5,7 @@ function build_fingerprint(path::AbstractString, version, hash_value)
     path_parts = split(path, '/')    
     (filename, extension) = split(path_parts[end], '.', limit = 2)
     return string(
-        join(path_parts[1:end-1], '/'), '/', filename,
+        join(vcat(path_parts[1:end-1], filename), '/'), 
         ".v", replace(string(version), fp_version_clean=>"_"),
         'm', hash_value,
         '.', extension

@@ -1,8 +1,8 @@
 using Test
 using HTTP
 using Dash
-using Dash: make_handler, compress_handler, process_resource, state_handler, prefix_handler, HandlerState, 
-            process_resource, StaticRoute, DynamicRoute, try_handle, RouteHandler, Route, _make_route, Router, add_route!
+using Dash: make_handler, compress_handler, process_resource, state_handler, HandlerState, 
+            process_resource, StaticRoute, DynamicRoute, try_handle, RouteHandler, Route, _make_route, Router, add_route!, make_handler
 using CodecZlib
 using MD5
 
@@ -47,6 +47,7 @@ end
         begin
             tmp = String[]
             for (k,v) in kwargs
+                @test v isa SubString
                 push!(tmp, string(k, "->",v))
             end
             HTTP.Response(200, join(tmp, ","))
@@ -106,10 +107,10 @@ end
     end
 
     handler1 = (req;var1) -> HTTP.Response(200, "var1=$var1")
-    add_route!(handler1, router, "/var/<var1>")
+    add_route!(handler1, router, "/var/<var1>/")
     
     add_route!((req;var1, var2) -> HTTP.Response(200, "var1=$var1,var2=$var2"), 
-        router, "/var/<var1>/<var2>")    
+        router, "/var/<var1>/<var2>/")    
         
     res = HTTP.handle(router, HTTP.Request("GET","")) 
     @test res.status == 200
@@ -155,6 +156,10 @@ end
     res = HTTP.handle(router, HTTP.Request("POST","/test"), "aaa") 
     @test res.status == 200
     @test String(res.body) == "aaa, var1=test"
+
+    res = HTTP.handle(router, HTTP.Request("POST","/test/renderer/r.js"), "aaa") 
+    @test res.status == 200
+    @test String(res.body) == "aaa, var1=test/renderer/r.js"
         
 end 
 
@@ -169,7 +174,7 @@ end
     state = TestState(true)
     test_handler = state_handler(base_handler, state)
     test_request = HTTP.Request("GET", "/test_path")
-    res = test_handler(test_request)
+    res = HTTP.handle(test_handler, test_request)
     @test res.status == 200
     @test String(res.body) == "test1"
     @test startswith(HTTP.header(res, "Content-Type", ""), "text/plain")
@@ -185,7 +190,7 @@ end
     state = TestState(true)
     test_handler = state_handler(base_handler_http, state)
     test_request = HTTP.Request("GET", "/test_path2")
-    res = test_handler(test_request)
+    res = HTTP.handle(test_handler, test_request)
     @test res.status == 200
     @test String(res.body) == "<html></html>"
     @test startswith(HTTP.header(res, "Content-Type", ""), "text/html")
@@ -200,7 +205,7 @@ end
 
     test_handler = state_handler(base_handler_js, state)
     test_request = HTTP.Request("GET", "/test_path3")
-    res = test_handler(test_request)
+    res = HTTP.handle(test_handler, test_request)
     @test res.status == 200
     @test String(res.body) == "<html></html>"
     @test startswith(HTTP.header(res, "Content-Type", ""), "text/javascript")
@@ -219,7 +224,7 @@ end
     handler = compress_handler(state_handler(base_handler, state))
     test_request = HTTP.Request("GET", "/test_path")
     HTTP.setheader(test_request, "Accept-Encoding" => "gzip")
-    res = handler(test_request)
+    res = HTTP.handle(handler, test_request)
     @test res.status == 200
     @test String(res.body) == "test1"
     @test !HTTP.hasheader(res, "Content-Encoding")
@@ -234,27 +239,11 @@ end
     test_request = HTTP.Request("GET", "/test_big")
     HTTP.setheader(test_request, "Accept-Encoding" => "gzip")
     handler = compress_handler(state_handler(base_handler, state))
-    res = handler(test_request)
+    res = HTTP.handle(handler, test_request)
     @test res.status == 200
     @test HTTP.header(res, "Content-Encoding") == "gzip"
     @test HTTP.header(res, "Content-Length") == string(sizeof(res.body))
     @test transcode(GzipDecompressor, res.body) == Vector{UInt8}(repeat("<html></html>", 500))
-end
-
-@testset "prefix handler" begin
-
-    base_handler = function(request, state)
-        @test request.target == "/test_path" 
-        @test state isa TestState
-        @test state.setting
-        return HTTP.Response(200, "test1")
-    end
-    
-    state = TestState(true)
-    handler = prefix_handler(state_handler(base_handler, state), "/")
-    test_request = HTTP.Request("GET", "/test_path")
-    res = handler(test_request)
-    @test res.status == 200
 end
 
 @testset "resource handler" begin
@@ -292,21 +281,22 @@ end
     )
 
     test_app = dash("test")
-    state = HandlerState(test_app, test_registry)
+    handler = make_handler(test_app, test_registry)
     request = HTTP.Request("GET", "/_dash-component-suites/dash_renderer/dash-renderer/dash_renderer.js")
-    resp = process_resource(request, state)
+    resp = HTTP.handle(handler, request)
     @test resp.status == 200
     @test String(resp.body) == "var a = [1,2,3,4,5,6]"
     @test HTTP.hasheader(resp, "ETag")
     @test HTTP.header(resp, "ETag") == bytes2hex(md5("var a = [1,2,3,4,5,6]"))
     @test HTTP.header(resp, "Content-Type") == "application/javascript"
+
     etag = HTTP.header(resp, "ETag")
     HTTP.setheader(request, "If-None-Match"=>etag)
-    resp = process_resource(request, state)
+    resp = HTTP.handle(handler, request)
     @test resp.status == 304
 
     request = HTTP.Request("GET", "/_dash-component-suites/dash_renderer/props.min.js")
-    resp = process_resource(request, state)
+    resp = HTTP.handle(handler, request)
     HTTP.setheader(request, "If-None-Match"=>bytes2hex(md5("var a = [1,2,3,4,5,6]")))
     @test resp.status == 200
     @test String(resp.body) == "var string = \"fffffff\""
@@ -314,12 +304,12 @@ end
     @test HTTP.header(resp, "ETag") == bytes2hex(md5("var string = \"fffffff\""))
     etag = HTTP.header(resp, "ETag")
     HTTP.setheader(request, "If-None-Match"=>etag)
-    resp = process_resource(request, state)
+    resp = HTTP.handle(handler, request)
     @test resp.status == 304
     
 
     request = HTTP.Request("GET", "/_dash-component-suites/dash_renderer/props.v1_2_3m2333123.min.js")
-    resp = process_resource(request, state)
+    resp = HTTP.handle(handler, request)
     HTTP.setheader(request, "If-None-Match"=>bytes2hex(md5("var a = [1,2,3,4,5,6]")))
     @test resp.status == 200
     @test String(resp.body) == "var string = \"fffffff\""

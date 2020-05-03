@@ -62,7 +62,7 @@ get_dash_renderer_pkg(registry::ResourcesRegistry) = registry.dash_renderer
 
 
 
-const RESOURCE_PATH = realpath(joinpath(@__DIR__, "..", "resources"))
+const RESOURCE_PATH = realpath(joinpath(ROOT_PATH, "resources"))
 
 const resources_registry = ResourcesRegistry(
     dash_dependency = (

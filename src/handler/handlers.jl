@@ -34,9 +34,7 @@ function process_layout(request::HTTP.Request, state::HandlerState)
     )
 end
 
-function process_callback(request::HTTP.Request, state::HandlerState)
-    body = String(request.body)
-    app = state.app
+function _process_callback(app::DashApp, body::String)
     params = JSON2.read(body)
     output = Symbol(params[:output])
     if !haskey(app.callbacks, output)
@@ -86,16 +84,30 @@ function process_callback(request::HTTP.Request, state::HandlerState)
     return Dict(:response=>response, :multi=>true)
 end
 
+function process_callback(request::HTTP.Request, state::HandlerState)
+        try
+            return HTTP.Response(200, ["Content-Type" => "application/json"],
+                body = JSON2.write(
+                    _process_callback(state.app, String(request.body))
+                )
+            )
+        catch e                                
+            if isa(e,PreventUpdate)                
+                return HTTP.Response(204)                                    
+            else
+                rethrow(e)
+            end
+        end 
+end
+
+
 function mime_by_path(path)
     endswith(path, ".js") && return "application/javascript"
     endswith(path, ".css") && return "application/css"
     endswith(path, ".map") && return "application/json"
     return nothing
 end
-function process_resource(request::HTTP.Request, state::HandlerState)
-    # /_dash-component-suites{1}/namespace{2}/rest path{3}
-    path::SubString = lstrip(HTTP.URI(request.target).path, '/')
-    (_, namespace, path) = split(path, '/', limit = 3)
+function process_resource(request::HTTP.Request, state::HandlerState; namespace::AbstractString, path::AbstractString)
     (relative_path, is_fp) = parse_fingerprint_path(path)
     registered_files = state.cache.resources.files
     if !haskey(registered_files, namespace)
@@ -135,11 +147,9 @@ function process_resource(request::HTTP.Request, state::HandlerState)
 end
 
 
-function process_assets(request::HTTP.Request, state::HandlerState)
+function process_assets(request::HTTP.Request, state::HandlerState; file_path::AbstractString)
     app = state.app
-    path = HTTP.URI(request.target).path
-    assets_path = "$(get_setting(app, :routes_pathname_prefix))" * strip(get_setting(app, :assets_url_path), '/') * "/"
-    filename = joinpath(app.config.assets_folder, replace(path, assets_path=>""))
+    filename = joinpath(get_setting(app, :assets_folder), file_path)
 
     try
         file_contents = read(filename)
@@ -152,78 +162,29 @@ end
 
 const dash_router = HTTP.Router()
 
+#For test purposes, with the ability to pass a custom registry
+function make_handler(app::DashApp, registry::ResourcesRegistry)
+            
 
-
-function make_handler(app::DashApp; debug = nothing, ui = nothing,
-            props_check = nothing,
-            serve_dev_bundles = nothing,
-            hot_reload = nothing,
-            hot_reload_interval = nothing,
-            hot_reload_watch_interval = nothing,
-            hot_reload_max_retry = nothing,
-            silence_routes_logging = nothing,
-            prune_errors = nothing)
-
-    @env_default!(debug, Bool, false)
-    set_debug!(app, 
-        debug = debug,
-        props_check = props_check,
-        serve_dev_bundles = serve_dev_bundles,
-        hot_reload = hot_reload,
-        hot_reload_interval = hot_reload_interval,
-        hot_reload_watch_interval = hot_reload_watch_interval,
-        hot_reload_max_retry = hot_reload_max_retry,
-        silence_routes_logging = silence_routes_logging,
-        prune_errors = prune_errors
-    )
-    app_resources = ApplicationResources(app, main_registry())
-
-    index_string::String = index_page(app, app_resources)
+    state = HandlerState(app, registry)
+    prefix = get_setting(app, :routes_pathname_prefix)
+    assets_url_path = get_setting(app, :assets_url_path)
     
-    return function (req::HTTP.Request)
-        body::Union{Nothing, String} = nothing
-        uri = HTTP.URI(req.target)
+    router = Router()
+    add_route!(process_index, router, prefix)
+    add_route!(process_layout, router, "$(prefix)_dash-layout")
+    add_route!(process_dependencies, router, "$(prefix)_dash-dependencies")
+    add_route!(process_resource, router, "$(prefix)_dash-component-suites/<namespace>/<path>")
+    add_route!(process_assets, router, "$(prefix)$(assets_url_path)/<file_path>")
+    add_route!(process_callback, router, "POST", "$(prefix)_dash-update-component")
 
-        # verify that the client accepts compression
-        accepts_gz = occursin("gzip", HTTP.header(req, "Accept-Encoding"))
-        # verify that the server was not launched with compress=false
-        with_gzip = accepts_gz && app.config.compress
+    handler = state_handler(router, state)
+    get_setting(app, :compress) && (handler = compress_handler(handler))
 
-        headers = []
-        
-        #ComponentPackages.@register_js_sources(uri.path, app.config.routes_pathname_prefix)
-        if uri.path == "$(app.config.routes_pathname_prefix)"
-            body = index_string
-        end
-        if uri.path == "$(app.config.routes_pathname_prefix)_dash-layout"
-            body = JSON2.write(app.layout)
-            push!(headers, "Content-Type" => "application/json")
-        end
-        if uri.path == "$(app.config.routes_pathname_prefix)_dash-dependencies"
-            body = dependencies_json(app)
-            push!(headers, "Content-Type" => "application/json")
-        end
-        if startswith(uri.path, "$(app.config.routes_pathname_prefix)assets/")
-            return process_assets(app, uri.path, with_gzip)
-        end
-        if uri.path == "$(app.config.routes_pathname_prefix)_dash-update-component" && req.method == "POST"            
-            try
-                return HTTP.Response(200, ["Content-Type" => "application/json"],
-                    body = JSON2.write(
-                        process_callback(app, String(req.body))
-                    )
-                )
-            catch e                                
-                if isa(e,PreventUpdate)                
-                    return HTTP.Response(204)                                    
-                else
-                    rethrow(e)
-                end
-            end 
-        end
-        if !isnothing(body)
-            return make_response(200, headers, body, with_gzip)
-        end
-        return HTTP.Response(404)
-    end 
+    HTTP.handle(handler, HTTP.Request("GET", prefix)) #For handler precompilation
+    return handler
+end
+
+function make_handler(app::DashApp)
+    return make_handler(app, main_registry())
 end

@@ -114,7 +114,7 @@ function walk_assets(callback, app::DashApp)
         (f) -> true :
         (f) -> !occursin(assets_regex, f)
         
-    if app.config.include_assets_files
+    if app.config.include_assets_files && isdir(app.config.assets_folder)
         for (base, dirs, files) in walkdir(app.config.assets_folder)
             if !isempty(files)
                 relative = ""

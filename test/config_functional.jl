@@ -1,6 +1,6 @@
 using Test
 using Dash
-using Dash: ApplicationResources, main_registry, HandlerState
+using Dash: ApplicationResources, main_registry, HandlerState, make_handler
 using HTTP
 
 
@@ -74,54 +74,54 @@ end
 
 @testset "assets paths" begin
     app = dash("test app")
-    state = HandlerState(app)
+    handler = make_handler(app)
     request = HTTP.Request("GET", "/assets/test.png")
-    res = Dash.process_assets(request, state)
+    res = HTTP.handle(handler, request)
     @test res.status == 200
     request = HTTP.Request("GET", "/assets/test3.png")
-    res = Dash.process_assets(request, state)
+    res = HTTP.handle(handler, request)
     @test res.status == 404
     request = HTTP.Request("GET", "/images/test.png")
-    res = Dash.process_assets(request, state)
+    res = HTTP.handle(handler, request)
     @test res.status == 404
 
     app = dash("test app", url_base_pathname = "/test/")
-    state = HandlerState(app)
+    handler = make_handler(app)
     request = HTTP.Request("GET", "/assets/test.png")
-    res = Dash.process_assets(request, state)
+    res = HTTP.handle(handler, request)
     @test res.status == 404
     request = HTTP.Request("GET", "/test/assets/test.png")
-    res = Dash.process_assets(request, state)
+    res = HTTP.handle(handler, request)
     @test res.status == 200
     request = HTTP.Request("GET", "/images/test.png")
-    res = Dash.process_assets(request, state)
+    res = HTTP.handle(handler, request)
     @test res.status == 404
 
     app = dash("test app", assets_url_path = "ass")
-    state = HandlerState(app)
+    handler = make_handler(app)
     request = HTTP.Request("GET", "/ass/test.png")
-    res = Dash.process_assets(request, state)
+    res = HTTP.handle(handler, request)
     @test res.status == 200
     request = HTTP.Request("GET", "/ass/test3.png")
-    res = Dash.process_assets(request, state)
+    res = HTTP.handle(handler, request)
     @test res.status == 404
     request = HTTP.Request("GET", "/assets/test3.png")
-    res = Dash.process_assets(request, state)
+    res = HTTP.handle(handler, request)
     @test res.status == 404
     request = HTTP.Request("GET", "/images/test.png")
-    res = Dash.process_assets(request, state)
+    res = HTTP.handle(handler, request)
     @test res.status == 404
 
     app = dash("test app", assets_folder = "images")
-    state = HandlerState(app)
+    handler = make_handler(app)
     request = HTTP.Request("GET", "/assets/test.png")
-    res = Dash.process_assets(request, state)
+    res = HTTP.handle(handler, request)
     @test res.status == 404
     request = HTTP.Request("GET", "/assets/test_images.png")
-    res = Dash.process_assets(request, state)
+    res = HTTP.handle(handler, request)
     @test res.status == 200
     request = HTTP.Request("GET", "/images/test.png")
-    res = Dash.process_assets(request, state)
+    res = HTTP.handle(handler, request)
     @test res.status == 404
 end
 
