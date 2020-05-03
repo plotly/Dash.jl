@@ -3,6 +3,8 @@ abstract type AppResource end
 struct AppRelativeResource <: AppResource
     namespace ::String
     relative_path ::String
+    version ::String
+    ts ::Int64
 end
 struct AppExternalResource <: AppResource
     url ::String
@@ -15,12 +17,18 @@ struct AppAssetResource <: AppResource
     ts ::Int64
 end
 
+struct NamespaceFiles
+    base_path ::String
+    files ::Set{String}
+    NamespaceFiles(base_path) = new(base_path, Set{String}())
+end
+
 struct ApplicationResources
-    routing ::Dict{String, String}
+    files ::Dict{String, NamespaceFiles}
     css ::Vector{AppResource}
     js ::Vector{AppResource}
     favicon ::Union{Nothing, String}
-    ApplicationResources(routing, css, js, favicon) = new(routing, css, js, favicon)
+    ApplicationResources(files, css, js, favicon) = new(files, css, js, favicon)
 end
 
 
@@ -28,7 +36,7 @@ function ApplicationResources(app::DashApp, registry::ResourcesRegistry)
     css = AppResource[]
     js = AppResource[]
     favicon::Union{Nothing, String} = nothing
-    routing = Dict{String, String}()
+    files = Dict{String, NamespaceFiles}()
     
     serve_locally = get_setting(app, :serve_locally)
     assets_external_path = get_setting(app, :assets_external_path)
@@ -72,21 +80,28 @@ function ApplicationResources(app::DashApp, registry::ResourcesRegistry)
     append_pkg.(get_componens_pkgs(registry))
     append_pkg(get_dash_renderer_pkg(registry))
 
-    fill_routing(routing, get_dash_dependencies(registry, get_devsetting(app, :props_check)), dev = dev, serve_locally = serve_locally)
-    fill_routing.(Ref(routing), get_componens_pkgs(registry), dev = dev, serve_locally = serve_locally)
-    fill_routing(routing, get_dash_renderer_pkg(registry), dev = dev, serve_locally = serve_locally)
-    ApplicationResources(routing, css, js, favicon)
+    fill_files(files, get_dash_dependencies(registry, get_devsetting(app, :props_check)), dev = dev, serve_locally = serve_locally)
+    fill_files.(Ref(files), get_componens_pkgs(registry), dev = dev, serve_locally = serve_locally)
+    fill_files(files, get_dash_renderer_pkg(registry), dev = dev, serve_locally = serve_locally)
+    ApplicationResources(files, css, js, favicon)
 end
 
 
-function fill_routing(dest::Dict{String, String}, pkg::ResourcePkg; dev, serve_locally)
+function fill_files(dest::Dict{String, NamespaceFiles}, pkg::ResourcePkg; dev, serve_locally)
     !serve_locally && return
 
-    full_path = (p)->joinpath(pkg.path, lstrip(p, ['/','\\']))
+    if !haskey(dest, pkg.namespace)
+        dest[pkg.namespace] = NamespaceFiles(pkg.path)
+    end
+    namespace_files = get!(dest, pkg.namespace, NamespaceFiles(pkg.path))
+        full_path = (p)->joinpath(pkg.path, lstrip(p, ['/','\\']))
     for resource in pkg.resources
         paths = dev && has_dev_path(resource) ? get_dev_path(resource) : get_relative_path(resource)
         for path in paths
-            dest[pkg.namespace * "/" * path] = full_path(path)
+            push!.(
+                Ref(namespace_files.files),
+                lstrip.(path, Ref(['/', '\\']))
+            )
         end
     end
 end
@@ -139,15 +154,15 @@ end
 _convert_external(v::String) = AppExternalResource(v)
 _convert_external(v::Dict{String, String}) = AppCustomResource(v)
 
-function _convert_resource(namespace::String, resource::Resource; dev, serve_locally)::Vector{AppResource}
+function _convert_resource(resource::Resource; namespace, version, ts, dev, serve_locally)::Vector{AppResource}
     if !serve_locally && has_external_url(resource)
         return AppExternalResource.(get_external_url(resource))
     end
-    if dev && has_dev_path(resource)
-        return AppRelativeResource.(namespace, get_dev_path(resource))
-    end
-    if has_relative_path(resource)
-        return AppRelativeResource.(namespace, get_relative_path(resource))
+    relative_path = dev && has_dev_path(resource) ?
+                    get_dev_path(resource) :
+                    (has_relative_path(resource) ? get_relative_path(resource) : nothing)
+    if !isnothing(relative_path)
+        return AppRelativeResource.(namespace, relative_path, version, ts)
     end
     if serve_locally
         #TODO Warning
@@ -162,8 +177,18 @@ function _convert_resource_pkg(pkg::ResourcePkg, type::Symbol; dev, serve_locall
     iterator = Iterators.filter(pkg.resources) do r
         get_type(r) == type && !isdynamic(r, eager_loading)
     end
+    ts = ispath(pkg.path) ? trunc(Int64, stat(pkg.path).mtime) : 0
     for resource in iterator
-        append!(result, _convert_resource(pkg.namespace, resource,  dev = dev, serve_locally = serve_locally))
+        append!(
+            result, 
+            _convert_resource(
+                    resource, 
+                    namespace = pkg.namespace,
+                    version = pkg.version,
+                    ts = ts,
+                    dev = dev, serve_locally = serve_locally
+                )
+            )
     end
     return result
 end

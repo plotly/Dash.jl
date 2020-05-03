@@ -36,7 +36,8 @@ struct ResourcePkg
     namespace ::String
     path ::String
     resources ::Vector{Resource}    
-    ResourcePkg(namespace, path, resources = Resource[])  = new(namespace, path, resources)
+    version ::String
+    ResourcePkg(namespace, path, resources = Resource[]; version = "")  = new(namespace, path, resources, version)
 end
 
 
@@ -67,7 +68,7 @@ const resources_registry = ResourcesRegistry(
     dash_dependency = (
         dev = ResourcePkg(
             "dash_renderer",
-            RESOURCE_PATH,
+            RESOURCE_PATH, version = "1.2.2",
             [
                 Resource(
                 relative_package_path = "react@16.8.6/umd/react.production.min.js",
@@ -89,7 +90,7 @@ const resources_registry = ResourcesRegistry(
         ),
         prod = ResourcePkg(
             "dash_renderer",
-            RESOURCE_PATH,
+            RESOURCE_PATH, version = "1.2.2",
             [
                 Resource(
                 relative_package_path = "react@16.8.6/umd/react.production.min.js",
@@ -112,7 +113,7 @@ const resources_registry = ResourcesRegistry(
     ),
     dash_renderer = ResourcePkg(
         "dash_renderer",
-        RESOURCE_PATH,
+        RESOURCE_PATH, version = "1.2.2",
         [
             Resource(
                 relative_package_path = "dash-renderer@1.2.2/dash-renderer/dash_renderer.min.js",
@@ -129,3 +130,5 @@ const resources_registry = ResourcesRegistry(
 )
 
 register_package(pkg::ResourcePkg) = register_package!(resources_registry, pkg)
+
+main_registry() = resources_registry

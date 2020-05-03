@@ -1,5 +1,5 @@
 module Dash
-import HTTP, JSON2, CodecZlib
+import HTTP, JSON2, CodecZlib, MD5
 using MacroTools
 
 include("ComponentPackages.jl")
@@ -26,9 +26,7 @@ include("app.jl")
 include("resources/registry.jl")
 include("resources/application.jl")
 include("config.jl")
-include("index_page.jl")
 include("handlers.jl")
-
 
 @doc """
     module Dash

@@ -45,6 +45,7 @@ using Dash: Resource, ResourcePkg, ResourcesRegistry,
     @test isdynamic(test_resource, false)
 end
 
+
 @testset "application resources base registry" begin
     test_registry = ResourcesRegistry(
         dash_dependency = (
@@ -82,7 +83,7 @@ end
         )    
     )
 
-    test_app = dash("test")
+    test_app = dash("test", include_assets_files = false)
 
     app_resources = ApplicationResources(test_app, test_registry)
     @test length(app_resources.css) == 0
@@ -99,11 +100,13 @@ end
     @test app_resources.js[end].namespace == "dash_renderer"
     @test app_resources.js[end].relative_path == "dash-renderer/dash_renderer.min.js"
 
-    @test app_resources.routing["dash_renderer/path1.prod.js"] == joinpath("path", "path1.prod.js")
-    @test app_resources.routing["dash_renderer/path2.prod.js"] == joinpath("path", "path2.prod.js")
-    @test app_resources.routing["dash_renderer/dash-renderer/dash_renderer.min.js"] == joinpath("path", "dash-renderer/dash_renderer.min.js")
+    @test haskey(app_resources.files, "dash_renderer")
+    @test app_resources.files["dash_renderer"].base_path == "path"
+    @test "path1.prod.js" in app_resources.files["dash_renderer"].files
+    @test "path2.prod.js" in app_resources.files["dash_renderer"].files
+    @test "dash-renderer/dash_renderer.min.js" in app_resources.files["dash_renderer"].files
 
-    test_app = dash("test")
+    test_app = dash("test", include_assets_files = false)
     set_debug!(test_app, debug = false, serve_dev_bundles = true)
 
     app_resources = ApplicationResources(test_app, test_registry)
@@ -122,11 +125,13 @@ end
     @test app_resources.js[end].namespace == "dash_renderer"
     @test app_resources.js[end].relative_path == "dash-renderer/dash_renderer.dev.js"
 
-    @test app_resources.routing["dash_renderer/path1.prod.js"] == joinpath("path", "path1.prod.js")
-    @test app_resources.routing["dash_renderer/path2.prod.js"] == joinpath("path", "path2.prod.js")
-    @test app_resources.routing["dash_renderer/dash-renderer/dash_renderer.dev.js"] == joinpath("path", "dash-renderer/dash_renderer.dev.js")
+    @test haskey(app_resources.files, "dash_renderer")
+    @test app_resources.files["dash_renderer"].base_path == "path"
+    @test "path1.prod.js" in app_resources.files["dash_renderer"].files
+    @test "path2.prod.js" in app_resources.files["dash_renderer"].files
+    @test "dash-renderer/dash_renderer.dev.js" in app_resources.files["dash_renderer"].files
     
-    test_app = dash("test")
+    test_app = dash("test", include_assets_files = false)
     set_debug!(test_app, debug = false, props_check = true, serve_dev_bundles = true)
 
     app_resources = ApplicationResources(test_app, test_registry)
@@ -145,11 +150,13 @@ end
     @test app_resources.js[end].namespace == "dash_renderer"
     @test app_resources.js[end].relative_path == "dash-renderer/dash_renderer.dev.js"
 
-    @test app_resources.routing["dash_renderer/path1.dev.js"] == joinpath("path", "path1.dev.js")
-    @test app_resources.routing["dash_renderer/path2.dev.js"] == joinpath("path", "path2.dev.js")
-    @test app_resources.routing["dash_renderer/dash-renderer/dash_renderer.dev.js"] == joinpath("path", "dash-renderer/dash_renderer.dev.js")
+    @test haskey(app_resources.files, "dash_renderer")
+    @test app_resources.files["dash_renderer"].base_path == "path"
+    @test "path1.dev.js" in app_resources.files["dash_renderer"].files
+    @test "path2.dev.js" in app_resources.files["dash_renderer"].files
+    @test "dash-renderer/dash_renderer.dev.js" in app_resources.files["dash_renderer"].files
 
-    test_app = dash("test", serve_locally = false)
+    test_app = dash("test", serve_locally = false, include_assets_files = false)
 
     app_resources = ApplicationResources(test_app, test_registry)
     @test length(app_resources.css) == 0
@@ -164,7 +171,7 @@ end
     @test app_resources.js[end] isa AppExternalResource 
     @test app_resources.js[end].url == "https://dash_renderer.min.js"
 
-    @test isempty(app_resources.routing)
+    @test isempty(app_resources.files)
 end
 
 @testset "application resources dynamic" begin
@@ -214,19 +221,21 @@ end
         )    
     )
 
-    test_app = dash("test")
+    test_app = dash("test", include_assets_files = false)
 
     app_resources = ApplicationResources(test_app, test_registry)
     @test length(app_resources.css) == 0
     @test length(app_resources.js) == 2
     @test app_resources.js[2].relative_path == "dash-renderer/dash_renderer.min.js"
     
-    @test app_resources.routing["dash_renderer/path1.prod.js"] == joinpath("path", "path1.prod.js")
-    @test app_resources.routing["dash_renderer/dash-renderer/dash_renderer.min.js"] == joinpath("path", "dash-renderer/dash_renderer.min.js")
-    @test app_resources.routing["dash_renderer/dash-renderer/dash_renderer.dyn.js"] == joinpath("path", "dash-renderer/dash_renderer.dyn.js")
-    @test app_resources.routing["dash_renderer/dash-renderer/dash_renderer.eag.js"] == joinpath("path", "dash-renderer/dash_renderer.eag.js")
+    @test haskey(app_resources.files, "dash_renderer")
+    @test app_resources.files["dash_renderer"].base_path == "path"
+    @test "path1.prod.js" in app_resources.files["dash_renderer"].files
+    @test "dash-renderer/dash_renderer.min.js" in app_resources.files["dash_renderer"].files
+    @test "dash-renderer/dash_renderer.dyn.js" in app_resources.files["dash_renderer"].files
+    @test "dash-renderer/dash_renderer.eag.js" in app_resources.files["dash_renderer"].files
     
-    test_app = dash("test", eager_loading = true)
+    test_app = dash("test", eager_loading = true, include_assets_files = false)
 
     app_resources = ApplicationResources(test_app, test_registry)
     @test length(app_resources.css) == 0
@@ -291,7 +300,7 @@ end
         )
     )  
 
-    test_app = dash("test")
+    test_app = dash("test", include_assets_files = false)
 
     app_resources = ApplicationResources(test_app, test_registry)
     @test length(app_resources.css) == 1
@@ -302,10 +311,11 @@ end
     @test app_resources.js[2].relative_path == "comp.js"
     @test app_resources.js[end].relative_path == "dash-renderer/dash_renderer.min.js"
 
-    @test app_resources.routing["comps/comp.js"] == joinpath("comps_path", "comp.js")
-    @test app_resources.routing["comps/comp.dyn.js"] == joinpath("comps_path", "comp.dyn.js")
-    @test app_resources.routing["comps/comp.css"] == joinpath("comps_path", "comp.css")
-    
+    @test haskey(app_resources.files, "comps")
+    @test app_resources.files["comps"].base_path == "comps_path"
+    @test "comp.js" in app_resources.files["comps"].files
+    @test "comp.dyn.js" in app_resources.files["comps"].files
+    @test "comp.css" in app_resources.files["comps"].files
 end
 
 @testset "application resources external" begin
@@ -346,7 +356,7 @@ end
 
     external_css = ["test.css", Dict("rel"=>"stylesheet", "href"=>"test.css")]
     external_js = ["test.js", Dict("crossorigin"=>"anonymous", "src"=>"test.js")]
-    test_app = dash("test", external_stylesheets = external_css, external_scripts = external_js)
+    test_app = dash("test", external_stylesheets = external_css, include_assets_files = false, external_scripts = external_js)
 
     app_resources = ApplicationResources(test_app, test_registry)
     @test length(app_resources.css) == 2
