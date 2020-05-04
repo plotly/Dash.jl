@@ -23,6 +23,21 @@ function interpolate_string(s::String; kwargs...)
     return result
 end
 
+function validate_index(name::AbstractString, index::AbstractString, checks)
+    missings = filter(checks) do check
+        !occursin(check[2], index)
+    end
+    if !isempty(missings)
+        error(
+            string(
+                "Missing item", (length(missings)>1 ? "s" : ""), " ",
+                join(getindex.(missings, 1), ", "),
+                " in ", name 
+            )
+        )
+    end
+end
+
 macro var_str(s)
     return Symbol(s)
 end

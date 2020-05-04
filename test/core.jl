@@ -2,8 +2,6 @@ import HTTP, JSON2
 using Test
 using Dash
 using Inflate
-include("TestComponents.jl")
-using .TestComponents
 @testset "Components" begin
     
     a_comp = html_a("test", id = "test-a")
@@ -33,7 +31,7 @@ using .TestComponents
 
 end
 
-@testset "get ids set" begin
+#=@testset "get ids set" begin
     comp = html_div(id = "id0") do
         html_div(id = "id1") do
             html_a(id = "id2")
@@ -52,7 +50,7 @@ end
     @test haskey(ids, :id2)
     @test haskey(ids, :id3)
 
-end
+end=#
 
 
 @testset "callid" begin
@@ -78,12 +76,12 @@ end
 end
 
 @testset "callback!" begin
-    app = dash("Test app") do
-        html_div() do
+    app = dash("Test app")
+    app.layout = html_div() do
             dcc_input(id = "my-id", value="initial value", type = "text"),
             html_div(id = "my-div")        
         end
-    end
+
     callback!(app, callid"my-id.value => my-div.children") do value
         return value
     end
@@ -91,13 +89,12 @@ end
     @test haskey(app.callbacks, Symbol("my-div.children"))
     @test app.callbacks[Symbol("my-div.children")].func("test") == "test"
 
-    app = dash("Test app") do
-        html_div() do
+    app = dash("Test app")
+    app.layout = html_div() do
             dcc_input(id = "my-id", value="initial value", type = "text"),
             html_div(id = "my-div"),
             html_div(id = "my-div2")    
         end
-    end
     callback!(app, callid"{my-id.type} my-id.value => my-div.children, my-div2.children") do state, value
         return state, value
     end
@@ -154,15 +151,14 @@ end
     end
     
 
-    app = dash("Test app") do
-        html_div() do
+    app = dash("Test app")
+    app.layout = html_div() do
             dcc_input(id = "my-id", value="initial value", type = "text"),
             html_div("test2", id = "my-div"),
             html_div(id = "my-div2") do 
                 html_h1("gggg", id = "my-h")
             end
         end
-    end
     callback!(app, callid"{my-id.type} my-id.value => my-div.children, my-h.children") do state, value
         return state, value
     end
@@ -170,13 +166,12 @@ end
 end
 
 @testset "handler" begin
-    app = dash("Test app", external_stylesheets=["test.css"]) do
-        html_div() do
+    app = dash("Test app", external_stylesheets=["test.css"])
+    app.layout = html_div() do
             dcc_input(id = "my-id", value="initial value", type = "text"),
             html_div(id = "my-div"),
             html_div(id = "my-div2")    
         end
-    end
     callback!(app, callid"my-id.value => my-div.children") do value
         return value
     end
@@ -223,12 +218,40 @@ end
     @test body_str == """{"response":{"props":{"children":"initial value3333"}}}"""
 end
 
+@testset "layout as function" begin
+    app = dash("Test app")
+    global_id = "my_div2"
+    layout_func = () -> begin
+        html_div() do
+            dcc_input(id = "my-id", value="initial value", type = "text"),
+            html_div(id = "my-div"),
+            html_div(id = global_id)    
+        end
+    end 
+    app.layout = layout_func
+    handler = Dash.make_handler(app)
+    request = HTTP.Request("GET", "/_dash-layout")
+
+    response = HTTP.handle(handler, request)
+    @test response.status == 200
+    body_str = String(response.body)
+    @test body_str == JSON2.write(layout_func())
+    @test occursin("my_div2", body_str)
+
+    global_id = "my_div3"
+    response = HTTP.handle(handler, request)
+    @test response.status == 200
+    body_str = String(response.body)
+    @test body_str == JSON2.write(layout_func())
+    @test occursin("my_div3", body_str)
+
+end
+
 @testset "assets" begin
-    app = dash("Test app", assets_folder = "assets") do
-        html_div() do            
+    app = dash("Test app", assets_folder = "assets")
+    app.layout = html_div() do            
             html_img(src = "assets/test.png")             
         end
-    end
     @test app.config.assets_folder == joinpath(pwd(),"assets")
     handler = Dash.make_handler(app)
     request = HTTP.Request("GET", "/assets/test.png")
@@ -244,12 +267,12 @@ end
 end
 
 @testset "PreventUpdate and no_update" begin
-    app = dash("Test app") do
-        html_div() do
+    app = dash("Test app")
+
+    app.layout = html_div() do
             html_div(10, id = "my-id"),
             html_div(id = "my-div")        
         end
-    end
     callback!(app, callid"my-id.children => my-div.children") do value
         throw(PreventUpdate())
     end
@@ -263,13 +286,12 @@ end
     @test response.status == 204
     @test length(response.body) == 0
 
-    app = dash("Test app") do
-        html_div() do
+    app = dash("Test app")
+    app.layout = html_div() do
             html_div(10, id = "my-id"),
             html_div(id = "my-div"),
             html_div(id = "my-div2")          
         end
-    end
     callback!(app, callid"my-id.children => my-div.children, my-div2.children") do value
         no_update(), "test"
     end
@@ -284,24 +306,23 @@ end
 end
 
 @testset "wildprops" begin
-    app = dash("Test app", external_stylesheets=["test.css"]) do
-        html_div() do            
-            html_div(;id = "my-div", @wildprop("data-attr" = "ffff")),
-            html_div(;id = "my-div2", @wildprop("aria-attr" = "gggg"))    
+    app = dash("Test app", external_stylesheets=["test.css"])
+
+    app.layout = html_div() do            
+            html_div(;id = "my-div", var"data-attr" = "ffff"),
+            html_div(;id = "my-div2", var"aria-attr" = "gggg")    
         end
-    end
     callback!(app, callid"my-div.children => my-div2.aria-attr") do v
     
     end
 end
 
 @testset "pass changed props" begin
-    app = dash("Test app") do
-        html_div() do
+    app = dash("Test app")
+    app.layout = html_div() do
             html_div(10, id = "my-id"),
             html_div(id = "my-div")        
         end
-    end
     callback!(app, callid"my-id.children => my-div.children", pass_changed_props = true) do changed, value
         @test "my-id.children" in changed
         return value
@@ -312,7 +333,6 @@ end
     test_json = """{"output":"my-div.children","changedPropIds":["my-id.children"],"inputs":[{"id":"my-id","property":"children","value":10}]}"""
         
     result = Dash._process_callback(app, test_json)
-    @show result
     @test length(result[:response]) == 1
     
     @test result[:response][:props][:children] == 10
@@ -322,6 +342,7 @@ end
 @testset "HTTP Compression" begin
     # test compression of assets
     app = dash("Test app", assets_folder = "assets_compressed", compress = true)
+    app.layout = html_div() 
     handler = Dash.make_handler(app)
 
     # ensure no compression of assets when Accept-Encoding not passed
@@ -339,9 +360,32 @@ end
     @test in("Content-Encoding"=>"gzip", response.headers)
 
     # test cases for compress = false
-    app = dash("Test app", assets_folder = "assets", compress=false) do
-        html_div() do
+    app = dash("Test app", assets_folder = "assets", compress=false)
+    app.layout = html_div() do
             html_div("test")
         end
-    end
+end
+
+@testset "layout validation" begin
+    app = dash("Test app", assets_folder = "assets_compressed", compress = true)
+    @test_throws ErrorException make_handler(app)
+    app.layout = html_div(id="top") do
+        html_div(id="second") do
+            html_div("dsfsd", id = "inner1")
+        end,
+        html_div(id = "third") do
+            html_div("dsfsd", id = "inner2")
+        end
+    end 
+    make_handler(app)
+
+    app.layout = html_div(id="top") do
+        html_div(id="second") do
+            html_div("dsfsd", id = "inner1")
+        end,
+        html_div(id = "second") do
+            html_div("dsfsd", id = "inner2")
+        end
+    end 
+    @test_throws ErrorException make_handler(app)
 end

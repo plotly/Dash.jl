@@ -107,7 +107,7 @@ end
     @test "dash-renderer/dash_renderer.min.js" in app_resources.files["dash_renderer"].files
 
     test_app = dash("test", include_assets_files = false)
-    set_debug!(test_app, debug = false, serve_dev_bundles = true)
+    enable_dev_tools!(test_app, debug = false, dev_tools_serve_dev_bundles = true)
 
     app_resources = ApplicationResources(test_app, test_registry)
     @test length(app_resources.css) == 0
@@ -132,7 +132,7 @@ end
     @test "dash-renderer/dash_renderer.dev.js" in app_resources.files["dash_renderer"].files
     
     test_app = dash("test", include_assets_files = false)
-    set_debug!(test_app, debug = false, props_check = true, serve_dev_bundles = true)
+    enable_dev_tools!(test_app, debug = false, dev_tools_props_check = true, dev_tools_serve_dev_bundles = true)
 
     app_resources = ApplicationResources(test_app, test_registry)
     @test length(app_resources.css) == 0

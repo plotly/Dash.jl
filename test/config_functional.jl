@@ -74,6 +74,7 @@ end
 
 @testset "assets paths" begin
     app = dash("test app")
+    app.layout = html_div()
     handler = make_handler(app)
     request = HTTP.Request("GET", "/assets/test.png")
     res = HTTP.handle(handler, request)
@@ -86,6 +87,7 @@ end
     @test res.status == 404
 
     app = dash("test app", url_base_pathname = "/test/")
+    app.layout = html_div()
     handler = make_handler(app)
     request = HTTP.Request("GET", "/assets/test.png")
     res = HTTP.handle(handler, request)
@@ -98,6 +100,7 @@ end
     @test res.status == 404
 
     app = dash("test app", assets_url_path = "ass")
+    app.layout = html_div()
     handler = make_handler(app)
     request = HTTP.Request("GET", "/ass/test.png")
     res = HTTP.handle(handler, request)
@@ -113,6 +116,7 @@ end
     @test res.status == 404
 
     app = dash("test app", assets_folder = "images")
+    app.layout = html_div()
     handler = make_handler(app)
     request = HTTP.Request("GET", "/assets/test.png")
     res = HTTP.handle(handler, request)

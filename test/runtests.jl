@@ -1,4 +1,5 @@
-
+include("TestComponents.jl")
+using .TestComponents
 include("env.jl")
 include("resources.jl")
 include("devtools.jl")

@@ -7,7 +7,6 @@ using Dash
     @test app.name == "test app"
     @test isempty(app.config.external_stylesheets)
     @test isempty(app.config.external_scripts) 
-    #@test app.config.url_base_pathname == "/"
     @test app.config.requests_pathname_prefix == "/"
     @test app.config.routes_pathname_prefix == "/"
     @test app.config.assets_folder == joinpath(pwd(), "assets")
@@ -19,7 +18,7 @@ using Dash
     @test app.config.eager_loading == false
     
     @test isempty(app.config.meta_tags) 
-    @test app.config.index_string == Dash.default_index
+    @test app.index_string == Dash.default_index
     @test app.config.assets_external_path == nothing
 
     @test app.config.include_assets_files == true
@@ -92,8 +91,9 @@ end
     app = dash("test app"; meta_tags = [Dict(["name"=>"test", "content" => "content"])])
     @test app.config.meta_tags == [Dict(["name"=>"test", "content" => "content"])]
 
-    app = dash("test app"; index_string = "<html></html>")
-    @test app.config.index_string == "<html></html>"
+    @test_throws ErrorException app = dash("test app"; index_string = "<html></html>")
+    app = dash("test app"; index_string = "<html>{%app_entry%}{%config%}{%scripts%}</html>")
+    @test app.index_string == "<html>{%app_entry%}{%config%}{%scripts%}</html>"
 
     app = dash("test app"; assets_external_path = "external")
     @test app.config.assets_external_path == "external"

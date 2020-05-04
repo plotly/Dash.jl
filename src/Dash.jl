@@ -4,14 +4,11 @@ using MacroTools
 const ROOT_PATH = realpath(joinpath(@__DIR__, ".."))
 include("Components.jl")
 include("Front.jl")
-
-
 import .Front
-
 using .Components
 
 export dash, Component, Front, <|, @callid_str, CallbackId, callback!,
-set_debug!,
+enable_dev_tools!,
 run_server, PreventUpdate, no_update, @var_str
 
 
@@ -19,7 +16,6 @@ run_server, PreventUpdate, no_update, @var_str
 #ComponentPackages.@reg_components()
 include("env.jl")
 include("utils.jl")
-include("devtools.jl")
 include("app.jl")
 include("resources/registry.jl")
 include("resources/application.jl")
@@ -91,27 +87,29 @@ julia> run_server(handler,  HTTP.Sockets.localhost, 8080)
 
 """
 function run_server(app::DashApp, host = HTTP.Sockets.localhost, port = 8080;
-            debug = nothing, ui = nothing,
-            props_check = nothing,
-            serve_dev_bundles = nothing,
-            hot_reload = nothing,
-            hot_reload_interval = nothing,
-            hot_reload_watch_interval = nothing,
-            hot_reload_max_retry = nothing,
-            silence_routes_logging = nothing,
-            prune_errors = nothing
+            debug = nothing, 
+            dev_tools_ui = nothing,
+            dev_tools_props_check = nothing,
+            dev_tools_serve_dev_bundles = nothing,
+            dev_tools_hot_reload = nothing,
+            dev_tools_hot_reload_interval = nothing,
+            dev_tools_hot_reload_watch_interval = nothing,
+            dev_tools_hot_reload_max_retry = nothing,
+            dev_tools_silence_routes_logging = nothing,
+            dev_tools_prune_errors = nothing
             )
     @env_default!(debug, Bool, false)
     set_debug!(app, 
         debug = debug,
-        props_check = props_check,
-        serve_dev_bundles = serve_dev_bundles,
-        hot_reload = hot_reload,
-        hot_reload_interval = hot_reload_interval,
-        hot_reload_watch_interval = hot_reload_watch_interval,
-        hot_reload_max_retry = hot_reload_max_retry,
-        silence_routes_logging = silence_routes_logging,
-        prune_errors = prune_errors
+        ui = dev_tools_ui,
+        props_check = dev_tools_props_check,
+        serve_dev_bundles = dev_tools_serve_dev_bundles,
+        hot_reload = dev_tools_hot_reload,
+        hot_reload_interval = dev_tools_hot_reload_interval,
+        hot_reload_watch_interval = dev_tools_hot_reload_watch_interval,
+        hot_reload_max_retry = dev_tools_hot_reload_max_retry,
+        silence_routes_logging = dev_tools_silence_routes_logging,
+        prune_errors = dev_tools_prune_errors
     )
     handler = make_handler(app);
     @info "started"

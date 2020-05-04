@@ -97,7 +97,7 @@ favicon_html(app::DashApp) = ""
 
 function index_page(app::DashApp, resources::ApplicationResources)    
     
-    return interpolate_string(app.config.index_string,
+    result = interpolate_string(app.index_string,
         metas = metas_html(app),
         title = app.name,
         favicon = favicon_html(app),
@@ -107,4 +107,14 @@ function index_page(app::DashApp, resources::ApplicationResources)
         scripts = scripts_html(app, resources),
         renderer = renderer_html()
     )
+
+    validate_index("index", result,
+        (
+            "#react-entry-point" => r"id=\"react-entry-point\"",
+            "#_dash_config" => r"id=\"_dash-config\"",
+            "dash-renderer" => r"src=\"[^\"]*dash[-_]renderer[^\"]*\"",
+            "new DashRenderer" => r"id=\"_dash-renderer",
+        ) 
+    )
+    return result
 end

@@ -25,12 +25,14 @@ function process_index(request::HTTP.Request, state::HandlerState)
         )
 end
 
+layout_data(layout::Component) = layout
+layout_data(layout::Function) = layout()
 function process_layout(request::HTTP.Request, state::HandlerState)
             body = 
     return HTTP.Response(
         200,
         ["Content-Type", "application/json"],
-        body = JSON2.write(state.app.layout)
+        body = JSON2.write(layout_data(state.app.layout))
     )
 end
 
@@ -162,13 +164,19 @@ end
 
 const dash_router = HTTP.Router()
 
+validate_layout(layout::Component) = validate(layout)
+
+validate_layout(layout::Function) = validate_layout(layout())
+
+validate_layout(layout) = error("layout must be Component or function that returns Component")
 #For test purposes, with the ability to pass a custom registry
-function make_handler(app::DashApp, registry::ResourcesRegistry)
+function make_handler(app::DashApp, registry::ResourcesRegistry; check_layout = false)
             
 
     state = HandlerState(app, registry)
     prefix = get_setting(app, :routes_pathname_prefix)
     assets_url_path = get_setting(app, :assets_url_path)
+    check_layout && validate_layout(get_layout(app))
     
     router = Router()
     add_route!(process_index, router, prefix)
@@ -186,5 +194,5 @@ function make_handler(app::DashApp, registry::ResourcesRegistry)
 end
 
 function make_handler(app::DashApp)
-    return make_handler(app, main_registry())
+    return make_handler(app, main_registry(), check_layout = true)
 end
