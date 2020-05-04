@@ -23,12 +23,8 @@ function interpolate_string(s::String; kwargs...)
     return result
 end
 
-macro wildprop(e)
-    if e.head != :(=) || length(e.args) != 2 || !(e.args[1] isa AbstractString) 
-        error("expected AbstractString = value")
-    end
-    keys = Symbol[Symbol(e.args[1])] 
-    esc(:(NamedTuple{Tuple($(keys))}(Tuple(Any[$(e.args[2])]))...))
+macro var_str(s)
+    return Symbol(s)
 end
 
 function parse_props(s)

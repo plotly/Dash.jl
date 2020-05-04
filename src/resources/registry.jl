@@ -76,7 +76,7 @@ const resources_registry = ResourcesRegistry(
                 ),
                 Resource(
                     relative_package_path = "react-dom@16.8.6/dist/react-dom.production.min.js",
-                    external_url = "https://unpkg.com/react-dom@16.8.6/dist/react-dom.production.min.js"        
+                    external_url = "https://unpkg.com/browse/react-dom@16.8.6/umd/react-dom.production.min.js"        
                 ),
                 Resource(
                     relative_package_path = "polyfill@7.7.0/dist/polyfill.min.js",
@@ -84,7 +84,7 @@ const resources_registry = ResourcesRegistry(
                 ),
                 Resource(
                     relative_package_path = "prop-types@15.7.2/prop-types/prop-types.js",
-                    external_url = "https://unpkg.com/prop-types@15.7.2/prop-types/prop-types.js",                
+                    external_url = "https://unpkg.com/prop-types@15.7.2/prop-types.js",                
                 ),
             ]
         ),
@@ -98,7 +98,7 @@ const resources_registry = ResourcesRegistry(
                 ),
                 Resource(
                     relative_package_path = "react-dom@16.8.6/dist/react-dom.production.min.js",
-                    external_url = "https://unpkg.com/react-dom@16.8.6/dist/react-dom.production.min.js"        
+                    external_url = "https://unpkg.com/react-dom@16.8.6/umd/react-dom.production.min.js"        
                 ),
                 Resource(
                     relative_package_path = "polyfill@7.7.0/dist/polyfill.min.js",
@@ -106,7 +106,7 @@ const resources_registry = ResourcesRegistry(
                 ),
                 Resource(
                     relative_package_path = "prop-types@15.7.2/prop-types/prop-types.min.js",
-                    external_url = "https://unpkg.com/prop-types@15.7.2/prop-types/prop-types.min.js",                
+                    external_url = "https://unpkg.com/prop-types@15.7.2/prop-types.min.js",                
                 ),
             ]
         ) 
@@ -118,7 +118,7 @@ const resources_registry = ResourcesRegistry(
             Resource(
                 relative_package_path = "dash-renderer@1.2.2/dash-renderer/dash_renderer.min.js",
                 dev_package_path = "dash-renderer@1.2.2/dash-renderer/dash_renderer.dev.js",
-                external_url = "https://unpkg.com/dash-renderer@1.2.2/dash-renderer/dash_renderer.min.js"                
+                external_url = "https://unpkg.com/dash-renderer@1.2.2/dash_renderer/dash_renderer.min.js"                
             ),
             Resource(
                 relative_package_path = "dash-renderer@1.2.2/dash-renderer/dash_renderer.min.js.map",

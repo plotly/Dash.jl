@@ -12,7 +12,7 @@ using .Components
 
 export dash, Component, Front, <|, @callid_str, CallbackId, callback!,
 set_debug!,
-run_server, PreventUpdate, no_update, @wildprop
+run_server, PreventUpdate, no_update, @var_str
 
 
 
