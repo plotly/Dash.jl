@@ -109,12 +109,12 @@ function index_page(app::DashApp, resources::ApplicationResources)
     )
 
     validate_index("index", result,
-        (
+        [
             "#react-entry-point" => r"id=\"react-entry-point\"",
             "#_dash_config" => r"id=\"_dash-config\"",
             "dash-renderer" => r"src=\"[^\"]*dash[-_]renderer[^\"]*\"",
             "new DashRenderer" => r"id=\"_dash-renderer",
-        ) 
+        ] 
     )
     return result
 end

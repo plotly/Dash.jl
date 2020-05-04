@@ -23,7 +23,7 @@ function interpolate_string(s::String; kwargs...)
     return result
 end
 
-function validate_index(name::AbstractString, index::AbstractString, checks)
+function validate_index(name::AbstractString, index::AbstractString, checks::Vector)
     missings = filter(checks) do check
         !occursin(check[2], index)
     end

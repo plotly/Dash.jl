@@ -62,11 +62,11 @@ get_layout(app::DashApp) = app.layout
 function check_index_string(index_string::AbstractString)
     validate_index(
         "index_string", index_string, 
-        (
+        [
             "{%app_entry%}"=>r"{%app_entry%}",
             "{%config%}"=>r"{%config%}",
             "{%scripts%}"=>r"{%scripts%}"
-        )
+        ]
     )
 end
 function set_index_string!(app::DashApp, index_string::AbstractString)
