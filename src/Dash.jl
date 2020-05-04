@@ -99,17 +99,17 @@ function run_server(app::DashApp, host = HTTP.Sockets.localhost, port = 8080;
             dev_tools_prune_errors = nothing
             )
     @env_default!(debug, Bool, false)
-    set_debug!(app, 
+    enable_dev_tools!(app, 
         debug = debug,
-        ui = dev_tools_ui,
-        props_check = dev_tools_props_check,
-        serve_dev_bundles = dev_tools_serve_dev_bundles,
-        hot_reload = dev_tools_hot_reload,
-        hot_reload_interval = dev_tools_hot_reload_interval,
-        hot_reload_watch_interval = dev_tools_hot_reload_watch_interval,
-        hot_reload_max_retry = dev_tools_hot_reload_max_retry,
-        silence_routes_logging = dev_tools_silence_routes_logging,
-        prune_errors = dev_tools_prune_errors
+        dev_tools_ui = dev_tools_ui,
+        dev_tools_props_check = dev_tools_props_check,
+        dev_tools_serve_dev_bundles = dev_tools_serve_dev_bundles,
+        dev_tools_hot_reload = dev_tools_hot_reload,
+        dev_tools_hot_reload_interval = dev_tools_hot_reload_interval,
+        dev_tools_hot_reload_watch_interval = dev_tools_hot_reload_watch_interval,
+        dev_tools_hot_reload_max_retry = dev_tools_hot_reload_max_retry,
+        dev_tools_silence_routes_logging = dev_tools_silence_routes_logging,
+        dev_tools_prune_errors = dev_tools_prune_errors
     )
     handler = make_handler(app);
     @info "started"
