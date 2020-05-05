@@ -1,5 +1,5 @@
 using Test
-using Dash: interpolate_string, build_fingerprint, parse_fingerprint_path
+using Dash: interpolate_string, build_fingerprint, parse_fingerprint_path, exe_path
 @testset "interpolate_string" begin
     test_str = """
     {%head%}
@@ -39,4 +39,8 @@ end
     (origin, is_fp) = parse_fingerprint_path(test_url) 
     @test !is_fp
     @test origin == test_url
+end
+@testset "paths" begin
+    println(exe_path())
+    println(Base.current_project())
 end

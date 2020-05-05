@@ -25,14 +25,15 @@ Representation of Dash application.
 Not meant to be constructed directly, use `dash` function instead.
 """
 mutable struct DashApp
-    name ::String
+    root_path ::String
     config ::DashConfig
     index_string ::Union{String, Nothing}
+    title ::String
     layout ::Union{Nothing, Component, Function}
     devtools ::DevTools
     callbacks ::Dict{Symbol, Callback}
     
-    DashApp(name, config, index_string) = new(name, config, index_string, nothing, DevTools(dash_env(Bool, "debug", false)), Dict{Symbol, Callback}())
+    DashApp(name, config, index_string, title = "Dash") = new(name, config, index_string, title, nothing, DevTools(dash_env(Bool, "debug", false)), Dict{Symbol, Callback}())
     
 end
 
@@ -41,6 +42,7 @@ function Base.setproperty!(app::DashApp, property::Symbol, value)
     property == :name && return set_name!(app, value)
     property == :index_string && return set_index_string!(app, value)
     property == :layout && return set_layout!(app::DashApp, value)
+    property == :title && return set_title!(app::DashApp, value)
 
     property in fieldnames(DashApp) && error("The property `$(property)` of `DashApp` is read-only")
 
@@ -49,6 +51,10 @@ end
 
 function set_name!(app::DashApp, name)
     setfield!(app, :name, name)
+end
+
+function set_title!(app::DashApp, title)
+    setfield!(app, :title, title)
 end
 
 get_name(app::DashApp) = app.name
@@ -209,7 +215,7 @@ Construct a dash app
         files and data served by HTTP.jl when supported by the client. Set to
         ``false`` to disable compression completely.
 """
-function dash(name::String = dash_env("dash_name", "");
+function dash(root_path::String = pwd();
         external_stylesheets = ExternalSrcType[],
         external_scripts  = ExternalSrcType[],
         url_base_pathname = dash_env("url_base_pathname"),        
@@ -251,6 +257,6 @@ function dash(name::String = dash_env("dash_name", "");
             show_undo_redo,
             compress
         )
-        result = DashApp(name, config, index_string)
+        result = DashApp(root_path, config, index_string)
     return result
 end

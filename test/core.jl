@@ -76,7 +76,7 @@ end=#
 end
 
 @testset "callback!" begin
-    app = dash("Test app")
+    app = dash()
     app.layout = html_div() do
             dcc_input(id = "my-id", value="initial value", type = "text"),
             html_div(id = "my-div")        
@@ -89,7 +89,7 @@ end
     @test haskey(app.callbacks, Symbol("my-div.children"))
     @test app.callbacks[Symbol("my-div.children")].func("test") == "test"
 
-    app = dash("Test app")
+    app = dash()
     app.layout = html_div() do
             dcc_input(id = "my-id", value="initial value", type = "text"),
             html_div(id = "my-div"),
@@ -102,7 +102,7 @@ end
     @test haskey(app.callbacks, Symbol("..my-div.children...my-div2.children.."))
     @test app.callbacks[Symbol("..my-div.children...my-div2.children..")].func("state", "value") == ("state", "value")
 
-    app = dash("Test app")
+    app = dash()
      
     app.layout = html_div() do
             dcc_input(id = "my-id", value="initial value", type = "text"),
@@ -151,7 +151,7 @@ end
     end
     
 
-    app = dash("Test app")
+    app = dash()
     app.layout = html_div() do
             dcc_input(id = "my-id", value="initial value", type = "text"),
             html_div("test2", id = "my-div"),
@@ -166,7 +166,7 @@ end
 end
 
 @testset "handler" begin
-    app = dash("Test app", external_stylesheets=["test.css"])
+    app = dash(external_stylesheets=["test.css"])
     app.layout = html_div() do
             dcc_input(id = "my-id", value="initial value", type = "text"),
             html_div(id = "my-div"),
@@ -219,7 +219,7 @@ end
 end
 
 @testset "layout as function" begin
-    app = dash("Test app")
+    app = dash()
     global_id = "my_div2"
     layout_func = () -> begin
         html_div() do
@@ -248,7 +248,7 @@ end
 end
 
 @testset "assets" begin
-    app = dash("Test app", assets_folder = "assets")
+    app = dash(assets_folder = "assets")
     app.layout = html_div() do            
             html_img(src = "assets/test.png")             
         end
@@ -267,7 +267,7 @@ end
 end
 
 @testset "PreventUpdate and no_update" begin
-    app = dash("Test app")
+    app = dash()
 
     app.layout = html_div() do
             html_div(10, id = "my-id"),
@@ -286,7 +286,7 @@ end
     @test response.status == 204
     @test length(response.body) == 0
 
-    app = dash("Test app")
+    app = dash()
     app.layout = html_div() do
             html_div(10, id = "my-id"),
             html_div(id = "my-div"),
@@ -306,7 +306,7 @@ end
 end
 
 @testset "wildprops" begin
-    app = dash("Test app", external_stylesheets=["test.css"])
+    app = dash(external_stylesheets=["test.css"])
 
     app.layout = html_div() do            
             html_div(;id = "my-div", var"data-attr" = "ffff"),
@@ -318,7 +318,7 @@ end
 end
 
 @testset "pass changed props" begin
-    app = dash("Test app")
+    app = dash()
     app.layout = html_div() do
             html_div(10, id = "my-id"),
             html_div(id = "my-div")        
@@ -341,7 +341,7 @@ end
 
 @testset "HTTP Compression" begin
     # test compression of assets
-    app = dash("Test app", assets_folder = "assets_compressed", compress = true)
+    app = dash(assets_folder = "assets_compressed", compress = true)
     app.layout = html_div() 
     handler = Dash.make_handler(app)
 
@@ -360,14 +360,14 @@ end
     @test in("Content-Encoding"=>"gzip", response.headers)
 
     # test cases for compress = false
-    app = dash("Test app", assets_folder = "assets", compress=false)
+    app = dash(assets_folder = "assets", compress=false)
     app.layout = html_div() do
             html_div("test")
         end
 end
 
 @testset "layout validation" begin
-    app = dash("Test app", assets_folder = "assets_compressed", compress = true)
+    app = dash(assets_folder = "assets_compressed", compress = true)
     @test_throws ErrorException make_handler(app)
     app.layout = html_div(id="top") do
         html_div(id="second") do

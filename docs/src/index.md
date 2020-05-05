@@ -33,7 +33,7 @@ import Pkg; Pkg.add("Dashboards")
 ```jldoctest
 julia> import HTTP
 julia> using Dashboards
-julia> app = Dash("Test app", external_stylesheets = ["https://codepen.io/chriddyp/pen/bWLwgP.css"]) do
+julia> app = Dash(external_stylesheets = ["https://codepen.io/chriddyp/pen/bWLwgP.css"]) do
     html_div() do
         html_h1("Hello Dashboards"),
         html_div("Dashboards: Julia interface for Dash"),
@@ -68,7 +68,7 @@ __Once you have run the code to create the Dashboard, go to `http://127.0.0.1:80
 ```jldoctest
 julia> import HTTP
 julia> using Dashboards
-julia> app = Dash("Test app", external_stylesheets = ["https://codepen.io/chriddyp/pen/bWLwgP.css"]) do
+julia> app = Dash(external_stylesheets = ["https://codepen.io/chriddyp/pen/bWLwgP.css"]) do
     html_div() do
         dcc_input(id = "my-id", value="initial value", type = "text"),
         html_div(id = "my-div")        
@@ -89,7 +89,7 @@ julia> HTTP.serve(handler, HTTP.Sockets.localhost, 8080)
 ```jldoctest
 julia> import HTTP
 julia> using Dashboards
-julia> app = Dash("Test app", external_stylesheets = ["https://codepen.io/chriddyp/pen/bWLwgP.css"]) do
+julia> app = Dash(external_stylesheets = ["https://codepen.io/chriddyp/pen/bWLwgP.css"]) do
     html_div() do
         dcc_input(id = "my-id", value="initial value", type = "text"),
         html_div(id = "my-div"),

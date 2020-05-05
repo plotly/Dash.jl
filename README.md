@@ -21,7 +21,7 @@ import Pkg; Pkg.add(Pkg.PackageSpec(url = "https://github.com/plotly/Dash.jl.git
 
 ```jldoctest
 julia> using Dash
-julia> app = dash("Test app", external_stylesheets = ["https://codepen.io/chriddyp/pen/bWLwgP.css"])
+julia> app = dash(external_stylesheets = ["https://codepen.io/chriddyp/pen/bWLwgP.css"])
  
 julia> app.layout = html_div() do
         html_h1("Hello Dash"),
@@ -55,7 +55,7 @@ __Once you have run the code to create the Dashboard, go to `http://127.0.0.1:80
 ```jldoctest
 
 julia> using Dash
-julia> app = dash("Test app", external_stylesheets = ["https://codepen.io/chriddyp/pen/bWLwgP.css"])
+julia> app = dash(external_stylesheets = ["https://codepen.io/chriddyp/pen/bWLwgP.css"])
 
 julia> app.layout = html_div() do
         dcc_input(id = "my-id", value="initial value", type = "text"),
@@ -76,7 +76,7 @@ julia> run_server(app, "0.0.0.0", 8080)
 ### States and Multiple Outputs
 ```jldoctest
 julia> using Dash
-julia> app = dash("Test app", external_stylesheets = ["https://codepen.io/chriddyp/pen/bWLwgP.css"])
+julia> app = dash(external_stylesheets = ["https://codepen.io/chriddyp/pen/bWLwgP.css"])
  
 julia> app.layout = html_div() do
         dcc_input(id = "my-id", value="initial value", type = "text"),

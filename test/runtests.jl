@@ -9,5 +9,4 @@ include("config_functional.jl")
 include("utils.jl")
 
 include("core.jl")
-#include("types.jl")
 #include("dev.jl")
