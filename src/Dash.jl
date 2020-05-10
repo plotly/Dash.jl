@@ -57,14 +57,14 @@ callback!(app, callid"graphTitle.value => graph.figure") do value
     )
 end
 handle = make_handler(app, debug = true)
-run_server(handle, HTTP.Sockets.localhost, 8080)
+run_server(handle, HTTP.Sockets.localhost, 8050)
 ```
 
 """ Dashboards
 
 
 """
-    run_server(app::DashApp, host = HTTP.Sockets.localhost, port = 8080; debug::Bool = false)
+    run_server(app::DashApp, host = HTTP.Sockets.localhost, port = 8050; debug::Bool = false)
 
 Run Dash server
 
@@ -82,11 +82,11 @@ julia> app = dash("Test") do
     end
 end
 julia>
-julia> run_server(handler,  HTTP.Sockets.localhost, 8080)
+julia> run_server(handler,  HTTP.Sockets.localhost, 8050)
 ```
 
 """
-function run_server(app::DashApp, host = HTTP.Sockets.localhost, port = 8080;
+function run_server(app::DashApp, host = HTTP.Sockets.localhost, port = 8050;
             debug = nothing, 
             dev_tools_ui = nothing,
             dev_tools_props_check = nothing,
