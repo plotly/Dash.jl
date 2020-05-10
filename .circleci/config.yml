@@ -6,7 +6,7 @@ jobs:
     working_directory: /root/project/Dash
 
     docker:
-      - image: plotly/julia:ci 
+      - image: julia:latest 
 
     steps:
       - checkout
