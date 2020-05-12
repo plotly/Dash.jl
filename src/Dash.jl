@@ -112,7 +112,7 @@ function run_server(app::DashApp, host = HTTP.Sockets.localhost, port = 8050;
         dev_tools_prune_errors = dev_tools_prune_errors
     )
     handler = make_handler(app);
-    @info "started"
+    @info string("Running on http://", host, ":", port)
     HTTP.serve(handler, host, port)
 end
 
