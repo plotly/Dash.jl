@@ -44,23 +44,23 @@ def test_jltr001r_undo_redo(dashjl):
     input1 = dashjl.find_element("#a")
     input1.send_keys("xyz")
     dashjl.wait_for_text_to_equal(
-        "#b", "xyz", timeout=1
+        "#b", "xyz", timeout=2
     )
     click_undo(dashjl)
     dashjl.wait_for_text_to_equal(
-        "#b", "xy", timeout=1
+        "#b", "xy", timeout=2
     )
     click_undo(dashjl)
     dashjl.wait_for_text_to_equal(
-        "#b", "x", timeout=1
+        "#b", "x", timeout=2
     )
     click_redo(dashjl)
     dashjl.wait_for_text_to_equal(
-        "#b", "xy", timeout=1
+        "#b", "xy", timeout=2
     )
     dashjl.percy_snapshot(name="undo-redo")
     click_undo(dashjl)
     click_undo(dashjl)
     dashjl.wait_for_text_to_equal(
-        "#b", "", timeout=1
+        "#b", "", timeout=2
     )
