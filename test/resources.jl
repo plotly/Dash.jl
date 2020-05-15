@@ -83,7 +83,7 @@ end
         )    
     )
 
-    test_app = dash("test", include_assets_files = false)
+    test_app = dash(include_assets_files = false)
 
     app_resources = ApplicationResources(test_app, test_registry)
     @test length(app_resources.css) == 0
@@ -106,7 +106,7 @@ end
     @test "path2.prod.js" in app_resources.files["dash_renderer"].files
     @test "dash-renderer/dash_renderer.min.js" in app_resources.files["dash_renderer"].files
 
-    test_app = dash("test", include_assets_files = false)
+    test_app = dash(include_assets_files = false)
     enable_dev_tools!(test_app, debug = false, dev_tools_serve_dev_bundles = true)
 
     app_resources = ApplicationResources(test_app, test_registry)
@@ -131,7 +131,7 @@ end
     @test "path2.prod.js" in app_resources.files["dash_renderer"].files
     @test "dash-renderer/dash_renderer.dev.js" in app_resources.files["dash_renderer"].files
     
-    test_app = dash("test", include_assets_files = false)
+    test_app = dash(include_assets_files = false)
     enable_dev_tools!(test_app, debug = false, dev_tools_props_check = true, dev_tools_serve_dev_bundles = true)
 
     app_resources = ApplicationResources(test_app, test_registry)
@@ -156,7 +156,7 @@ end
     @test "path2.dev.js" in app_resources.files["dash_renderer"].files
     @test "dash-renderer/dash_renderer.dev.js" in app_resources.files["dash_renderer"].files
 
-    test_app = dash("test", serve_locally = false, include_assets_files = false)
+    test_app = dash(serve_locally = false, include_assets_files = false)
 
     app_resources = ApplicationResources(test_app, test_registry)
     @test length(app_resources.css) == 0
@@ -221,7 +221,7 @@ end
         )    
     )
 
-    test_app = dash("test", include_assets_files = false)
+    test_app = dash(include_assets_files = false)
 
     app_resources = ApplicationResources(test_app, test_registry)
     @test length(app_resources.css) == 0
@@ -235,7 +235,7 @@ end
     @test "dash-renderer/dash_renderer.dyn.js" in app_resources.files["dash_renderer"].files
     @test "dash-renderer/dash_renderer.eag.js" in app_resources.files["dash_renderer"].files
     
-    test_app = dash("test", eager_loading = true, include_assets_files = false)
+    test_app = dash(eager_loading = true, include_assets_files = false)
 
     app_resources = ApplicationResources(test_app, test_registry)
     @test length(app_resources.css) == 0
@@ -300,7 +300,7 @@ end
         )
     )  
 
-    test_app = dash("test", include_assets_files = false)
+    test_app = dash(include_assets_files = false)
 
     app_resources = ApplicationResources(test_app, test_registry)
     @test length(app_resources.css) == 1
@@ -356,7 +356,7 @@ end
 
     external_css = ["test.css", Dict("rel"=>"stylesheet", "href"=>"test.css")]
     external_js = ["test.js", Dict("crossorigin"=>"anonymous", "src"=>"test.js")]
-    test_app = dash("test", external_stylesheets = external_css, include_assets_files = false, external_scripts = external_js)
+    test_app = dash(external_stylesheets = external_css, include_assets_files = false, external_scripts = external_js)
 
     app_resources = ApplicationResources(test_app, test_registry)
     @test length(app_resources.css) == 2
@@ -404,7 +404,7 @@ end
         )    
     )
 
-    test_app = dash("test", assets_folder = "assets_include")
+    test_app = dash(assets_folder = "assets_include")
 
     app_resources = ApplicationResources(test_app, test_registry)
     @test length(app_resources.css) == 1
@@ -432,14 +432,14 @@ end
         r.path == "sub/sub2.js"
     end
 
-    test_app = dash("test", assets_folder = "assets_include", include_assets_files = false)
+    test_app = dash(assets_folder = "assets_include", include_assets_files = false)
 
     app_resources = ApplicationResources(test_app, test_registry)
     @test length(app_resources.css) == 0
     @test length(app_resources.js) == 0
     @test app_resources.favicon ===  nothing
 
-    test_app = dash("test", assets_folder = "assets_include", serve_locally = false)
+    test_app = dash(assets_folder = "assets_include", serve_locally = false)
 
     app_resources = ApplicationResources(test_app, test_registry)
     @test length(app_resources.css) == 1
@@ -467,7 +467,7 @@ end
         r.path == "sub/sub2.js"
     end
 
-    test_app = dash("test", assets_folder = "assets_include", serve_locally = false, assets_external_path = "http://ext/")
+    test_app = dash(assets_folder = "assets_include", serve_locally = false, assets_external_path = "http://ext/")
 
     app_resources = ApplicationResources(test_app, test_registry)
     @test length(app_resources.css) == 1
@@ -497,7 +497,7 @@ end
         r.url == "http://ext/sub/sub2.js"
     end
     
-    test_app = dash("test", assets_folder = "assets_include", assets_ignore = ".*1")
+    test_app = dash(assets_folder = "assets_include", assets_ignore = ".*1")
 
     app_resources = ApplicationResources(test_app, test_registry)
     @test length(app_resources.css) == 1

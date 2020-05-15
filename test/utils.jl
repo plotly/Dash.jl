@@ -1,5 +1,5 @@
 using Test
-using Dash: interpolate_string, build_fingerprint, parse_fingerprint_path, exe_path
+using Dash: interpolate_string, build_fingerprint, parse_fingerprint_path
 @testset "interpolate_string" begin
     test_str = """
     {%head%}
@@ -40,7 +40,11 @@ end
     @test !is_fp
     @test origin == test_url
 end
-@testset "paths" begin
-    println(exe_path())
-    println(Base.current_project())
+
+using Dash: parse_includes
+@testset "parse_includes" begin
+    files = parse_includes(joinpath("hot_reload", "app.jl"))
+    for f in ["app.jl", "file1.jl", "file2.jl", "file3.jl", "file4.jl"]
+        @test abspath(joinpath("hot_reload", f)) in files
+    end
 end

@@ -252,7 +252,7 @@ end
     app.layout = html_div() do            
             html_img(src = "assets/test.png")             
         end
-    @test app.config.assets_folder == joinpath(pwd(),"assets")
+    @test Dash.get_assets_path(app) == joinpath(pwd(),"assets")
     handler = Dash.make_handler(app)
     request = HTTP.Request("GET", "/assets/test.png")
     response = HTTP.handle(handler, request)

@@ -221,7 +221,7 @@ end
 
 @testset "index_string" begin
     index_string = "test test test, {%metas%},{%title%},{%favicon%},{%css%},{%app_entry%},{%config%},{%scripts%},{%renderer%}"
-    app = dash("test", index_string = index_string)
+    app = dash(index_string = index_string)
     resources = ApplicationResources(app, main_registry()) 
     index_page = Dash.index_page(app, resources)
     @test startswith(index_page, "test test test,")  
@@ -230,13 +230,13 @@ end
 
 @testset "show_undo_redo" begin
     
-    app = dash("test")
+    app = dash()
     
     resources = ApplicationResources(app, main_registry()) 
     index_page = Dash.index_page(app, resources)
     @test !isnothing(findfirst("\"show_undo_redo\":false", index_page))
 
-    app = dash("test", show_undo_redo = true)
+    app = dash(show_undo_redo = true)
     
     resources = ApplicationResources(app, main_registry()) 
     index_page = Dash.index_page(app, resources)

@@ -26,6 +26,7 @@ Not meant to be constructed directly, use `dash` function instead.
 """
 mutable struct DashApp
     root_path ::String
+    is_interactive ::Bool
     config ::DashConfig
     index_string ::Union{String, Nothing}
     title ::String
@@ -33,7 +34,7 @@ mutable struct DashApp
     devtools ::DevTools
     callbacks ::Dict{Symbol, Callback}
     
-    DashApp(name, config, index_string, title = "Dash") = new(name, config, index_string, title, nothing, DevTools(dash_env(Bool, "debug", false)), Dict{Symbol, Callback}())
+    DashApp(root_path, is_interactive, config, index_string, title = "Dash") = new(root_path, is_interactive, config, index_string, title, nothing, DevTools(dash_env(Bool, "debug", false)), Dict{Symbol, Callback}())
     
 end
 
@@ -112,6 +113,8 @@ get_devsetting(app::DashApp, name::Symbol) = getproperty(app.devtools, name)
 
 get_setting(app::DashApp, name::Symbol) = getproperty(app.config, name)
 
+get_assets_path(app::DashApp) = joinpath(app.root_path, get_setting(app, :assets_folder))
+
 """
     dash(name::String;
             external_stylesheets,
@@ -136,7 +139,6 @@ get_setting(app::DashApp, name::Symbol) = getproperty(app.config, name)
 Construct a dash app 
 
 # Arguments
-- `name::String` - The name of your application
 - `assets_folder::String` - a path, relative to the current working directory,
         for extra files to be used in the browser. Default ``'assets'``.
 
@@ -215,7 +217,7 @@ Construct a dash app
         files and data served by HTTP.jl when supported by the client. Set to
         ``false`` to disable compression completely.
 """
-function dash(root_path::String = pwd();
+function dash(;
         external_stylesheets = ExternalSrcType[],
         external_scripts  = ExternalSrcType[],
         url_base_pathname = dash_env("url_base_pathname"),        
@@ -245,7 +247,7 @@ function dash(root_path::String = pwd();
                 requests_pathname_prefix,
                 routes_pathname_prefix
                 )...,
-            absolute_assets_path(assets_folder),
+            assets_folder,
             lstrip(assets_url_path, '/'),
             assets_ignore,             
             serve_locally, 
@@ -257,6 +259,6 @@ function dash(root_path::String = pwd();
             show_undo_redo,
             compress
         )
-        result = DashApp(root_path, config, index_string)
+        result = DashApp(app_root_path(), isinteractive(), config, index_string)
     return result
 end

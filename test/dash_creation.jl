@@ -9,7 +9,7 @@ using Dash
     @test isempty(app.config.external_scripts) 
     @test app.config.requests_pathname_prefix == "/"
     @test app.config.routes_pathname_prefix == "/"
-    @test app.config.assets_folder == joinpath(pwd(), "assets")
+    @test app.config.assets_folder == "assets"
     @test app.config.assets_url_path == "assets"
     @test app.config.assets_ignore == ""
     
@@ -71,7 +71,7 @@ end
     
 
     app = dash(; assets_folder = "images") 
-    @test app.config.assets_folder == joinpath(pwd(), "images")
+    @test app.config.assets_folder == "images"
 
     app = dash(; assets_url_path = "/images") 
     @test app.config.assets_url_path == "images"

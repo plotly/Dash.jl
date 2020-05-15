@@ -151,7 +151,7 @@ end
 
 function process_assets(request::HTTP.Request, state::HandlerState; file_path::AbstractString)
     app = state.app
-    filename = joinpath(get_setting(app, :assets_folder), file_path)
+    filename = joinpath(get_assets_path(app), file_path)
 
     try
         file_contents = read(filename)

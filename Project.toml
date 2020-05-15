@@ -13,6 +13,7 @@ LibGit2 = "76f85450-5226-5b5a-8eaa-529ad045b433"
 MD5 = "6ac74813-4b46-53a4-afec-0b5dc9d7885c"
 MacroTools = "1914dd2f-81c6-5fcd-8719-6d5c9610ff09"
 PlotlyBase = "a03496cd-edff-5a9b-9e67-9cda94a718b5"
+Sockets = "6462fe0b-24de-5631-8697-dd941f90decc"
 Test = "8dfed614-e22c-5e08-85e1-65c5234f0b40"
 
 [compat]

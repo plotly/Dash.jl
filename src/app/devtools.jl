@@ -3,8 +3,8 @@ struct DevTools
     props_check::Bool
     serve_dev_bundles::Bool
     hot_reload::Bool
-    hot_reload_interval::Float32
-    hot_reload_watch_interval::Float32
+    hot_reload_interval::Float64
+    hot_reload_watch_interval::Float64
     hot_reload_max_retry::Int
     silence_routes_logging::Bool
     prune_errors::Bool

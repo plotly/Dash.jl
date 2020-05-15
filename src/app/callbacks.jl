@@ -20,7 +20,7 @@ If `pass_changed_props` is true then the first argument of callback is an array 
 # Examples
 
 ```julia
-app = dash("Test") do
+app = dash) do
     html_div() do
         dcc_input(id="graphTitle", value="Let's Dance!", type = "text"),
         dcc_input(id="graphTitle2", value="Let's Dance!", type = "text"),

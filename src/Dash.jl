@@ -1,5 +1,6 @@
 module Dash
 import HTTP, JSON2, CodecZlib, MD5
+using Sockets
 using MacroTools
 const ROOT_PATH = realpath(joinpath(@__DIR__, ".."))
 include("Components.jl")
@@ -19,7 +20,6 @@ include("utils.jl")
 include("app.jl")
 include("resources/registry.jl")
 include("resources/application.jl")
-include("config.jl")
 include("handlers.jl")
 
 @doc """
@@ -31,7 +31,7 @@ Julia backend for [Plotly Dash](https://github.com/plotly/dash)
 ```julia
 
 using Dash
-app = dash("Test", external_stylesheets=["https://codepen.io/chriddyp/pen/bWLwgP.css"]) do
+app = dash(external_stylesheets=["https://codepen.io/chriddyp/pen/bWLwgP.css"]) do
     html_div() do
         dcc_input(id="graphTitle", value="Let's Dance!", type = "text"),
         html_div(id="outputID"),            
@@ -76,7 +76,7 @@ Run Dash server
 
 #Examples
 ```jldoctest
-julia> app = dash("Test") do
+julia> app = dash) do
     html_div() do
         html_h1("Test Dashboard")
     end
@@ -112,9 +112,20 @@ function run_server(app::DashApp, host = HTTP.Sockets.localhost, port = 8080;
         dev_tools_prune_errors = dev_tools_prune_errors
     )
     handler = make_handler(app);
-    @info "started"
-    HTTP.serve(handler, host, port)
+    main_func = () -> begin
+        server = Sockets.listen(get_inetaddr(host, port))
+        task = @async HTTP.serve(handler, host, port; server = server)
+        @info "started"
+        wait(task)
+    end
+    if get_devsetting(app, :hot_reload)
+        hot_restart(main_func, check_interval = get_devsetting(app, :hot_reload_watch_interval))
+    else
+        main_func()
+    end
 end
 
+get_inetaddr(host::String, port::Integer) = Sockets.InetAddr(parse(IPAddr, host), port)
+get_inetaddr(host::IPAddr, port::Integer) = Sockets.InetAddr(host, port)
 
 end # module
