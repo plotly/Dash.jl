@@ -9,3 +9,6 @@ lib/*
 Manifest.toml
 .DS_Store
 docs/build
+venv
+*.pyc
+tmp
