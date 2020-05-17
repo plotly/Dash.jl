@@ -17,7 +17,6 @@ Base.convert(::Type{Vector{IdProp}}, v::IdProp) = [v]
 struct Callback
     func ::Function
     id ::CallbackId
-    pass_changed_props ::Bool
 end
 
 struct PreventUpdate <: Exception

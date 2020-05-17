@@ -46,9 +46,6 @@ function _process_callback(app::DashApp, body::String)
         return get(x, :value, nothing)        
     end 
     args = []
-    if app.callbacks[output].pass_changed_props
-        push!(args, params[:changedPropIds])
-    end
     if haskey(params, :state)
         append!(args, convert_values(params.state))        
     end

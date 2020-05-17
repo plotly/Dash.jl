@@ -317,28 +317,6 @@ end
     end
 end
 
-@testset "pass changed props" begin
-    app = dash("Test app")
-    app.layout = html_div() do
-            html_div(10, id = "my-id"),
-            html_div(id = "my-div")        
-        end
-    callback!(app, callid"my-id.children => my-div.children", pass_changed_props = true) do changed, value
-        @test "my-id.children" in changed
-        return value
-    end
-
-    handler = Dash.make_handler(app)
-
-    test_json = """{"output":"my-div.children","changedPropIds":["my-id.children"],"inputs":[{"id":"my-id","property":"children","value":10}]}"""
-        
-    result = Dash._process_callback(app, test_json)
-    @test length(result[:response]) == 1
-    
-    @test result[:response][:props][:children] == 10
-
-end
-
 @testset "HTTP Compression" begin
     # test compression of assets
     app = dash("Test app", assets_folder = "assets_compressed", compress = true)
