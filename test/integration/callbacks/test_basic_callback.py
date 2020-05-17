@@ -53,10 +53,9 @@ def test_jlcbsc002_callbacks_generating_children(dashjl):
 
     dashjl.find_element("#sub-input-1").send_keys("deadbeef")
 
-    assert (
-        dashjl.find_element("#sub-output-1").text
-        == pad_input.attrs["value"] + "deadbeef"
-    ), "deadbeef is added"
+    dashjl.wait_for_text_to_equal(
+        "#sub-output-1", pad_input.attrs["value"] + "deadbeef", timeout=2
+    )
 
 
 def test_jlcbsc003_callback_with_unloaded_async_component(dashjl):
