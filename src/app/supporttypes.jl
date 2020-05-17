@@ -6,9 +6,9 @@ struct CallbackId
     output ::Vector{IdProp}    
 end
 
-CallbackId(;input ::Union{Vector{IdProp}, IdProp},
-            output ::Union{Vector{IdProp}, IdProp},
-            state ::Union{Vector{IdProp}, IdProp} = Vector{IdProp}()
+CallbackId(;input,
+            output,
+            state = Vector{IdProp}()
             ) = CallbackId(state, input, output)
 
 

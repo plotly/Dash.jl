@@ -84,7 +84,7 @@ end
     @test res.status == 404
     request = HTTP.Request("GET", "/images/test.png")
     res = HTTP.handle(handler, request)
-    @test res.status == 404
+    @test startswith(HTTP.header(res, "Content-Type"), "text/html")
 
     app = dash("test app", url_base_pathname = "/test/")
     app.layout = html_div()
@@ -110,10 +110,10 @@ end
     @test res.status == 404
     request = HTTP.Request("GET", "/assets/test3.png")
     res = HTTP.handle(handler, request)
-    @test res.status == 404
+    @test startswith(HTTP.header(res, "Content-Type"), "text/html")
     request = HTTP.Request("GET", "/images/test.png")
     res = HTTP.handle(handler, request)
-    @test res.status == 404
+    @test startswith(HTTP.header(res, "Content-Type"), "text/html")
 
     app = dash("test app", assets_folder = "images")
     app.layout = html_div()
@@ -126,7 +126,7 @@ end
     @test res.status == 200
     request = HTTP.Request("GET", "/images/test.png")
     res = HTTP.handle(handler, request)
-    @test res.status == 404
+    @test startswith(HTTP.header(res, "Content-Type"), "text/html")
 end
 
 @testset "suppress_callback_exceptions" begin
