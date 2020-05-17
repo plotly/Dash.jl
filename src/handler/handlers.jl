@@ -46,9 +46,6 @@ function _process_callback(app::DashApp, body::String)
         return get(x, :value, nothing)        
     end 
     args = []
-    if app.callbacks[output].pass_changed_props
-        push!(args, params[:changedPropIds])
-    end
     if haskey(params, :state)
         append!(args, convert_values(params.state))        
     end
@@ -179,12 +176,13 @@ function make_handler(app::DashApp, registry::ResourcesRegistry; check_layout = 
     check_layout && validate_layout(get_layout(app))
     
     router = Router()
-    add_route!(process_index, router, prefix)
     add_route!(process_layout, router, "$(prefix)_dash-layout")
     add_route!(process_dependencies, router, "$(prefix)_dash-dependencies")
     add_route!(process_resource, router, "$(prefix)_dash-component-suites/<namespace>/<path>")
     add_route!(process_assets, router, "$(prefix)$(assets_url_path)/<file_path>")
     add_route!(process_callback, router, "POST", "$(prefix)_dash-update-component")
+    add_route!(process_index, router, "$prefix/*")
+    add_route!(process_index, router, "$prefix")
 
     handler = state_handler(router, state)
     get_setting(app, :compress) && (handler = compress_handler(handler))

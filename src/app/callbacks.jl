@@ -11,11 +11,10 @@ function output_string(id::CallbackId)
 end
 
 """
-    callback!(func::Function, app::Dash, id::CallbackId; pass_changed_props = false)
+    callback!(func::Function, app::Dash, id::CallbackId)
 
 Create a callback that updates the output by calling function `func`.
 
-If `pass_changed_props` is true then the first argument of callback is an array of changed properties
 
 # Examples
 
@@ -48,30 +47,19 @@ callback!(app, callid"{graphTitle.type} graphTitle.value => outputID.children, o
 end
 ```
 
-Using `changed_props`
-
-```julia
-callback!(app, callid"graphTitle.value, graphTitle2.value => outputID.children", pass_changed_props = true) do changed, input1, input2
-    if "graphTitle.value" in changed
-        return input1
-    else
-        return input2
-    end
-end
-```
 
 """
-function callback!(func::Function, app::DashApp, id::CallbackId; pass_changed_props = false)    
+function callback!(func::Function, app::DashApp, id::CallbackId)    
     
-    check_callback(func, app, id, pass_changed_props)
+    check_callback(func, app, id)
     
     out_symbol = Symbol(output_string(id))
         
-    push!(app.callbacks, out_symbol => Callback(func, id, pass_changed_props))
+    push!(app.callbacks, out_symbol => Callback(func, id))
 end
 
 
-function check_callback(func::Function, app::DashApp, id::CallbackId, pass_changed_props)
+function check_callback(func::Function, app::DashApp, id::CallbackId)
 
     
 
@@ -86,7 +74,6 @@ function check_callback(func::Function, app::DashApp, id::CallbackId, pass_chang
     end
 
     args_count = length(id.state) + length(id.input)
-    pass_changed_props && (args_count+=1)
 
     !hasmethod(func, NTuple{args_count, Any}) && error("Callback function don't have method with proper arguments")
 
