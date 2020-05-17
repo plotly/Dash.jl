@@ -102,7 +102,7 @@ end
 
 function mime_by_path(path)
     endswith(path, ".js") && return "application/javascript"
-    endswith(path, ".css") && return "application/css"
+    endswith(path, ".css") && return "text/css"
     endswith(path, ".map") && return "application/json"
     return nothing
 end
@@ -151,8 +151,11 @@ function process_assets(request::HTTP.Request, state::HandlerState; file_path::A
     filename = joinpath(get_setting(app, :assets_folder), file_path)
 
     try
+        headers = Pair{String,String}[]
+        mimetype = mime_by_path(filename)
+        !isnothing(mimetype) && push!(headers, "Content-Type" => mimetype)
         file_contents = read(filename)
-        return HTTP.Response(200, file_contents)
+        return HTTP.Response(200, headers;body = file_contents)
     catch
         return HTTP.Response(404)
     end
