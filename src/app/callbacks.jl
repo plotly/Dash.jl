@@ -75,7 +75,7 @@ function check_callback(func::Function, app::DashApp, id::CallbackId)
 
     args_count = length(id.state) + length(id.input)
 
-    !hasmethod(func, NTuple{args_count, Any}) && error("Callback function don't have method with proper arguments")
+    !hasmethod(func, NTuple{args_count, Any}) && error("The arguments of the specified callback function do not align with the currently defined callback; please ensure that the arguments to `func` are properly defined.")
 
     for id_prop in id.input
         id_prop in id.output && error("Circular input and output arguments were found. Please verify that callback outputs are not also input arguments.")
