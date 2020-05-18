@@ -173,7 +173,7 @@ Construct a dash app
         Defaults to ``url_base_pathname``, and must start and end
         with ``'/'``.
 
-- `serve_locally`: [IN DEVELOPMENT] If ``true`` (default), assets and dependencies
+- `serve_locally`: [EXPERIMENTAL] If `true` (default), assets and dependencies (Dash and Component js and css) will be served from local URLs. If `false` Dash will use CDN links where available.
         (Dash and Component js and css) will be served from local URLs.
         If ``false`` we will use CDN links where available.
     
