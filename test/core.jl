@@ -18,16 +18,16 @@ using Inflate
     
     @test_throws ArgumentError html_a(undefined_prop = "rrrr")
 
-    component_with_childs = html_div() do 
+    component_with_children = html_div() do 
         html_a("fffff"),
         html_h1("fffff")
     end
 
-    @test haskey(component_with_childs.props, :children) 
-    @test component_with_childs.props[:children] isa Tuple{Component, Component}
-    @test length(component_with_childs.props[:children]) == 2
-    @test component_with_childs.props[:children][1].type == "A"
-    @test component_with_childs.props[:children][2].type == "H1"
+    @test haskey(component_with_children.props, :children) 
+    @test component_with_children.props[:children] isa Tuple{Component, Component}
+    @test length(component_with_children.props[:children]) == 2
+    @test component_with_children.props[:children][1].type == "A"
+    @test component_with_children.props[:children][2].type == "H1"
 
 end
 
