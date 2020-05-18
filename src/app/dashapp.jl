@@ -127,7 +127,11 @@ get_setting(app::DashApp, name::Symbol) = getproperty(app.config, name)
             compress
         )
 
-Construct a dash app 
+Dash is a framework for building analytical web applications. No JavaScript required.
+
+If a parameter can be set by an environment variable, that is listed as:
+  env: `DASH_****`
+  Values provided here take precedence over environment variables.
 
 # Arguments
 - `name::String` - The name of your application
