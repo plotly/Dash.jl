@@ -38,7 +38,7 @@ callback!(app, CallbackId(
 end
 ```
 
-You can use macro `callid` string macro for make CallbackId : 
+Alternatively, the `callid` string macro is also available when passing `input`, `state`, and `output` arguments to `callback!`: 
 
 ```julia
 callback!(app, callid"{graphTitle.type} graphTitle.value => outputID.children, outputID2.children") do stateType, inputValue
