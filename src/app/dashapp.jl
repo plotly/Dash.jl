@@ -44,7 +44,7 @@ function Base.setproperty!(app::DashApp, property::Symbol, value)
 
     property in fieldnames(DashApp) && error("The property `$(property)` of `DashApp` is read-only")
 
-    error("The property `$(property)` of `DashApp` don't exists")
+    error("The property `$(property)` of `DashApp` does not exist.")
 end
 
 function set_name!(app::DashApp, name)
