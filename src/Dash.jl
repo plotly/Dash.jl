@@ -1,26 +1,26 @@
 module Dash
-import HTTP, JSON2, CodecZlib
+import HTTP, JSON2, CodecZlib, MD5
 using MacroTools
-include("ComponentPackages.jl")
-include("ComponentMetas.jl")
+const ROOT_PATH = realpath(joinpath(@__DIR__, ".."))
 include("Components.jl")
 include("Front.jl")
-
-import .ComponentPackages
 import .Front
-using .ComponentMetas
 using .Components
 
-export dash, Component, Front, @use, <|, @callid_str, CallbackId, callback!,
-run_server, PreventUpdate, no_update, @wildprop
+export dash, Component, Front, <|, @callid_str, CallbackId, callback!,
+enable_dev_tools!,
+run_server, PreventUpdate, no_update, @var_str
 
-ComponentPackages.@reg_components()
+
+
+#ComponentPackages.@reg_components()
+include("env.jl")
 include("utils.jl")
-include("config.jl")
 include("app.jl")
-include("index_page.jl")
+include("resources/registry.jl")
+include("resources/application.jl")
+include("config.jl")
 include("handlers.jl")
-
 
 @doc """
     module Dash
@@ -57,16 +57,14 @@ callback!(app, callid"graphTitle.value => graph.figure") do value
     )
 end
 handle = make_handler(app, debug = true)
-run_server(handle, HTTP.Sockets.localhost, 8080)
+run_server(handle, HTTP.Sockets.localhost, 8050)
 ```
 
-# Available components
-$(ComponentPackages.component_doc_list())
 """ Dashboards
 
 
 """
-    run_server(app::DashApp, host = HTTP.Sockets.localhost, port = 8080; debug::Bool = false)
+    run_server(app::DashApp, host = HTTP.Sockets.localhost, port = 8050; debug::Bool = false)
 
 Run Dash server
 
@@ -84,12 +82,37 @@ julia> app = dash("Test") do
     end
 end
 julia>
-julia> run_server(handler,  HTTP.Sockets.localhost, 8080)
+julia> run_server(handler,  HTTP.Sockets.localhost, 8050)
 ```
 
 """
-function run_server(app::DashApp, host = HTTP.Sockets.localhost, port = 8080; debug = false)
-    handler = make_handler(app, debug = debug);
+function run_server(app::DashApp, host = HTTP.Sockets.localhost, port = 8050;
+            debug = nothing, 
+            dev_tools_ui = nothing,
+            dev_tools_props_check = nothing,
+            dev_tools_serve_dev_bundles = nothing,
+            dev_tools_hot_reload = nothing,
+            dev_tools_hot_reload_interval = nothing,
+            dev_tools_hot_reload_watch_interval = nothing,
+            dev_tools_hot_reload_max_retry = nothing,
+            dev_tools_silence_routes_logging = nothing,
+            dev_tools_prune_errors = nothing
+            )
+    @env_default!(debug, Bool, false)
+    enable_dev_tools!(app, 
+        debug = debug,
+        dev_tools_ui = dev_tools_ui,
+        dev_tools_props_check = dev_tools_props_check,
+        dev_tools_serve_dev_bundles = dev_tools_serve_dev_bundles,
+        dev_tools_hot_reload = dev_tools_hot_reload,
+        dev_tools_hot_reload_interval = dev_tools_hot_reload_interval,
+        dev_tools_hot_reload_watch_interval = dev_tools_hot_reload_watch_interval,
+        dev_tools_hot_reload_max_retry = dev_tools_hot_reload_max_retry,
+        dev_tools_silence_routes_logging = dev_tools_silence_routes_logging,
+        dev_tools_prune_errors = dev_tools_prune_errors
+    )
+    handler = make_handler(app);
+    @info string("Running on http://", host, ":", port)
     HTTP.serve(handler, host, port)
 end
 

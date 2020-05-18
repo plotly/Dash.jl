@@ -1,6 +1,6 @@
 module Components
 import JSON2
-export Component, ComponentContainer, <|, hasproperty, is_prop_available
+export Component, <|, hasproperty, is_prop_available, validate
 
 abstract type AbstractComponent end
 
@@ -35,29 +35,30 @@ function is_prop_available(c::Component, prop::Symbol)
     return prop in c.available_props
 end
 
-function collect_with_ids(comp)
-    result = Dict{Symbol, Component}()    
-    return collect_with_ids!(comp, result)
-end
 
-function collect_with_ids!(comp, dest::Dict{Symbol, Component})
-    empty!(dest)
-    
+function _validate_children(children::Union{Vector, Tuple}, ids::Set{Symbol})
+    for child in children
+        _validate(child, ids)
+    end
+end
+function _validate_children(children::Component, ids::Set{Symbol})
+    _validate(children, ids)
+end
+function _validate_children(children, ids::Set{Symbol}) end
+
+
+function _validate(comp::Component, ids::Set{Symbol})
     if haskey(comp.props, :id)
-        push!(dest, Symbol(comp.props[:id])=>comp)
+        id = Symbol(comp.props[:id])
+        id in ids && error("Duplicate component id found in the initial layout: $(id)")
+        push!(ids, id)
     end
-    if haskey(comp.props, :children)
-        if comp.props[:children] isa Vector || comp.props[:children] isa Tuple
-            for child in comp.props[:children]
-                if child isa Component 
-                    merge!(dest, collect_with_ids(child))
-                end
-            end
-        elseif comp.props[:children] isa Component
-            merge!(dest, collect_with_ids(comp.props[:children]))            
-        end        
-    end
-    return dest
+    _validate_children(get(comp.props, :children, nothing), ids)
+end
+function _validate(non_comp, ids::Set{Symbol}) end
+
+function validate(comp::Component)
+    _validate(comp, Set{Symbol}())
 end
 
 end

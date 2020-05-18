@@ -18,20 +18,20 @@ using Inflate
     
     @test_throws ArgumentError html_a(undefined_prop = "rrrr")
 
-    component_with_childs = html_div() do 
+    component_with_children = html_div() do 
         html_a("fffff"),
         html_h1("fffff")
     end
 
-    @test haskey(component_with_childs.props, :children) 
-    @test component_with_childs.props[:children] isa Tuple{Component, Component}
-    @test length(component_with_childs.props[:children]) == 2
-    @test component_with_childs.props[:children][1].type == "A"
-    @test component_with_childs.props[:children][2].type == "H1"
+    @test haskey(component_with_children.props, :children) 
+    @test component_with_children.props[:children] isa Tuple{Component, Component}
+    @test length(component_with_children.props[:children]) == 2
+    @test component_with_children.props[:children][1].type == "A"
+    @test component_with_children.props[:children][2].type == "H1"
 
 end
 
-@testset "get ids set" begin
+#=@testset "get ids set" begin
     comp = html_div(id = "id0") do
         html_div(id = "id1") do
             html_a(id = "id2")
@@ -50,7 +50,7 @@ end
     @test haskey(ids, :id2)
     @test haskey(ids, :id3)
 
-end
+end=#
 
 
 @testset "callid" begin
@@ -76,12 +76,12 @@ end
 end
 
 @testset "callback!" begin
-    app = dash("Test app") do
-        html_div() do
+    app = dash("Test app")
+    app.layout = html_div() do
             dcc_input(id = "my-id", value="initial value", type = "text"),
             html_div(id = "my-div")        
         end
-    end
+
     callback!(app, callid"my-id.value => my-div.children") do value
         return value
     end
@@ -89,13 +89,12 @@ end
     @test haskey(app.callbacks, Symbol("my-div.children"))
     @test app.callbacks[Symbol("my-div.children")].func("test") == "test"
 
-    app = dash("Test app") do
-        html_div() do
+    app = dash("Test app")
+    app.layout = html_div() do
             dcc_input(id = "my-id", value="initial value", type = "text"),
             html_div(id = "my-div"),
             html_div(id = "my-div2")    
         end
-    end
     callback!(app, callid"{my-id.type} my-id.value => my-div.children, my-div2.children") do state, value
         return state, value
     end
@@ -128,30 +127,6 @@ end
         return "v_$(value)"
     end
 
-    @test_throws ErrorException callback!(app, callid"my-id-wrong.value => my-div2.style") do value
-        return "v_$(value)"
-    end
-
-    @test_throws ErrorException callback!(app, callid"my-id.wrong_prop => my-div2.style") do value
-        return "v_$(value)"
-    end
-
-    @test_throws ErrorException callback!(app, callid"my-id.value => my-div-wrong.style") do value
-        return "v_$(value)"
-    end
-
-    @test_throws ErrorException callback!(app, callid"my-id.value => my-div.wrong-prop") do value
-        return "v_$(value)"
-    end
-
-    @test_throws ErrorException callback!(app, callid"{my-id-wrong.type} my-id.value => my-div.wrong-prop") do value
-        return "v_$(value)"
-    end
-
-    @test_throws ErrorException callback!(app, callid"{my-id.wrong_prop} my-id.value => my-div.wrong-prop") do value
-        return "v_$(value)"
-    end
-
     @test_throws ErrorException callback!(app, callid"{my-id.value} my-id.value => my-id.value") do value
         return "v_$(value)"
     end
@@ -176,15 +151,14 @@ end
     end
     
 
-    app = dash("Test app") do
-        html_div() do
+    app = dash("Test app")
+    app.layout = html_div() do
             dcc_input(id = "my-id", value="initial value", type = "text"),
             html_div("test2", id = "my-div"),
             html_div(id = "my-div2") do 
                 html_h1("gggg", id = "my-h")
             end
         end
-    end
     callback!(app, callid"{my-id.type} my-id.value => my-div.children, my-h.children") do state, value
         return state, value
     end
@@ -192,13 +166,12 @@ end
 end
 
 @testset "handler" begin
-    app = dash("Test app", external_stylesheets=["test.css"]) do
-        html_div() do
+    app = dash("Test app", external_stylesheets=["test.css"])
+    app.layout = html_div() do
             dcc_input(id = "my-id", value="initial value", type = "text"),
             html_div(id = "my-div"),
             html_div(id = "my-div2")    
         end
-    end
     callback!(app, callid"my-id.value => my-div.children") do value
         return value
     end
@@ -209,34 +182,18 @@ end
     handler = Dash.make_handler(app)
 
     request = HTTP.Request("GET", "/")
-    response = handler(request)
+    response = HTTP.handle(handler, request)
     @test response.status == 200
     body_str = String(response.body)
     
-    @test !isnothing(findfirst("test.css", body_str))
-    @test !isnothing(findfirst("dash_html_components.min.js", body_str))
-    @test !isnothing(findfirst("dash_core_components.min.js", body_str))
-
-    request = HTTP.Request("GET", "/_dash-component-suites/dash_html_components/dash_html_components.min.js")
-    response = handler(request)
-    @test response.status == 200
-
-    request = HTTP.Request("GET", "/_dash-component-suites/dash_core_components/dash_core_components.min.js")
-    response = handler(request)
-    @test response.status == 200
-
-    request = HTTP.Request("GET", "/_dash-component-suites/dash_core_components/dash_wrong_components.min.js")
-    response = handler(request)
-    @test response.status == 404
-
     request = HTTP.Request("GET", "/_dash-layout")
-    response = handler(request)
+    response = HTTP.handle(handler, request)
     @test response.status == 200
     body_str = String(response.body)
     @test body_str == JSON2.write(app.layout)
 
     request = HTTP.Request("GET", "/_dash-dependencies")
-    response = handler(request)
+    response = HTTP.handle(handler, request)
     @test response.status == 200
     body_str = String(response.body)
     resp_json = JSON2.read(body_str)
@@ -254,40 +211,68 @@ end
 
     test_json = """{"output":"my-div.children","changedPropIds":["my-id.value"],"inputs":[{"id":"my-id","property":"value","value":"initial value3333"}]}"""
     request = HTTP.Request("POST", "/_dash-update-component", [], Vector{UInt8}(test_json))
-    response = handler(request)
+    response = HTTP.handle(handler, request)
     @test response.status == 200
     body_str = String(response.body)
     
     @test body_str == """{"response":{"props":{"children":"initial value3333"}}}"""
 end
 
+@testset "layout as function" begin
+    app = dash("Test app")
+    global_id = "my_div2"
+    layout_func = () -> begin
+        html_div() do
+            dcc_input(id = "my-id", value="initial value", type = "text"),
+            html_div(id = "my-div"),
+            html_div(id = global_id)    
+        end
+    end 
+    app.layout = layout_func
+    handler = Dash.make_handler(app)
+    request = HTTP.Request("GET", "/_dash-layout")
+
+    response = HTTP.handle(handler, request)
+    @test response.status == 200
+    body_str = String(response.body)
+    @test body_str == JSON2.write(layout_func())
+    @test occursin("my_div2", body_str)
+
+    global_id = "my_div3"
+    response = HTTP.handle(handler, request)
+    @test response.status == 200
+    body_str = String(response.body)
+    @test body_str == JSON2.write(layout_func())
+    @test occursin("my_div3", body_str)
+
+end
+
 @testset "assets" begin
-    app = dash("Test app", assets_folder = "assets") do
-        html_div() do            
+    app = dash("Test app", assets_folder = "assets")
+    app.layout = html_div() do            
             html_img(src = "assets/test.png")             
         end
-    end
     @test app.config.assets_folder == joinpath(pwd(),"assets")
     handler = Dash.make_handler(app)
     request = HTTP.Request("GET", "/assets/test.png")
-    response = handler(request)
+    response = HTTP.handle(handler, request)
     @test response.status == 200
     body_str = String(response.body)
     
     request = HTTP.Request("GET", "/assets/wrong.png")
-    response = handler(request)
+    response = HTTP.handle(handler, request)
     @test response.status == 404
     body_str = String(response.body)
     
 end
 
 @testset "PreventUpdate and no_update" begin
-    app = dash("Test app") do
-        html_div() do
+    app = dash("Test app")
+
+    app.layout = html_div() do
             html_div(10, id = "my-id"),
             html_div(id = "my-div")        
         end
-    end
     callback!(app, callid"my-id.children => my-div.children") do value
         throw(PreventUpdate())
     end
@@ -297,24 +282,23 @@ end
     test_json = """{"output":"my-div.children","changedPropIds":["my-id.children"],"inputs":[{"id":"my-id","property":"children","value":10}]}"""
         
     request = HTTP.Request("POST", "/_dash-update-component", [], Vector{UInt8}(test_json))
-    response = handler(request)
+    response = HTTP.handle(handler, request)
     @test response.status == 204
     @test length(response.body) == 0
 
-    app = dash("Test app") do
-        html_div() do
+    app = dash("Test app")
+    app.layout = html_div() do
             html_div(10, id = "my-id"),
             html_div(id = "my-div"),
             html_div(id = "my-div2")          
         end
-    end
     callback!(app, callid"my-id.children => my-div.children, my-div2.children") do value
         no_update(), "test"
     end
 
     test_json = """{"output":"..my-div.children...my-div2.children..","changedPropIds":["my-id.children"],"inputs":[{"id":"my-id","property":"children","value":10}]}"""
 
-    result = Dash.process_callback(app, test_json)
+    result = Dash._process_callback(app, test_json)
     @test length(result[:response]) == 1
     @test haskey(result[:response], Symbol("my-div2"))
     @test !haskey(result[:response], Symbol("my-div"))
@@ -322,105 +306,64 @@ end
 end
 
 @testset "wildprops" begin
-    app = dash("Test app", external_stylesheets=["test.css"]) do
-        html_div() do            
-            html_div(;id = "my-div", @wildprop("data-attr" = "ffff")),
-            html_div(;id = "my-div2", @wildprop("aria-attr" = "gggg"))    
+    app = dash("Test app", external_stylesheets=["test.css"])
+
+    app.layout = html_div() do            
+            html_div(;id = "my-div", var"data-attr" = "ffff"),
+            html_div(;id = "my-div2", var"aria-attr" = "gggg")    
         end
-    end
     callback!(app, callid"my-div.children => my-div2.aria-attr") do v
     
     end
 end
 
-@testset "pass changed props" begin
-    app = dash("Test app") do
-        html_div() do
-            html_div(10, id = "my-id"),
-            html_div(id = "my-div")        
-        end
-    end
-    callback!(app, callid"my-id.children => my-div.children", pass_changed_props = true) do changed, value
-        @test "my-id.children" in changed
-        return value
-    end
-
-    handler = Dash.make_handler(app)
-
-    test_json = """{"output":"my-div.children","changedPropIds":["my-id.children"],"inputs":[{"id":"my-id","property":"children","value":10}]}"""
-        
-    result = Dash.process_callback(app, test_json)
-    @show result
-    @test length(result[:response]) == 1
-    
-    @test result[:response][:props][:children] == 10
-
-end
-
 @testset "HTTP Compression" begin
     # test compression of assets
-    app = dash("Test app", assets_folder = "assets") do
-        html_div() do
-            html_div("test")
-        end
-    end
-
-    # verify that JSON is not compressed when compress = true
-    # and Accept-Encoding = "gzip" is not present within request headers
+    app = dash("Test app", assets_folder = "assets_compressed", compress = true)
+    app.layout = html_div() 
     handler = Dash.make_handler(app)
-    request = HTTP.Request("GET", "/_dash-dependencies")
-    response = handler(request)
-    @test app.config.compress == true
-    @test String(response.body) == "[]"
-    @test !in("Content-Encoding"=>"gzip", response.headers)
-
-    # verify that JSON is compressed when compress = true
-    # and Accept-Encoding = "gzip" is present within request headers
-    request = HTTP.Request("GET", "/_dash-dependencies", ["Accept-Encoding"=>"gzip"])
-    response = handler(request)
-    @test String(inflate_gzip(response.body)) == "[]"
-    @test String(response.body) != "[]"
-    @test in("Content-Encoding"=>"gzip", response.headers)
 
     # ensure no compression of assets when Accept-Encoding not passed
-    request = HTTP.Request("GET", "/assets/test.css")
-    response = handler(request)
-    @test String(response.body) == "/* Test */\n"
+    request = HTTP.Request("GET", "/assets/bootstrap.css")
+    body = read("assets_compressed/bootstrap.css", String)
+    response = HTTP.handle(handler, request)
+    @test String(response.body) == body
     @test !in("Content-Encoding"=>"gzip", response.headers)
 
     # ensure compression when Accept-Encoding = "gzip"
-    request = HTTP.Request("GET", "/assets/test.css", ["Accept-Encoding"=>"gzip"])
-    response = handler(request)
-    @test String(inflate_gzip(response.body)) == "/* Test */\n"
-    @test String(response.body) != "/* Test */\n"
+    request = HTTP.Request("GET", "/assets/bootstrap.css", ["Accept-Encoding"=>"gzip"])
+    response = HTTP.handle(handler, request)
+    @test String(inflate_gzip(response.body)) == body
+    @test String(response.body) != body
     @test in("Content-Encoding"=>"gzip", response.headers)
 
     # test cases for compress = false
-    app = dash("Test app", assets_folder = "assets", compress=false) do
-        html_div() do
+    app = dash("Test app", assets_folder = "assets", compress=false)
+    app.layout = html_div() do
             html_div("test")
         end
-    end
+end
 
-    # verify that JSON is not compressed when compress = false
-    # and Accept-Encoding = "gzip" is not present within request headers
-    handler = Dash.make_handler(app)
-    request = HTTP.Request("GET", "/_dash-dependencies")
-    response = handler(request)
-    @test app.config.compress == false
-    @test String(response.body) == "[]"
-    @test !in("Content-Encoding"=>"gzip", response.headers)
+@testset "layout validation" begin
+    app = dash("Test app", assets_folder = "assets_compressed", compress = true)
+    @test_throws ErrorException make_handler(app)
+    app.layout = html_div(id="top") do
+        html_div(id="second") do
+            html_div("dsfsd", id = "inner1")
+        end,
+        html_div(id = "third") do
+            html_div("dsfsd", id = "inner2")
+        end
+    end 
+    make_handler(app)
 
-    # verify that JSON is NOT compressed when compress = false
-    # and Accept-Encoding = "gzip" is present within request headers
-    request = HTTP.Request("GET", "/_dash-dependencies", ["Accept-Encoding"=>"gzip"])
-    response = handler(request)
-    @test String(response.body) == "[]"
-    @test !in("Content-Encoding"=>"gzip", response.headers)
-
-    # ensure NO compression when Accept-Encoding = "gzip" and compress = false
-    request = HTTP.Request("GET", "/assets/test.css", ["Accept-Encoding"=>"gzip"])
-    response = handler(request)
-    @test String(response.body) == "/* Test */\n"
-    @test !in("Content-Encoding"=>"gzip", response.headers)
+    app.layout = html_div(id="top") do
+        html_div(id="second") do
+            html_div("dsfsd", id = "inner1")
+        end,
+        html_div(id = "second") do
+            html_div("dsfsd", id = "inner2")
+        end
+    end 
+    @test_throws ErrorException make_handler(app)
 end

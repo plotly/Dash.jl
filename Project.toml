@@ -4,24 +4,25 @@ authors = ["Alexandr Romanenko"]
 version = "0.1.0"
 
 [deps]
+CodecZlib = "944b1d66-785c-5afd-91f1-9de20f533193"
 DataStructures = "864edb3b-99cc-5e75-8d2d-829cb0a9cfe8"
 HTTP = "cd3eb016-35fb-5094-929b-558a96fad6f3"
 JSON = "682c06a0-de6a-54ab-a142-c8b1cf79cde6"
 JSON2 = "2535ab7d-5cd8-5a07-80ac-9b1792aadce3"
-CodecZlib = "944b1d66-785c-5afd-91f1-9de20f533193"
 LibGit2 = "76f85450-5226-5b5a-8eaa-529ad045b433"
+MD5 = "6ac74813-4b46-53a4-afec-0b5dc9d7885c"
 MacroTools = "1914dd2f-81c6-5fcd-8719-6d5c9610ff09"
 PlotlyBase = "a03496cd-edff-5a9b-9e67-9cda94a718b5"
 Test = "8dfed614-e22c-5e08-85e1-65c5234f0b40"
 
 [compat]
-julia = "1.1"
 DataStructures = "0.17.5"
-HTTP = "0.8.6"
+HTTP = "0.8.10"
 JSON = "0.21.0"
 JSON2 = "0.3.1"
 MacroTools = "0.5.1"
 PlotlyBase = "0.3.0"
+julia = "1.1"
 
 [extras]
 Test = "8dfed614-e22c-5e08-85e1-65c5234f0b40"
