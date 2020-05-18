@@ -140,7 +140,7 @@ Construct a dash app
         Default ``'assets'`.
     
 
-- `assets_ignore::String` - [IN DEVELOPMENT] A regex, as a string to pass to ``Regex``, for
+- `assets_ignore::String` - [EXPERIMENTAL] A regex, as a string to pass to ``Regex``, for
         assets to omit from immediate loading. Ignored files will still be
         served if specifically requested. You cannot use this to prevent access
         to sensitive files. 
