@@ -139,7 +139,6 @@ Construct a dash app
         where ``asset_path`` is the path to a file inside ``assets_folder``.
         Default ``'assets'`.
     
-
 - `assets_ignore::String` - [EXPERIMENTAL] A regex, as a string to pass to ``Regex``, for
         assets to omit from immediate loading. Ignored files will still be
         served if specifically requested. You cannot use this to prevent access
@@ -151,27 +150,28 @@ Construct a dash app
         automatically load if you also keep local copies in your assets
         folder that Dash can index, but external serving can improve
         performance and reduce load on the Dash server.        
-    
+        env: `DASH_ASSETS_EXTERNAL_PATH`  
 
 - `include_assets_files::Bool` - [EXPERIMENTAL] Default ``true``, set to ``false`` to prevent
         immediate loading of any assets. Assets will still be served if
         specifically requested. You cannot use this to prevent access
         to sensitive files. 
-    
+        env: `DASH_INCLUDE_ASSETS_FILES` 
 
 - `url_base_pathname::String`: A local URL prefix to use app-wide.
         Default ``nothing``. Both `requests_pathname_prefix` and
         `routes_pathname_prefix` default to `url_base_pathname`.
-        
+        env: `DASH_URL_BASE_PATHNAME` 
 
 - `requests_pathname_prefix::String`: A local URL prefix for file requests.
         Defaults to `url_base_pathname`, and must end with
         `routes_pathname_prefix`
-    
+        env: `DASH_REQUESTS_PATHNAME_PREFIX` 
 
 - `routes_pathname_prefix::String`: A local URL prefix for JSON requests.
         Defaults to ``url_base_pathname``, and must start and end
         with ``'/'``.
+        env: `DASH_ROUTES_PATHNAME_PREFIX`
 
 - `serve_locally`: [EXPERIMENTAL] If `true` (default), assets and dependencies (Dash and Component js and css) will be served from local URLs. If `false` Dash will use CDN links where available.
         (Dash and Component js and css) will be served from local URLs.
@@ -181,13 +181,11 @@ Construct a dash app
         Each dict should have the attributes and values for one tag, eg:
         ``Dict("name"=>"description", "content" => "My App")``
     
-
 - `index_string::String`: Override the standard Dash index page.
         Must contain the correct insertion markers to interpolate various
         content into it depending on the app config and components used.
         See https://dash.plotly.com/external-resources for details.
     
-
 - `external_scripts::Vector`: Additional JS files to load with the page.
         Each entry can be a String (the URL) or a Dict{String, String} with ``src`` (the URL)
         and optionally other ``<script>`` tag attributes such as ``integrity``
@@ -201,6 +199,7 @@ Construct a dash app
 - `suppress_callback_exceptions::Bool`: Default ``false``: check callbacks to
         ensure referenced IDs exist and props are valid. Set to ``true``
         if your layout is dynamic, to bypass these checks.
+        env: `DASH_SUPPRESS_CALLBACK_EXCEPTIONS`
         
 - `show_undo_redo::Bool`: Default ``false``, set to ``true`` to enable undo
         and redo buttons for stepping through the history of the app state.
