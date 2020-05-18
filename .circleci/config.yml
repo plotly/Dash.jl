@@ -9,7 +9,6 @@ jobs:
         environment:
           PERCY_PARALLEL_TOTAL: '-1'
           PUPPETEER_SKIP_CHROMIUM_DOWNLOAD: 'True'
-    parallelism: 3
  
     steps:
       - checkout
