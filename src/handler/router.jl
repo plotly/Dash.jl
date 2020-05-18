@@ -14,7 +14,7 @@ end
 
 function DynamicRoute(url::AbstractString)
     parts = split(url, '/', keepempty = false)
-    segmets_vector = Tuple{Int, String}[]
+    segments_vector = Tuple{Int, String}[]
     variables = Dict{Symbol, Int}()
     segments_count = 0
     for  part in parts
@@ -24,17 +24,17 @@ function DynamicRoute(url::AbstractString)
             var_name in keys(variables) && ArgumentError("duplicated variable name $(var_name)")
             variables[var_name] = segments_count
         elseif part != "*"
-            push!(segmets_vector,(segments_count, String(part)))
+            push!(segments_vector,(segments_count, String(part)))
         end
     end
     #Route is tailed if it url hasn't / at end and the last segment is dynamic
     tailed = false
-    if url[end] != '/' && (isempty(segmets_vector) || segmets_vector[end][1] != length(parts))
+    if url[end] != '/' && (isempty(segments_vector) || segments_vector[end][1] != length(parts))
         tailed = true
     end 
     return DynamicRoute(
         segments_count,
-        (segmets_vector...,),
+        (segments_vector...,),
         (;variables...),
         tailed
     )
