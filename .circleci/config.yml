@@ -38,7 +38,7 @@ jobs:
             git clone --depth 1 https://github.com/plotly/dash.git -b add-julia-runner dash-main
             cd dash-main && pip install -e .[dev,testing] --progress-bar off && cd ~/dashjl 
             export PATH=$PATH:/home/circleci/.local/bin/
-            pytest -v --log-cli-level DEBUG --nopercyfinalize --junitxml=test-reports/dashjl.xml --percy-assets=test/assets/ test/integration/
+            pytest --headless --nopercyfinalize --junitxml=test-reports/dashjl.xml --percy-assets=test/assets/ test/integration/
       - store_artifacts:
           path: test-reports
       - store_test_results:
