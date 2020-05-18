@@ -37,9 +37,9 @@ jobs:
             . venv/bin/activate
             git clone --depth 1 https://github.com/plotly/dash.git -b add-julia-runner dash-main
             cd dash-main && pip install -e .[dev,testing] --progress-bar off && cd ~/dashjl 
-            pip install pytest-parallel
+            pip install pytest-xdist
             export PATH=$PATH:/home/circleci/.local/bin/
-            pytest --workers auto --headless --nopercyfinalize --junitxml=test-reports/dashjl.xml --percy-assets=test/assets/ test/integration/
+            pytest -n 20 --headless --nopercyfinalize --junitxml=test-reports/dashjl.xml --percy-assets=test/assets/ test/integration/
       - store_artifacts:
           path: test-reports
       - store_test_results:
