@@ -20,7 +20,7 @@ const default_index = """<!DOCTYPE html>
 """
     struct DashApp <: Any
 
-Representation of Dash application.
+Dash.jl's internal representation of a Dash application.
 
 Not meant to be constructed directly, use `dash` function instead.
 """
