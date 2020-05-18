@@ -20,9 +20,9 @@ const default_index = """<!DOCTYPE html>
 """
     struct DashApp <: Any
 
-Representation of Dash application.
+Dash.jl's internal representation of a Dash application.
 
-Not meant to be constructed directly, use `dash` function instead.
+This `struct` is not intended to be called directly; developers should create their Dash application using the `dash` function instead.
 """
 mutable struct DashApp
     root_path ::String
@@ -47,7 +47,7 @@ function Base.setproperty!(app::DashApp, property::Symbol, value)
 
     property in fieldnames(DashApp) && error("The property `$(property)` of `DashApp` is read-only")
 
-    error("The property `$(property)` of `DashApp` don't exists")
+    error("The property `$(property)` of `DashApp` does not exist.")
 end
 
 function set_name!(app::DashApp, name)
@@ -136,52 +136,56 @@ get_assets_path(app::DashApp) = joinpath(app.root_path, get_setting(app, :assets
             compress
         )
 
-Construct a dash app 
+Dash is a framework for building analytical web applications. No JavaScript required.
+
+If a parameter can be set by an environment variable, that is listed as:
+  env: `DASH_****`
+  Values provided here take precedence over environment variables.
 
 # Arguments
 - `assets_folder::String` - a path, relative to the current working directory,
-        for extra files to be used in the browser. Default ``'assets'``.
+        for extra files to be used in the browser. Default `'assets'`. All .js and .css files will be loaded immediately unless excluded by `assets_ignore`, and other files such as images will be served if requested.
 
 - `assets_url_path::String` - The local urls for assets will be:
         ``requests_pathname_prefix * assets_url_path * "/" * asset_path``
         where ``asset_path`` is the path to a file inside ``assets_folder``.
         Default ``'assets'`.
     
-
-- `assets_ignore::String` - [IN DEVELOPMENT] A regex, as a string to pass to ``Regex``, for
+- `assets_ignore::String` - [EXPERIMENTAL] A regex, as a string to pass to ``Regex``, for
         assets to omit from immediate loading. Ignored files will still be
         served if specifically requested. You cannot use this to prevent access
         to sensitive files. 
     :type assets_ignore: string
 
--  `assets_external_path::String` - [IN DEVELOPMENT] an absolute URL from which to load assets.
+-  `assets_external_path::String` - [EXPERIMENTAL] an absolute URL from which to load assets.
         Use with ``serve_locally=false``. Dash can still find js and css to
         automatically load if you also keep local copies in your assets
         folder that Dash can index, but external serving can improve
         performance and reduce load on the Dash server.        
-    
+        env: `DASH_ASSETS_EXTERNAL_PATH`  
 
-- `include_assets_files::Bool` - [IN DEVELOPMENT] Default ``true``, set to ``False`` to prevent
+- `include_assets_files::Bool` - [EXPERIMENTAL] Default ``true``, set to ``false`` to prevent
         immediate loading of any assets. Assets will still be served if
         specifically requested. You cannot use this to prevent access
         to sensitive files. 
-    
+        env: `DASH_INCLUDE_ASSETS_FILES` 
 
 - `url_base_pathname::String`: A local URL prefix to use app-wide.
         Default ``nothing``. Both `requests_pathname_prefix` and
         `routes_pathname_prefix` default to `url_base_pathname`.
-        
+        env: `DASH_URL_BASE_PATHNAME` 
 
 - `requests_pathname_prefix::String`: A local URL prefix for file requests.
         Defaults to `url_base_pathname`, and must end with
         `routes_pathname_prefix`
-    
+        env: `DASH_REQUESTS_PATHNAME_PREFIX` 
 
 - `routes_pathname_prefix::String`: A local URL prefix for JSON requests.
         Defaults to ``url_base_pathname``, and must start and end
         with ``'/'``.
+        env: `DASH_ROUTES_PATHNAME_PREFIX`
 
-- `serve_locally`: [IN DEVELOPMENT] If ``true`` (default), assets and dependencies
+- `serve_locally`: [EXPERIMENTAL] If `true` (default), assets and dependencies (Dash and Component js and css) will be served from local URLs. If `false` Dash will use CDN links where available.
         (Dash and Component js and css) will be served from local URLs.
         If ``false`` we will use CDN links where available.
     
@@ -189,13 +193,11 @@ Construct a dash app
         Each dict should have the attributes and values for one tag, eg:
         ``Dict("name"=>"description", "content" => "My App")``
     
-
 - `index_string::String`: Override the standard Dash index page.
         Must contain the correct insertion markers to interpolate various
         content into it depending on the app config and components used.
         See https://dash.plotly.com/external-resources for details.
     
-
 - `external_scripts::Vector`: Additional JS files to load with the page.
         Each entry can be a String (the URL) or a Dict{String, String} with ``src`` (the URL)
         and optionally other ``<script>`` tag attributes such as ``integrity``
@@ -209,6 +211,7 @@ Construct a dash app
 - `suppress_callback_exceptions::Bool`: Default ``false``: check callbacks to
         ensure referenced IDs exist and props are valid. Set to ``true``
         if your layout is dynamic, to bypass these checks.
+        env: `DASH_SUPPRESS_CALLBACK_EXCEPTIONS`
         
 - `show_undo_redo::Bool`: Default ``false``, set to ``true`` to enable undo
         and redo buttons for stepping through the history of the app state.

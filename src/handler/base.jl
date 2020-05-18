@@ -20,7 +20,7 @@ function check_mime(message::HTTP.Message, mime_list)
 end
 
 
-const default_compress_mimes = ["text/plain", "text/html", "text/css", "text/xml", "application/json", "application/javascript"]
+const default_compress_mimes = ["text/plain", "text/html", "text/css", "text/xml", "application/json", "application/javascript", "application/css"]
 function compress_handler(base_handler; mime_types::Vector{String} = default_compress_mimes, compress_min_size = 500)
     return HTTP.RequestHandlerFunction(
         function(request::HTTP.Request, args...)

@@ -102,7 +102,7 @@ end
 
 function mime_by_path(path)
     endswith(path, ".js") && return "application/javascript"
-    endswith(path, ".css") && return "application/css"
+    endswith(path, ".css") && return "text/css"
     endswith(path, ".map") && return "application/json"
     return nothing
 end
@@ -151,8 +151,11 @@ function process_assets(request::HTTP.Request, state::HandlerState; file_path::A
     filename = joinpath(get_assets_path(app), file_path)
 
     try
+        headers = Pair{String,String}[]
+        mimetype = mime_by_path(filename)
+        !isnothing(mimetype) && push!(headers, "Content-Type" => mimetype)
         file_contents = read(filename)
-        return HTTP.Response(200, file_contents)
+        return HTTP.Response(200, headers;body = file_contents)
     catch
         return HTTP.Response(404)
     end
@@ -165,7 +168,7 @@ validate_layout(layout::Component) = validate(layout)
 
 validate_layout(layout::Function) = validate_layout(layout())
 
-validate_layout(layout) = error("layout must be Component or function that returns Component")
+validate_layout(layout) = error("The layout must be a component, tree of components, or a function which returns a component.")
 #For test purposes, with the ability to pass a custom registry
 function make_handler(app::DashApp, registry::ResourcesRegistry; check_layout = false)
             

@@ -40,8 +40,6 @@ end
     @test !is_fp
     @test origin == test_url
 end
-
-using Dash: parse_includes
 @testset "parse_includes" begin
     files = parse_includes(joinpath("hot_reload", "app.jl"))
     for f in ["app.jl", "file1.jl", "file2.jl", "file3.jl", "file4.jl"]
