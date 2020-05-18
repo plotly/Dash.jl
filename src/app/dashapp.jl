@@ -22,7 +22,7 @@ const default_index = """<!DOCTYPE html>
 
 Dash.jl's internal representation of a Dash application.
 
-Not meant to be constructed directly, use `dash` function instead.
+This `struct` is not intended to be called directly; developers should create their Dash application using the `dash` function instead.
 """
 mutable struct DashApp
     name ::String
