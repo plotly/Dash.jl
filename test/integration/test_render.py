@@ -17,7 +17,7 @@ using Dash
 using DashHtmlComponents
 using DashCoreComponents
 
-app = dash("Undo/Redo Test App", show_undo_redo=true)
+app = dash(show_undo_redo=true)
 
 app.layout = html_div() do
  dcc_input(id="a"),

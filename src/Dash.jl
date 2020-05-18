@@ -128,4 +128,12 @@ end
 get_inetaddr(host::String, port::Integer) = Sockets.InetAddr(parse(IPAddr, host), port)
 get_inetaddr(host::IPAddr, port::Integer) = Sockets.InetAddr(host, port)
 
+function _precompile_()
+    println("precompilation")
+    ccall(:jl_generating_output, Cint, ()) == 1 || return nothing
+    precompile(Tuple{Core.kwftype(typeof(Dash.run_server)),NamedTuple{(:debug,),Tuple{Bool}},typeof(run_server),Dash.DashApp,String,Int64})
+    precompile(Tuple{typeof(Dash.handle),Tuple{Dash.Route{Dash.RouteHandler{Dash.StaticRoute,typeof(Dash.process_layout)}},Dash.Route{Dash.RouteHandler{Dash.StaticRoute,typeof(Dash.process_dependencies)}},Dash.Route{Dash.RouteHandler{Dash.DynamicRoute{Tuple{Tuple{Int64,String}},NamedTuple{(:path, :namespace),Tuple{Int64,Int64}}},typeof(Dash.process_resource)}},Dash.Route{Dash.RouteHandler{Dash.DynamicRoute{Tuple{Tuple{Int64,String}},NamedTuple{(:file_path,),Tuple{Int64}}},typeof(Dash.process_assets)}},Dash.Route{Dash.RouteHandler{Dash.StaticRoute,typeof(Dash.process_callback)}},Dash.Route{Dash.RouteHandler{Dash.DynamicRoute{Tuple{},NamedTuple{(),Tuple{}}},typeof(Dash.process_index)}},Dash.Route{Dash.RouteHandler{Dash.StaticRoute,typeof(Dash.process_index)}}},SubString{String},HTTP.Messages.Request,Dash.HandlerState})
+end
+
+_precompile_()
 end # module

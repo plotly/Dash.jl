@@ -190,7 +190,9 @@ function make_handler(app::DashApp, registry::ResourcesRegistry; check_layout = 
     handler = state_handler(router, state)
     get_setting(app, :compress) && (handler = compress_handler(handler))
 
-    HTTP.handle(handler, HTTP.Request("GET", prefix)) #For handler precompilation
+    compile_request = HTTP.Request("GET", "/test_big")
+    HTTP.setheader(compile_request, "Accept-Encoding" => "gzip")
+    HTTP.handle(handler, compile_request) #For handler precompilation
     return handler
 end
 

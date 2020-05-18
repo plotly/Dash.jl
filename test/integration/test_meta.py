@@ -6,7 +6,7 @@ app = '''
 using Dash
 using DashHtmlComponents
 
-app = dash("Meta Tags Test", meta_tags = [Dict(["name"=>"description", "content" => "some content"])])
+app = dash(meta_tags = [Dict(["name"=>"description", "content" => "some content"])])
 
 app.layout = html_div(children = "Hello world!", id = "hello-div")
 
@@ -28,7 +28,7 @@ app2 = '''
 using Dash
 using DashHtmlComponents
 
-app = dash("Meta Tags Test", meta_tags = [Dict(["charset"=>"ISO-8859-1", "keywords"=>"dash,pleasant,productive", "http-equiv"=>"content-type", "content"=>"text/html"])])
+app = dash(meta_tags = [Dict(["charset"=>"ISO-8859-1", "keywords"=>"dash,pleasant,productive", "http-equiv"=>"content-type", "content"=>"text/html"])])
 
 app.layout = html_div(children = "Hello world!", id = "hello-div")
 
