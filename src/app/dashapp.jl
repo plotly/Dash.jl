@@ -153,7 +153,7 @@ Construct a dash app
         performance and reduce load on the Dash server.        
     
 
-- `include_assets_files::Bool` - [IN DEVELOPMENT] Default ``true``, set to ``False`` to prevent
+- `include_assets_files::Bool` - [EXPERIMENTAL] Default ``true``, set to ``false`` to prevent
         immediate loading of any assets. Assets will still be served if
         specifically requested. You cannot use this to prevent access
         to sensitive files. 
