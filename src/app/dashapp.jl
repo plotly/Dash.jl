@@ -146,7 +146,7 @@ Construct a dash app
         to sensitive files. 
     :type assets_ignore: string
 
--  `assets_external_path::String` - [IN DEVELOPMENT] an absolute URL from which to load assets.
+-  `assets_external_path::String` - [EXPERIMENTAL] an absolute URL from which to load assets.
         Use with ``serve_locally=false``. Dash can still find js and css to
         automatically load if you also keep local copies in your assets
         folder that Dash can index, but external serving can improve
