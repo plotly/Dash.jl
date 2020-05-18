@@ -132,7 +132,7 @@ Construct a dash app
 # Arguments
 - `name::String` - The name of your application
 - `assets_folder::String` - a path, relative to the current working directory,
-        for extra files to be used in the browser. Default ``'assets'``.
+        for extra files to be used in the browser. Default `'assets'`. All .js and .css files will be loaded immediately unless excluded by `assets_ignore`, and other files such as images will be served if requested.
 
 - `assets_url_path::String` - The local urls for assets will be:
         ``requests_pathname_prefix * assets_url_path * "/" * asset_path``
