@@ -1,10 +1,11 @@
 function program_path()
     (isinteractive() || isempty(Base.PROGRAM_FILE)) && return nothing
-    return abspath(Base.PROGRAM_FILE) 
+    return dirname(abspath(Base.PROGRAM_FILE))
 end
 
 function app_root_path()
     prog_path = program_path()
+    
     return isnothing(prog_path) ? pwd() : prog_path
 end
 

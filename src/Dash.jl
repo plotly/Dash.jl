@@ -111,8 +111,8 @@ function run_server(app::DashApp, host = HTTP.Sockets.localhost, port = 8050;
         dev_tools_silence_routes_logging = dev_tools_silence_routes_logging,
         dev_tools_prune_errors = dev_tools_prune_errors
     )
-    handler = make_handler(app);
     main_func = () -> begin
+        handler = make_handler(app);
         server = Sockets.listen(get_inetaddr(host, port))
         task = @async HTTP.serve(handler, host, port; server = server)
         @info string("Running on http://", host, ":", port)
@@ -135,5 +135,6 @@ function _precompile_()
     precompile(Tuple{typeof(Dash.handle),Tuple{Dash.Route{Dash.RouteHandler{Dash.StaticRoute,typeof(Dash.process_layout)}},Dash.Route{Dash.RouteHandler{Dash.StaticRoute,typeof(Dash.process_dependencies)}},Dash.Route{Dash.RouteHandler{Dash.DynamicRoute{Tuple{Tuple{Int64,String}},NamedTuple{(:path, :namespace),Tuple{Int64,Int64}}},typeof(Dash.process_resource)}},Dash.Route{Dash.RouteHandler{Dash.DynamicRoute{Tuple{Tuple{Int64,String}},NamedTuple{(:file_path,),Tuple{Int64}}},typeof(Dash.process_assets)}},Dash.Route{Dash.RouteHandler{Dash.StaticRoute,typeof(Dash.process_callback)}},Dash.Route{Dash.RouteHandler{Dash.DynamicRoute{Tuple{},NamedTuple{(),Tuple{}}},typeof(Dash.process_index)}},Dash.Route{Dash.RouteHandler{Dash.StaticRoute,typeof(Dash.process_index)}}},SubString{String},HTTP.Messages.Request,Dash.HandlerState})
 end
 
-_precompile_()
+#_precompile_()
+
 end # module
