@@ -17,9 +17,16 @@ function hot_restart(func::Function; check_interval = 1., env_key = "IS_HOT_RELO
         new_env = deepcopy(ENV)
         new_env[env_key] = "true"
         cmd = Cmd(`$(julia_str) $(app_path)`, env = new_env, ignorestatus = true, windows_hide = true)
+        subp_ref = Ref{Base.Process}()
+        atexit() do
+            if isdefined(subp_ref, 1) && process_running(subp_ref[])
+                kill(subp_ref[])
+            end
+        end
         while true
-            p = run(cmd)
-            p.exitcode != 3 && break
+            subp_ref[] = run(pipeline(cmd, stdout = stdout, stderr = stderr), wait = false)
+            wait(subp_ref[])
+            subp_ref[].exitcode != 3 && break
         end
     end
 end
