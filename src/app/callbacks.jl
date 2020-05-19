@@ -19,7 +19,7 @@ Create a callback that updates the output by calling function `func`.
 # Examples
 
 ```julia
-app = dash) do
+app = dash() do
     html_div() do
         dcc_input(id="graphTitle", value="Let's Dance!", type = "text"),
         dcc_input(id="graphTitle2", value="Let's Dance!", type = "text"),

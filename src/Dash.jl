@@ -114,9 +114,8 @@ function run_server(app::DashApp, host = HTTP.Sockets.localhost, port = 8050;
     main_func = () -> begin
         ccall(:jl_exit_on_sigint, Cvoid, (Cint,), 0)
         handler = make_handler(app);
-        server = Sockets.listen(get_inetaddr(host, port))
         try
-            task = @async HTTP.serve(handler, host, port; server = server)
+            task = @async HTTP.serve(handler, host, port)
             @info string("Running on http://", host, ":", port)
             wait(task)
         catch e
@@ -134,8 +133,5 @@ function run_server(app::DashApp, host = HTTP.Sockets.localhost, port = 8050;
         main_func()
     end
 end
-
-get_inetaddr(host::String, port::Integer) = Sockets.InetAddr(parse(IPAddr, host), port)
-get_inetaddr(host::IPAddr, port::Integer) = Sockets.InetAddr(host, port)
 
 end # module
