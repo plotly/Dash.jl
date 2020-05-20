@@ -11,6 +11,12 @@ struct Component <: AbstractComponent
     props ::Dict{Symbol, Any}
     available_props ::Set{Symbol}
     wildcard_props ::Set{Symbol}
+    function Component(type, namespace, props, available_props, wildcard_props)
+        if :children in available_props && !haskey(props, :children)
+            props[:children] = nothing
+        end
+        return new(type, namespace, props, available_props, wildcard_props)
+    end
 end
 
 JSON2.@format Component begin
