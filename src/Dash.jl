@@ -76,7 +76,7 @@ Run Dash server
 
 #Examples
 ```jldoctest
-julia> app = dash) do
+julia> app = dash() do
     html_div() do
         html_h1("Test Dashboard")
     end
