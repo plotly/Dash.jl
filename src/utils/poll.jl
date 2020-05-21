@@ -20,7 +20,6 @@ function poll_until_changed(files::Set{String}; interval = 1.)
                 active = false
                 break;
             end
-            sleep(0.1)
         end
         sleep(interval)
     end

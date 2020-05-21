@@ -3,30 +3,32 @@ function is_hot_restart_available()
 end
 function hot_restart(func::Function; check_interval = 1., env_key = "IS_HOT_RELOADABLE", suppress_warn = false)
     if !is_hot_restart_available()
-        !suppress_warn && @warn "hot restart is disabled for intereactive sessions"
-        return func()
+        error("hot restart is disabled for intereactive sessions")
     end
     app_path = abspath(Base.PROGRAM_FILE)
     if get(ENV, env_key, "false") == "true"
-        @async func()
+        (server, _) = func()
         files = parse_includes(app_path)
         poll_until_changed(files, interval = check_interval)
-        exit(3)
+        close(server)
     else
         julia_str = joinpath(Sys.BINDIR, Base.julia_exename())
-        new_env = deepcopy(ENV)
-        new_env[env_key] = "true"
-        cmd = Cmd(`$(julia_str) $(app_path)`, env = new_env, ignorestatus = true, windows_hide = true)
-        subp_ref = Ref{Base.Process}()
-        atexit() do
-            if isdefined(subp_ref, 1) && process_running(subp_ref[])
-                kill(subp_ref[])
+        ENV[env_key] = "true"
+        try
+            while true
+                sym = gensym()
+                task = @async Base.eval(Main,
+                    :(module $(sym) include($app_path) end)
+                )
+                wait(task)
             end
-        end
-        while true
-            subp_ref[] = run(pipeline(cmd, stdout = stdout, stderr = stderr), wait = false)
-            wait(subp_ref[])
-            subp_ref[].exitcode != 3 && break
+        catch e
+            if e isa InterruptException 
+                println("finished")
+                return
+            else
+                rethrow(e)
+            end
         end
     end
 end

@@ -127,11 +127,37 @@ function run_server(app::DashApp, host = HTTP.Sockets.localhost, port = 8050;
 
         end
     end
-    if get_devsetting(app, :hot_reload)
-        hot_restart(main_func, check_interval = get_devsetting(app, :hot_reload_watch_interval))
+    start_server = () -> begin
+        handler = make_handler(app);
+        server = Sockets.listen(get_inetaddr(host, port))
+        task = @async HTTP.serve(handler, host, port; server = server)
+        @info string("Running on http://", host, ":", port)
+        return (server, task)
+    end
+
+    if get_devsetting(app, :hot_reload) && !is_hot_restart_available()
+        @warn "hot restart is disabled for intereactive sessions"
+    end
+
+    if get_devsetting(app, :hot_reload) && is_hot_restart_available()
+        hot_restart(start_server, check_interval = get_devsetting(app, :hot_reload_watch_interval))
     else
-        main_func()
+        (server, task) = start_server()
+        try
+            wait(task)
+            println(task)
+        catch e
+            close(server)
+            if e isa InterruptException 
+                println("finished")
+                return
+            else
+                rethrow(e)
+            end
+        end
     end
 end
+get_inetaddr(host::String, port::Integer) = Sockets.InetAddr(parse(IPAddr, host), port)
+get_inetaddr(host::IPAddr, port::Integer) = Sockets.InetAddr(host, port)
 
 end # module
