@@ -1,18 +1,20 @@
 # Change Log for Dash for Julia
 All notable changes to this project will be documented in this file. This project adheres to Semantic Versioning.
 
+
+
 ### [UNRELEASED]
 ### Added
-- Support for hot reloading on application or asset changes [#25](plotly/Dash.jl#25)
-- Asset serving of CSS, JavaScript, and other resources [#18](plotly/Dash.jl#18)
-- Support for passing functions as layouts [#18](plotly/Dash.jl#18)
-- Resource registry for component assets [#18](plotly/Dash.jl#18)
-- Asynchronous component loading & fingerprinting component assets [#18](plotly/Dash.jl#18)
-- Developer tools UI support [#18](plotly/Dash.jl#18)
-- Dash environment variables are now supported [#18](plotly/Dash.jl#18)
+- Support for hot reloading on application or asset changes [#25](https://github.com/plotly/Dash.jl#25)
+- Asset serving of CSS, JavaScript, and other resources [#18](https://github.com/plotly/Dash.jl/pull/18)
+- Support for passing functions as layouts [#18](https://github.com/plotly/Dash.jl/pull/18)
+- Resource registry for component assets [#18](https://github.com/plotly/Dash.jl/pull/18)
+- Asynchronous component loading & fingerprinting component assets [#18](https://github.com/plotly/Dash.jl/pull/18)
+- Developer tools UI support [#18](https://github.com/plotly/Dash.jl/pull/18)
+- Dash environment variables are now supported [#18](https://github.com/plotly/Dash.jl/pull/18)
 - Index page/layout validation now performed [#18](https://github.com/plotly/Dash.jl/pull/18)
-- Support for `gzip` compression [#14](plotly/Dash.jl#14)
-- Parity with core Dash API parameters [#12](plotly/Dash.jl/pull/12)
+- Support for `gzip` compression [#14](https://github.com/plotly/Dash.jl#14)
+- Parity with core Dash API parameters [#12](https://github.com/plotly/Dash.jl/pull/12)
 - Integration tests are now supported, server startup message appears on app initialization [#21](https://github.com/plotly/Dash.jl/pull/21)
 
 ### Changed
