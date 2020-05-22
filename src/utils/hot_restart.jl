@@ -3,7 +3,7 @@ function is_hot_restart_available()
 end
 function hot_restart(func::Function; check_interval = 1., env_key = "IS_HOT_RELOADABLE", suppress_warn = false)
     if !is_hot_restart_available()
-        error("hot restart is disabled for intereactive sessions")
+        error("Hot reloading is disabled for interactive sessions. Please run your app using julia from the command line to take advantage of this feature.")
     end
     app_path = abspath(Base.PROGRAM_FILE)
     if get(ENV, env_key, "false") == "true"

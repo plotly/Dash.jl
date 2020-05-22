@@ -12,7 +12,7 @@ end
 function process_dependencies(request::HTTP.Request, state::HandlerState)
     return HTTP.Response(
         200,
-        ["Content-Type", "application/json"],
+        ["Content-Type" => "application/json"],
         body = state.cache.dependencies_json
         )
 end
@@ -21,7 +21,7 @@ function process_index(request::HTTP.Request, state::HandlerState)
     get_cache(state).need_recache && rebuild_cache!(state)
     return HTTP.Response(
         200,
-        ["Content-Type", "text/html"],
+        ["Content-Type" => "text/html"],
         body = state.cache.index_string
         )
 end
@@ -29,10 +29,9 @@ end
 layout_data(layout::Component) = layout
 layout_data(layout::Function) = layout()
 function process_layout(request::HTTP.Request, state::HandlerState)
-            body = 
     return HTTP.Response(
         200,
-        ["Content-Type", "application/json"],
+        ["Content-Type" => "application/json"],
         body = JSON2.write(layout_data(state.app.layout))
     )
 end
@@ -176,7 +175,7 @@ function process_reload_hash(request::HTTP.Request, state::HandlerState)
 
 end
 
-function start_reaload_poll(state::HandlerState)
+function start_reload_poll(state::HandlerState)
     folders = Set{String}()
     push!(folders, get_assets_path(state.app))
     push!(folders, state.registry.dash_renderer.path)
@@ -236,7 +235,7 @@ function make_handler(app::DashApp, registry::ResourcesRegistry; check_layout = 
     HTTP.setheader(compile_request, "Accept-Encoding" => "gzip")
     HTTP.handle(handler, compile_request) #For handler precompilation
 
-    get_devsetting(app, :hot_reload) && start_reaload_poll(state)
+    get_devsetting(app, :hot_reload) && start_reload_poll(state)
 
     return handler
 end
