@@ -12,7 +12,7 @@ end
 function process_dependencies(request::HTTP.Request, state::HandlerState)
     return HTTP.Response(
         200,
-        ["Content-Type", "application/json"],
+        ["Content-Type" => "application/json"],
         body = state.cache.dependencies_json
         )
 end
@@ -21,7 +21,7 @@ function process_index(request::HTTP.Request, state::HandlerState)
     get_cache(state).need_recache && rebuild_cache!(state)
     return HTTP.Response(
         200,
-        ["Content-Type", "text/html"],
+        ["Content-Type" => "text/html"],
         body = state.cache.index_string
         )
 end
@@ -29,10 +29,9 @@ end
 layout_data(layout::Component) = layout
 layout_data(layout::Function) = layout()
 function process_layout(request::HTTP.Request, state::HandlerState)
-            body = 
     return HTTP.Response(
         200,
-        ["Content-Type", "application/json"],
+        ["Content-Type" => "application/json"],
         body = JSON2.write(layout_data(state.app.layout))
     )
 end
