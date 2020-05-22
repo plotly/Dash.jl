@@ -136,7 +136,7 @@ function run_server(app::DashApp, host = HTTP.Sockets.localhost, port = 8050;
     end
 
     if get_devsetting(app, :hot_reload) && !is_hot_restart_available()
-        @warn "hot restart is disabled for intereactive sessions"
+        @warn "hot restart is disabled for interactive sessions"
     end
 
     if get_devsetting(app, :hot_reload) && is_hot_restart_available()
