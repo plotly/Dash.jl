@@ -60,28 +60,6 @@ end
 
 make_callback_func!(app::DashApp, func::Union{Function, ClientsideFunction}, id::CallbackId) = func
 
-#=
-_inline_clientside_template = """
-var clientside = window.dash_clientside = window.dash_clientside || {{}};
-var ns = clientside["{namespace}"] = clientside["{namespace}"] || {{}};
-ns["{function_name}"] = {clientside_function};
-"""
-
- out0 = output
-            if isinstance(output, (list, tuple)):
-                out0 = output[0]
-
-            namespace = "_dashprivate_{}".format(out0.component_id)
-            function_name = "{}".format(out0.component_property)
-
-            self._inline_scripts.append(
-                _inline_clientside_template.format(
-                    namespace=namespace.replace('"', '\\"'),
-                    function_name=function_name.replace('"', '\\"'),
-                    clientside_function=clientside_function,
-                )
-            )
-=#
 function make_callback_func!(app::DashApp, func::String, id::CallbackId)
     first_output = first(id.output)
     namespace = replace("_dashprivate_$(first_output[1])", "\""=>"\\\"")
