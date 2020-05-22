@@ -3,6 +3,7 @@ All notable changes to this project will be documented in this file. This projec
 
 ### [UNRELEASED]
 ### Added
+- Support for hot reloading on application or asset changes [#30](plotly/Dash.jl#30)
 - Asset serving of CSS, JavaScript, and other resources [#18](plotly/Dash.jl#18)
 - Support for passing functions as layouts [#18](plotly/Dash.jl#18)
 - Resource registry for component assets [#18](plotly/Dash.jl#18)
