@@ -280,7 +280,7 @@ end
         )    
     )
 
-    test_app = dash("test")
+    test_app = dash()
     handler = make_handler(test_app, test_registry)
     request = HTTP.Request("GET", "/_dash-component-suites/dash_renderer/dash-renderer/dash_renderer.js")
     resp = HTTP.handle(handler, request)

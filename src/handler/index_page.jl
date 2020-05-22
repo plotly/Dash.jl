@@ -99,7 +99,7 @@ function index_page(app::DashApp, resources::ApplicationResources)
     
     result = interpolate_string(app.index_string,
         metas = metas_html(app),
-        title = app.name,
+        title = app.title,
         favicon = favicon_html(app),
         css = css_html(app, resources),
         app_entry = app_entry_html(),

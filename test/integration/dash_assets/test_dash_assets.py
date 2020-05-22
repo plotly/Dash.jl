@@ -38,7 +38,6 @@ def test_jldada001_assets(dashjl):
     ]
 
     assert order == tested, "the content and order is expected"
-    dashjl.percy_snapshot("test assets includes")
 
 def test_jldada002_external_files_init(dashjl):
     fp = jl_test_file_path("jldada002_external_files_init.jl") 

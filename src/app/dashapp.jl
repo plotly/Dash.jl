@@ -25,14 +25,16 @@ Dash.jl's internal representation of a Dash application.
 This `struct` is not intended to be called directly; developers should create their Dash application using the `dash` function instead.
 """
 mutable struct DashApp
-    name ::String
+    root_path ::String
+    is_interactive ::Bool
     config ::DashConfig
     index_string ::Union{String, Nothing}
+    title ::String
     layout ::Union{Nothing, Component, Function}
     devtools ::DevTools
     callbacks ::Dict{Symbol, Callback}
     
-    DashApp(name, config, index_string) = new(name, config, index_string, nothing, DevTools(dash_env(Bool, "debug", false)), Dict{Symbol, Callback}())
+    DashApp(root_path, is_interactive, config, index_string, title = "Dash") = new(root_path, is_interactive, config, index_string, title, nothing, DevTools(dash_env(Bool, "debug", false)), Dict{Symbol, Callback}())
     
 end
 
@@ -41,6 +43,7 @@ function Base.setproperty!(app::DashApp, property::Symbol, value)
     property == :name && return set_name!(app, value)
     property == :index_string && return set_index_string!(app, value)
     property == :layout && return set_layout!(app::DashApp, value)
+    property == :title && return set_title!(app::DashApp, value)
 
     property in fieldnames(DashApp) && error("The property `$(property)` of `DashApp` is read-only")
 
@@ -49,6 +52,10 @@ end
 
 function set_name!(app::DashApp, name)
     setfield!(app, :name, name)
+end
+
+function set_title!(app::DashApp, title)
+    setfield!(app, :title, title)
 end
 
 get_name(app::DashApp) = app.name
@@ -106,6 +113,8 @@ get_devsetting(app::DashApp, name::Symbol) = getproperty(app.devtools, name)
 
 get_setting(app::DashApp, name::Symbol) = getproperty(app.config, name)
 
+get_assets_path(app::DashApp) = joinpath(app.root_path, get_setting(app, :assets_folder))
+
 """
     dash(name::String;
             external_stylesheets,
@@ -134,7 +143,6 @@ If a parameter can be set by an environment variable, that is listed as:
   Values provided here take precedence over environment variables.
 
 # Arguments
-- `name::String` - The name of your application
 - `assets_folder::String` - a path, relative to the current working directory,
         for extra files to be used in the browser. Default `'assets'`. All .js and .css files will be loaded immediately unless excluded by `assets_ignore`, and other files such as images will be served if requested.
 
@@ -212,7 +220,7 @@ If a parameter can be set by an environment variable, that is listed as:
         files and data served by HTTP.jl when supported by the client. Set to
         ``false`` to disable compression completely.
 """
-function dash(name::String = dash_env("dash_name", "");
+function dash(;
         external_stylesheets = ExternalSrcType[],
         external_scripts  = ExternalSrcType[],
         url_base_pathname = dash_env("url_base_pathname"),        
@@ -242,7 +250,7 @@ function dash(name::String = dash_env("dash_name", "");
                 requests_pathname_prefix,
                 routes_pathname_prefix
                 )...,
-            absolute_assets_path(assets_folder),
+            assets_folder,
             lstrip(assets_url_path, '/'),
             assets_ignore,             
             serve_locally, 
@@ -254,6 +262,6 @@ function dash(name::String = dash_env("dash_name", "");
             show_undo_redo,
             compress
         )
-        result = DashApp(name, config, index_string)
+        result = DashApp(app_root_path(), isinteractive(), config, index_string)
     return result
 end

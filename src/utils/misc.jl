@@ -1,4 +1,5 @@
 using MacroTools
+using UUIDs
 
 function format_tag(name ::String, attributes::Dict{String, String}, inner::String = ""; opened = false, closed = false)
     attrs_string = join(
@@ -59,6 +60,9 @@ function parse_props(s)
     end    
 end
 
+function generate_hash()
+    return strip(string(UUIDs.uuid4()), '-')    
+end
 
 """
     @callid_str"

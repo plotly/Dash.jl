@@ -6,18 +6,18 @@ using HTTP
 
 
 @testset "external_stylesheets" begin    
-    app = dash("test app")
+    app = dash()
     resources = ApplicationResources(app, main_registry()) 
     index_page = Dash.index_page(app, resources)
     
     @test isnothing(findfirst("link rel=\"stylesheet\"", index_page))
     
-    app = dash("test app"; external_stylesheets = ["https://test.css"])
+    app = dash(external_stylesheets = ["https://test.css"])
     resources = ApplicationResources(app, main_registry()) 
     index_page = Dash.index_page(app, resources)
     @test !isnothing(findfirst("<link rel=\"stylesheet\" href=\"https://test.css\">", index_page))
 
-    app = dash("test app"; external_stylesheets = [
+    app = dash(external_stylesheets = [
         "https://test.css",
          Dict("href" => "https://test2.css", "rel" => "stylesheet")
          ]
@@ -33,12 +33,12 @@ end
 @testset "external_scripts" begin
     
     
-    app = dash("test app"; external_scripts = ["https://test.js"])
+    app = dash(external_scripts = ["https://test.js"])
     resources = ApplicationResources(app, main_registry()) 
     index_page = Dash.index_page(app, resources)
     @test !isnothing(findfirst("""<script src="https://test.js"></script>""", index_page))
 
-    app = dash("test app"; external_scripts = [
+    app = dash(external_scripts = [
         "https://test.js",  
         Dict("src" => "https://test2.js", "crossorigin" => "anonymous")
         ])
@@ -52,7 +52,7 @@ end
 end
 
 @testset "url paths" begin
-    #=app = dash("test app"; requests_pathname_prefix = "/reg/prefix/", routes_pathname_prefix = "/prefix/")
+    #=app = dash(requests_pathname_prefix = "/reg/prefix/", routes_pathname_prefix = "/prefix/")
     resources = ApplicationResources(app, main_registry()) 
     index_page = Dash.index_page(app, resources)
     
@@ -73,7 +73,7 @@ end
 end
 
 @testset "assets paths" begin
-    app = dash("test app")
+    app = dash()
     app.layout = html_div()
     handler = make_handler(app)
     request = HTTP.Request("GET", "/assets/test.png")
@@ -86,7 +86,7 @@ end
     res = HTTP.handle(handler, request)
     @test startswith(HTTP.header(res, "Content-Type"), "text/html")
 
-    app = dash("test app", url_base_pathname = "/test/")
+    app = dash(url_base_pathname = "/test/")
     app.layout = html_div()
     handler = make_handler(app)
     request = HTTP.Request("GET", "/assets/test.png")
@@ -99,7 +99,7 @@ end
     res = HTTP.handle(handler, request)
     @test res.status == 404
 
-    app = dash("test app", assets_url_path = "ass")
+    app = dash(assets_url_path = "ass")
     app.layout = html_div()
     handler = make_handler(app)
     request = HTTP.Request("GET", "/ass/test.png")
@@ -115,7 +115,7 @@ end
     res = HTTP.handle(handler, request)
     @test startswith(HTTP.header(res, "Content-Type"), "text/html")
 
-    app = dash("test app", assets_folder = "images")
+    app = dash(assets_folder = "images")
     app.layout = html_div()
     handler = make_handler(app)
     request = HTTP.Request("GET", "/assets/test.png")
@@ -130,13 +130,13 @@ end
 end
 
 @testset "suppress_callback_exceptions" begin
-    app = dash("test app")
+    app = dash()
     resources = ApplicationResources(app, main_registry()) 
     index_page = Dash.index_page(app, resources)
     @test !isnothing(findfirst("\"suppress_callback_exceptions\":false", index_page))
     @test isnothing(findfirst("\"suppress_callback_exceptions\":true", index_page))
 
-    app = dash("test app", suppress_callback_exceptions = true)
+    app = dash(suppress_callback_exceptions = true)
     resources = ApplicationResources(app, main_registry()) 
     index_page = Dash.index_page(app, resources)
     @test isnothing(findfirst("\"suppress_callback_exceptions\":false", index_page))
@@ -144,7 +144,7 @@ end
 end
 
 @testset "meta_tags" begin
-    app = dash("test app")
+    app = dash()
     resources = ApplicationResources(app, main_registry()) 
     index_page = Dash.index_page(app, resources)
     
@@ -160,7 +160,7 @@ end
             index_page)
         )
 
-    app = dash("test app", meta_tags = [Dict("type" => "tst", "rel" => "r")])
+    app = dash(meta_tags = [Dict("type" => "tst", "rel" => "r")])
     resources = ApplicationResources(app, main_registry()) 
     index_page = Dash.index_page(app, resources)
 
@@ -182,7 +182,7 @@ end
             index_page)
         )
 
- app = dash("test app", meta_tags = [Dict("charset" => "Win1251"), Dict("type" => "tst", "rel" => "r")])
+ app = dash(meta_tags = [Dict("charset" => "Win1251"), Dict("type" => "tst", "rel" => "r")])
     resources = ApplicationResources(app, main_registry()) 
     index_page = Dash.index_page(app, resources)
 
@@ -203,7 +203,7 @@ end
             index_page)
         )
 
-    app = dash("test app", meta_tags = [Dict("http-equiv" => "X-UA-Compatible", "content" => "IE"), Dict("type" => "tst", "rel" => "r")])
+    app = dash(meta_tags = [Dict("http-equiv" => "X-UA-Compatible", "content" => "IE"), Dict("type" => "tst", "rel" => "r")])
     resources = ApplicationResources(app, main_registry()) 
     index_page = Dash.index_page(app, resources)
     @test isnothing(
@@ -221,7 +221,7 @@ end
 
 @testset "index_string" begin
     index_string = "test test test, {%metas%},{%title%},{%favicon%},{%css%},{%app_entry%},{%config%},{%scripts%},{%renderer%}"
-    app = dash("test", index_string = index_string)
+    app = dash(index_string = index_string)
     resources = ApplicationResources(app, main_registry()) 
     index_page = Dash.index_page(app, resources)
     @test startswith(index_page, "test test test,")  
@@ -230,13 +230,13 @@ end
 
 @testset "show_undo_redo" begin
     
-    app = dash("test")
+    app = dash()
     
     resources = ApplicationResources(app, main_registry()) 
     index_page = Dash.index_page(app, resources)
     @test !isnothing(findfirst("\"show_undo_redo\":false", index_page))
 
-    app = dash("test", show_undo_redo = true)
+    app = dash(show_undo_redo = true)
     
     resources = ApplicationResources(app, main_registry()) 
     index_page = Dash.index_page(app, resources)

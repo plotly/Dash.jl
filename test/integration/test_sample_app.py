@@ -2,7 +2,7 @@ app = '''
 using Dash
 using DashHtmlComponents
 
-app = dash("Test app")
+app = dash()
 
 app.layout = html_div() do
  html_div("Hello Dash.jl testing", id="container")

@@ -114,14 +114,15 @@ function walk_assets(callback, app::DashApp)
         (f) -> true :
         (f) -> !occursin(assets_regex, f)
         
-    if app.config.include_assets_files && isdir(app.config.assets_folder)
-        for (base, dirs, files) in walkdir(app.config.assets_folder)
+    assets_path = get_assets_path(app)
+    if get_setting(app, :include_assets_files) && isdir(assets_path)
+        for (base, dirs, files) in walkdir(assets_path)
             if !isempty(files)
                 relative = ""
-                if base != app.config.assets_folder
+                if base != assets_path
                     relative = join(
                             splitpath(
-                                relpath(base, app.config.assets_folder)
+                                relpath(base, assets_path)
                             ), "/"
                         ) * "/"
                 end

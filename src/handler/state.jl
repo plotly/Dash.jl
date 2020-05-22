@@ -1,8 +1,22 @@
+struct ChangedAsset
+    url ::String
+    modified ::Int
+    is_css ::Bool
+end
+mutable struct StateReload
+    hash::Union{String, Nothing}
+    hard::Bool
+    changed_assets::Vector{ChangedAsset}
+    task ::Union{Nothing, Task}
+    StateReload(hash) = new(hash, false, ChangedAsset[], nothing)
+end
+
 mutable struct StateCache
     resources::ApplicationResources
     index_string ::String
     dependencies_json ::String
-    StateCache(app, registry) = new(_cache_tuple(app, registry)...)
+    need_recache ::Bool
+    StateCache(app, registry) = new(_cache_tuple(app, registry)..., false)
 end
 
 function _dependencies_json(app::DashApp)
@@ -27,12 +41,16 @@ struct HandlerState
     app::DashApp
     registry::ResourcesRegistry
     cache::StateCache
-    HandlerState(app, registry = main_registry()) = new(app, registry, StateCache(app, registry))
+    reload::StateReload
+    HandlerState(app, registry = main_registry()) = new(app, registry, StateCache(app, registry), make_reload_state(app))
 end
+
+make_reload_state(app::DashApp) = get_devsetting(app, :hot_reload) ? StateReload(generate_hash()) : StateReload(nothing)
 
 get_cache(state::HandlerState) = state.cache
 
 function rebuild_cache!(state::HandlerState)
     cache = get_cache(state) 
-    (cache.resources, cache.index_string, cache.dependencies) = _cache_tuple(state.app, state.registry)
+    (cache.resources, cache.index_string, cache.dependencies_json) = _cache_tuple(state.app, state.registry)
+    cache.need_recache = false
 end

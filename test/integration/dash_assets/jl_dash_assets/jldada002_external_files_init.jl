@@ -1,8 +1,6 @@
 using Dash
 using DashHtmlComponents
 using DashCoreComponents
-
-cd(@__DIR__) #change cwd to file dir #TODO remove when proper app_path routine is implemented
 js_files = [
     "https://www.google-analytics.com/analytics.js",
     Dict("src"=> "https://cdn.polyfill.io/v2/polyfill.min.js"),

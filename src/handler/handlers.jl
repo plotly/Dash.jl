@@ -18,6 +18,7 @@ function process_dependencies(request::HTTP.Request, state::HandlerState)
 end
 
 function process_index(request::HTTP.Request, state::HandlerState)
+    get_cache(state).need_recache && rebuild_cache!(state)
     return HTTP.Response(
         200,
         ["Content-Type" => "text/html"],
@@ -147,7 +148,7 @@ end
 
 function process_assets(request::HTTP.Request, state::HandlerState; file_path::AbstractString)
     app = state.app
-    filename = joinpath(get_setting(app, :assets_folder), file_path)
+    filename = joinpath(get_assets_path(app), file_path)
 
     try
         headers = Pair{String,String}[]
@@ -161,7 +162,47 @@ function process_assets(request::HTTP.Request, state::HandlerState; file_path::A
     
 end
 
-const dash_router = HTTP.Router()
+function process_reload_hash(request::HTTP.Request, state::HandlerState)
+    reload_tuple = (
+        reloadHash = state.reload.hash,
+        hard = state.reload.hard,
+        packages = keys(state.cache.resources.files),
+        files = state.reload.changed_assets
+    ) 
+    state.reload.hard = false
+    state.reload.changed_assets = []
+    return HTTP.Response(200, ["Content-Type" => "application/json"], body = JSON2.write(reload_tuple))
+
+end
+
+function start_reload_poll(state::HandlerState)
+    folders = Set{String}()
+    push!(folders, get_assets_path(state.app))
+    push!(folders, state.registry.dash_renderer.path)
+    for pkg in values(state.registry.components)
+        push!(folders, pkg.path)
+    end
+    state.reload.task = @async poll_folders(folders; interval = get_devsetting(state.app, :hot_reload_watch_interval)) do file, ts, deleted
+        state.reload.hard = true
+        state.reload.hash = generate_hash()
+        assets_path = get_assets_path(state.app)
+        if startswith(file, assets_path)
+            state.cache.need_recache = true
+            rel_path = lstrip(
+                    replace(relpath(file, assets_path), '\\'=>'/'),
+                    '/'
+                )
+            push!(state.reload.changed_assets, 
+                ChangedAsset(
+                    asset_path(state.app, rel_path), 
+                    trunc(Int, ts),
+                    endswith(file, "css")
+                    )
+            )
+        end
+
+    end
+end
 
 validate_layout(layout::Component) = validate(layout)
 
@@ -180,6 +221,7 @@ function make_handler(app::DashApp, registry::ResourcesRegistry; check_layout = 
     router = Router()
     add_route!(process_layout, router, "$(prefix)_dash-layout")
     add_route!(process_dependencies, router, "$(prefix)_dash-dependencies")
+    add_route!(process_reload_hash, router, "$(prefix)_reload-hash")
     add_route!(process_resource, router, "$(prefix)_dash-component-suites/<namespace>/<path>")
     add_route!(process_assets, router, "$(prefix)$(assets_url_path)/<file_path>")
     add_route!(process_callback, router, "POST", "$(prefix)_dash-update-component")
@@ -189,7 +231,12 @@ function make_handler(app::DashApp, registry::ResourcesRegistry; check_layout = 
     handler = state_handler(router, state)
     get_setting(app, :compress) && (handler = compress_handler(handler))
 
-    HTTP.handle(handler, HTTP.Request("GET", prefix)) #For handler precompilation
+    compile_request = HTTP.Request("GET", prefix)
+    HTTP.setheader(compile_request, "Accept-Encoding" => "gzip")
+    HTTP.handle(handler, compile_request) #For handler precompilation
+
+    get_devsetting(app, :hot_reload) && start_reload_poll(state)
+
     return handler
 end
 
