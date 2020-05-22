@@ -1,0 +1,21 @@
+documentation:
+- "./*.md"
+- "**/*.md"
+
+tests:
+- "test/*"
+- "test/**/*"
+
+CI:
+- ".github/*.yml"
+- ".github/workflows/*.yml"
+- "./*.yml"
+
+enhancement:
+- "src/*.jl"
+- "./*"
+  
+  
+  
+ 
+  
