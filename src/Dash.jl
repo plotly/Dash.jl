@@ -136,7 +136,7 @@ function run_server(app::DashApp, host = HTTP.Sockets.localhost, port = 8050;
     end
 
     if get_devsetting(app, :hot_reload) && !is_hot_restart_available()
-        @warn "hot restart is disabled for interactive sessions"
+        @warn "Hot reloading is disabled for interactive sessions. Please run your app using julia from the command line to take advantage of this feature."
     end
 
     if get_devsetting(app, :hot_reload) && is_hot_restart_available()
