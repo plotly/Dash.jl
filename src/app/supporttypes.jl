@@ -13,9 +13,12 @@ CallbackId(;input,
 
 
 Base.convert(::Type{Vector{IdProp}}, v::IdProp) = [v]
-
+struct ClientsideFunction
+    namespace ::String
+    function_name ::String
+end
 struct Callback
-    func ::Function
+    func ::Union{Function, ClientsideFunction}
     id ::CallbackId
 end
 
