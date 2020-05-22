@@ -8,8 +8,7 @@ Built on top of Plotly.js, React and HTTP.jl, [Dash](https://plotly.com/dash/) t
 
 ## Installation
 
-Julia version >= 1.2 is required.
-It also works in 1.1 now, but I do not plan testing and support for versions under 1.2
+Please ensure that you are using a version of Julia >= 1.2.
 
 ```julia
 import Pkg; Pkg.add(Pkg.PackageSpec(url = "https://github.com/plotly/Dash.jl.git"))
@@ -71,7 +70,7 @@ julia> run_server(app, "0.0.0.0", 8080)
 * You can make your dashboard interactive by register callbacks for changes in frontend with function ``callback!(func::Function, app::Dash, id::CallbackId)``
 * Inputs and outputs (and states, see below) of callback are described by struct `CallbackId` which can easily created by string macro `callid""`
 * `callid""` parse string in form ``"[{state1 [,...]}] input1[,...] => output1[,...]"`` where all items is ``"<element id>.<property name>"``
-* Callback function must have the signature(states..., inputs...) and return data for output
+* Callback function must have the signature(states..., inputs...), and provide a return value comparable (in terms of number of elements) to the outputs being updated.
 
 ### States and Multiple Outputs
 ```jldoctest
@@ -90,7 +89,6 @@ julia> callback!(app, callid"{my-id.type} my-id.value => my-div.children, my-div
 end
 julia> run_server(app, "0.0.0.0", 8080)
 ```
-* For multiple output callback must return any collection with element for each output
 
 ## Comparation with original python syntax
 
@@ -100,8 +98,8 @@ julia> run_server(app, "0.0.0.0", 8080)
 
 ### component creation:
 
-Just like in Python, functions for creating components have keywords arguments, which are the same as in Python. ``html_div(id="my-id", children="Simple text")``.
-For components that have `children` prop, two additional signatures are available. ``(children; kwargs..)`` and ``(children_maker::Function; kwargs...)`` so You can write ``html_div("Simple text", id="my-id")``  for simple elements or avoid the hell of nested brackets with `do` syntax for complex elements:
+Just as in Python, functions for declaring components have keyword arguments, which are the same as in Python. ``html_div(id="my-id", children="Simple text")``.
+For components which declare `children`, two additional signatures are available. ``(children; kwargs..)`` and ``(children_maker::Function; kwargs...)`` so one can write ``html_div("Simple text", id="my-id")`` for simple elements, or choose an abbreviated syntax with `do` syntax for complex elements:
 
 ```julia
 html_div(id="outer-div") do
@@ -150,4 +148,6 @@ end
 Be careful - in Dash.jl states came first in arguments list
 
 ### json:
-I use JSON2 for json serialization/deserialization, so in callbacks all json objects are NamedTuples not Dicts. In component props you can use both Dicts and NamedTuples for json objects. But be careful with single property objects: `layout = (title = "Test graph")` is not interpreted as NamedTuple by Julia  - you need add comma at the end `layout = (title = "Test graph",)`
+I use JSON2 for json serialization/deserialization, so in callbacks all JSON objects are `NamedTuples` rather than dictionaries. Within component properties you can use both `Dict` and `NamedTuple` for json objects. 
+
+Note when declaring elements with a single properly that `layout = (title = "Test graph")` is not interpreted as a `NamedTuple` by Julia  - you'll need to add a comma when declaring the layout, e.g. `layout = (title = "Test graph",)`
