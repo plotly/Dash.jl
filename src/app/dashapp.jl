@@ -86,19 +86,22 @@ get_index_string(app::DashApp) = app.component.index_string
 
 """
 Activate the dev tools, called by `run_server`.
-All parameters can be set by environment variables as listed.
-Values provided here take precedence over environment variables.
+
+If a parameter can be set by an environment variable, that is listed as:
+  env: `DASH_****`
+  Values provided here take precedence over environment variables.
+
 Available dev_tools environment variables:
-    - DASH_DEBUG
-    - DASH_UI
-    - DASH_PROPS_CHECK
-    - DASH_SERVE_DEV_BUNDLES
-    - DASH_HOT_RELOAD
-    - DASH_HOT_RELOAD_INTERVAL
-    - DASH_HOT_RELOAD_WATCH_INTERVAL
-    - DASH_HOT_RELOAD_MAX_RETRY
-    - DASH_SILENCE_ROUTES_LOGGING
-    - DASH_PRUNE_ERRORS
+- `DASH_DEBUG`
+- `DASH_UI`
+- `DASH_PROPS_CHECK`
+- `DASH_SERVE_DEV_BUNDLES`
+- `DASH_HOT_RELOAD`
+- `DASH_HOT_RELOAD_INTERVAL`
+- `DASH_HOT_RELOAD_WATCH_INTERVAL`
+- `DASH_HOT_RELOAD_MAX_RETRY`
+- `DASH_SILENCE_ROUTES_LOGGING`
+- `DASH_PRUNE_ERRORS`
 
 # Arguments
 
