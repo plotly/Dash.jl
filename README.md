@@ -10,8 +10,20 @@ Built on top of Plotly.js, React and HTTP.jl, [Dash](https://plotly.com/dash/) t
 
 Please ensure that you are using a version of Julia >= 1.2.
 
+To install the most recently released version:
+
 ```julia
-import Pkg; Pkg.add(Pkg.PackageSpec(url = "https://github.com/plotly/Dash.jl.git"))
+using Pkg; Pkg.add(PackageSpec(url="https://github.com/plotly/Dash.jl.git"))
+```
+
+To install the latest (stable) development version instead:
+
+```julia
+using Pkg
+Pkg.add(PackageSpec(url="https://github.com/plotly/Dash.jl.git", rev="dev"))
+Pkg.add(PackageSpec(url="https://github.com/plotly/dash-html-components.git", rev="jl"))
+Pkg.add(PackageSpec(url="https://github.com/plotly/dash-core-components.git", rev="jl"))
+Pkg.add(PackageSpec(url="https://github.com/plotly/dash-table.git", rev="jl"))
 ```
 
 ## Usage
