@@ -33,8 +33,10 @@ mutable struct DashApp
     layout ::Union{Nothing, Component, Function}
     devtools ::DevTools
     callbacks ::Dict{Symbol, Callback}
+    inline_scripts ::Vector{String}
     
-    DashApp(root_path, is_interactive, config, index_string, title = "Dash") = new(root_path, is_interactive, config, index_string, title, nothing, DevTools(dash_env(Bool, "debug", false)), Dict{Symbol, Callback}())
+    DashApp(root_path, is_interactive, config, index_string, title = "Dash") = 
+    new(root_path, is_interactive, config, index_string, title, nothing, DevTools(dash_env(Bool, "debug", false)), Dict{Symbol, Callback}(), String[])
     
 end
 

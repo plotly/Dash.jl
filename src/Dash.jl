@@ -9,7 +9,7 @@ import .Front
 using .Components
 
 export dash, Component, Front, <|, @callid_str, CallbackId, callback!,
-enable_dev_tools!,
+enable_dev_tools!, ClientsideFunction,
 run_server, PreventUpdate, no_update, @var_str
 
 

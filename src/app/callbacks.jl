@@ -49,17 +49,32 @@ end
 
 
 """
-function callback!(func::Function, app::DashApp, id::CallbackId)    
+function callback!(func::Union{Function, ClientsideFunction, String}, app::DashApp, id::CallbackId)    
     
     check_callback(func, app, id)
     
     out_symbol = Symbol(output_string(id))
-        
-    push!(app.callbacks, out_symbol => Callback(func, id))
+    callback_func = make_callback_func!(app, func, id)      
+    push!(app.callbacks, out_symbol => Callback(callback_func, id))
 end
 
+make_callback_func!(app::DashApp, func::Union{Function, ClientsideFunction}, id::CallbackId) = func
 
-function check_callback(func::Function, app::DashApp, id::CallbackId)
+function make_callback_func!(app::DashApp, func::String, id::CallbackId)
+    first_output = first(id.output)
+    namespace = replace("_dashprivate_$(first_output[1])", "\""=>"\\\"")
+    function_name = replace("$(first_output[2])", "\""=>"\\\"")
+
+    function_string = """
+            var clientside = window.dash_clientside = window.dash_clientside || {};
+            var ns = clientside["$namespace"] = clientside["$namespace"] || {};
+            ns["$function_name"] = $func;
+    """
+    push!(app.inline_scripts, function_string)
+    return ClientsideFunction(namespace, function_name)
+end
+
+function check_callback(func, app::DashApp, id::CallbackId)
 
     
 
@@ -75,9 +90,15 @@ function check_callback(func::Function, app::DashApp, id::CallbackId)
 
     args_count = length(id.state) + length(id.input)
 
-    !hasmethod(func, NTuple{args_count, Any}) && error("The arguments of the specified callback function do not align with the currently defined callback; please ensure that the arguments to `func` are properly defined.")
+    check_callback_func(func, args_count)
 
     for id_prop in id.input
         id_prop in id.output && error("Circular input and output arguments were found. Please verify that callback outputs are not also input arguments.")
     end
+end
+
+function check_callback_func(func::Function, args_count)
+    !hasmethod(func, NTuple{args_count, Any}) && error("The arguments of the specified callback function do not align with the currently defined callback; please ensure that the arguments to `func` are properly defined.")
+end
+function check_callback_func(func, args_count)
 end

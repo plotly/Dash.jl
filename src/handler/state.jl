@@ -19,12 +19,15 @@ mutable struct StateCache
     StateCache(app, registry) = new(_cache_tuple(app, registry)..., false)
 end
 
+_dep_clientside_func(func::ClientsideFunction) = func
+_dep_clientside_func(func) = nothing
 function _dependencies_json(app::DashApp)
     id_prop_named(p::IdProp) = (id = p[1], property = p[2])
     result = map(values(app.callbacks)) do dep
         (inputs = id_prop_named.(dep.id.input),
         state = id_prop_named.(dep.id.state),
-        output = output_string(dep.id)
+        output = output_string(dep.id),
+        clientside_function = _dep_clientside_func(dep.func)
         )
     end
     return JSON2.write(result)

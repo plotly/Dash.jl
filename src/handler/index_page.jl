@@ -34,6 +34,7 @@ make_css_tag(app::DashApp, resource::AppResource) = make_css_tag(resource_url(ap
 make_script_tag(url::String) = """<script src="$(url)"></script>"""
 make_script_tag(app::DashApp, resource::AppCustomResource) = format_tag("script", resource.params)
 make_script_tag(app::DashApp, resource::AppResource) = make_script_tag(resource_url(app, resource))
+make_inline_script_tag(script::String) = """<script>$(script)</script>"""
 
 function metas_html(app::DashApp)
     meta_tags = app.config.meta_tags
@@ -58,9 +59,14 @@ function css_html(app::DashApp, resources::ApplicationResources)
 end
 
 function scripts_html(app::DashApp, resources::ApplicationResources)
-     join(
-         make_script_tag.(Ref(app), resources.js), "\n       "
-         )
+    include_string = join(
+         vcat(
+            make_script_tag.(Ref(app), resources.js),
+            make_inline_script_tag.(app.inline_scripts)
+        ),
+         "\n       "
+        )
+
 end
 
 app_entry_html() = """
