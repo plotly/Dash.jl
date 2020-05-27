@@ -10,17 +10,35 @@ using .Components
 
 export dash, Component, Front, <|, @callid_str, CallbackId, callback!,
 enable_dev_tools!, ClientsideFunction,
-run_server, PreventUpdate, no_update, @var_str
+run_server, PreventUpdate, no_update, @var_str, @using_components
 
 
 
-#ComponentPackages.@reg_components()
 include("env.jl")
 include("utils.jl")
 include("app.jl")
 include("resources/registry.jl")
 include("resources/application.jl")
 include("handlers.jl")
+include("core_components.jl")
+
+"""
+    @using_components(package_name)
+
+Load the components module or package and make its functions available for direct use. 
+It also adds package resources to the list of resources required for the dashboard
+"""
+macro using_components(name::Symbol)
+    
+    result = Expr(:toplevel)
+    if name in (:DashHtmlComponents, :DashCoreComponents, :DashTable) 
+        push!(result.args, esc(:(using Dash.$name)))
+        push!(result.args, esc(:(Dash.$name.__dash_init__();)))
+    else
+        push!(result.args, esc(:(using $name)))
+    end
+    return result
+end
 
 @doc """
     module Dash
