@@ -39,10 +39,10 @@ end
             html_div(id = "my-div"),
             html_div(id = "my-div2")    
         end
-    callback!(app, callid"my-id.value => my-div.children") do value
+    callback!(app, Output("my-div","children"), Input("my-id","value")) do value
         return value
     end
-    callback!(app, callid"my-id.value => my-div2.children") do value
+    callback!(app, Output("my-div2","children"), Input("my-id","value")) do value
         return "v_$(value)"
     end
 
@@ -140,7 +140,7 @@ end
             html_div(10, id = "my-id"),
             html_div(id = "my-div")        
         end
-    callback!(app, callid"my-id.children => my-div.children") do value
+    callback!(app,  Output("my-div","children"), Input("my-id","children")) do value
         throw(PreventUpdate())
     end
 
@@ -159,7 +159,7 @@ end
             html_div(id = "my-div"),
             html_div(id = "my-div2")          
         end
-    callback!(app, callid"my-id.children => my-div.children, my-div2.children") do value
+    callback!(app, [Output("my-div","children"), Output("my-div2","children")], Input("my-id","children")) do value
         no_update(), "test"
     end
 
@@ -172,17 +172,6 @@ end
     @test result[:response][Symbol("my-div2")][:children] == "test"
 end
 
-@testset "wildprops" begin
-    app = dash(external_stylesheets=["test.css"])
-
-    app.layout = html_div() do            
-            html_div(;id = "my-div", var"data-attr" = "ffff"),
-            html_div(;id = "my-div2", var"aria-attr" = "gggg")    
-        end
-    callback!(app, callid"my-div.children => my-div2.aria-attr") do v
-    
-    end
-end
 
 @testset "HTTP Compression" begin
     # test compression of assets

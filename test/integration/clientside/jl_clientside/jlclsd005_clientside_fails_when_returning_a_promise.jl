@@ -12,7 +12,7 @@ end
 
 callback!( 
     ClientsideFunction("clientside", "side_effect_and_return_a_promise"),
-    app, callid"input.children=>output.children"
+    app, Output("output","children"), Input("input","children")
     )
 
 

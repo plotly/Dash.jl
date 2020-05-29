@@ -1,19 +1,25 @@
-idprop_string(idprop::IdProp) = "$(idprop[1]).$(idprop[2])"
+dependency_string(dep::Dependency) = "$(dep.id).$(dep.property)"
 
 
-function output_string(id::CallbackId)
-    if length(id.output) == 1
-        return idprop_string(id.output[1])
+function output_string(deps::CallbackDeps)
+    if length(deps.output) == 1
+        return dependency_string(deps.output[1])
     end
     return ".." *
-    join(map(idprop_string, id.output), "...") *
+    join(dependency_string.(deps.output), "...") *
     ".."
 end
 
-"""
-    callback!(func::Function, app::Dash, id::CallbackId)
 
-Create a callback that updates the output by calling function `func`.
+"""
+    function callback!(func::Union{Function, ClientsideFunction, String},
+        app::DashApp,
+        output::Union{Vector{Output}, Output},
+        input::Union{Vector{Input}, Input},
+        state::Union{Vector{State}, State} = []
+        )
+
+Create a callback that updates the output by calling function `func`. 
 
 
 # Examples
@@ -28,42 +34,39 @@ app = dash() do
 
     end
 end
-callback!(app, CallbackId(
-    state = [(:graphTitle, :type)],
-    input = [(:graphTitle, :value)],
-    output = [(:outputID, :children), (:outputID2, :children)]
-    )
+callback!(app, [Output("outputID2", "children"), Output("outputID", "children")],
+    Input("graphTitle", "value"),
+    State("graphTitle", "type")
     ) do stateType, inputValue
     return (stateType * "..." * inputValue, inputValue)
 end
 ```
-
-Alternatively, the `callid` string macro is also available when passing `input`, `state`, and `output` arguments to `callback!`: 
-
-```julia
-callback!(app, callid"{graphTitle.type} graphTitle.value => outputID.children, outputID2.children") do stateType, inputValue
-
-    return (stateType * "..." * inputValue, inputValue)
-end
-```
-
-
 """
-function callback!(func::Union{Function, ClientsideFunction, String}, app::DashApp, id::CallbackId)    
-    
-    check_callback(func, app, id)
-    
-    out_symbol = Symbol(output_string(id))
-    callback_func = make_callback_func!(app, func, id)      
-    push!(app.callbacks, out_symbol => Callback(callback_func, id))
+function callback!(func::Union{Function, ClientsideFunction, String},
+     app::DashApp,
+     output::Union{Vector{Output}, Output},
+     input::Union{Vector{Input}, Input},
+     state::Union{Vector{State}, State} = State[]
+     )
+     return _callback!(func, app, CallbackDeps(output, input, state))
 end
 
-make_callback_func!(app::DashApp, func::Union{Function, ClientsideFunction}, id::CallbackId) = func
+function _callback!(func::Union{Function, ClientsideFunction, String}, app::DashApp, deps::CallbackDeps)    
+    
+    check_callback(func, app, deps)
+    
+    out_symbol = Symbol(output_string(deps))
+    callback_func = make_callback_func!(app, func, deps)      
+    push!(app.callbacks, out_symbol => Callback(callback_func, deps))
+end
 
-function make_callback_func!(app::DashApp, func::String, id::CallbackId)
-    first_output = first(id.output)
-    namespace = replace("_dashprivate_$(first_output[1])", "\""=>"\\\"")
-    function_name = replace("$(first_output[2])", "\""=>"\\\"")
+
+make_callback_func!(app::DashApp, func::Union{Function, ClientsideFunction}, deps::CallbackDeps) = func
+
+function make_callback_func!(app::DashApp, func::String, deps::CallbackDeps)
+    first_output = first(deps.output)
+    namespace = replace("_dashprivate_$(first_output.id)", "\""=>"\\\"")
+    function_name = replace("$(first_output.property)", "\""=>"\\\"")
 
     function_string = """
             var clientside = window.dash_clientside = window.dash_clientside || {};
@@ -74,26 +77,25 @@ function make_callback_func!(app::DashApp, func::String, id::CallbackId)
     return ClientsideFunction(namespace, function_name)
 end
 
-function check_callback(func, app::DashApp, id::CallbackId)
+function check_callback(func, app::DashApp, deps::CallbackDeps)
 
-    
 
-    isempty(id.input) && error("The callback method requires that one or more properly formatted inputs are passed.")
+    isempty(deps.input) && error("The callback method requires that one or more properly formatted inputs are passed.")
 
-    length(id.output) != length(unique(id.output)) && error("One or more callback outputs have been duplicated; please confirm that all outputs are unique.")
+    length(deps.output) != length(unique(deps.output)) && error("One or more callback outputs have been duplicated; please confirm that all outputs are unique.")
 
-    for out in id.output
-        if any(x->out in x.id.output, values(app.callbacks))
+    for out in deps.output
+        if any(x->out in x.dependencies.output, values(app.callbacks))
             error("output \"$(out)\" already registered")
         end
     end
 
-    args_count = length(id.state) + length(id.input)
+    args_count = length(deps.state) + length(deps.input)
 
     check_callback_func(func, args_count)
 
-    for id_prop in id.input
-        id_prop in id.output && error("Circular input and output arguments were found. Please verify that callback outputs are not also input arguments.")
+    for id_prop in deps.input
+        id_prop in deps.output && error("Circular input and output arguments were found. Please verify that callback outputs are not also input arguments.")
     end
 end
 

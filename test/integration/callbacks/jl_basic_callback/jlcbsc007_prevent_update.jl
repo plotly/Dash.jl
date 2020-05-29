@@ -15,10 +15,11 @@ app.layout = html_div() do
     html_div(id="output"),
     html_div(id="regular_output")
 end
-callback!(app, callid"input.value => regular_output.children") do input
+callback!(app, Output("regular_output","children"), Input("input","value")) do input
     return input
 end
-callback!(app, callid"input.value => output.children") do input
+
+callback!(app, Output("output","children"), Input("input","value")) do input
     input == "prevent" && throw(PreventUpdate())
     input == "no_update" && return no_update()
     return input

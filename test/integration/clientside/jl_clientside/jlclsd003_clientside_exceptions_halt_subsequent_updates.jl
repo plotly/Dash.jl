@@ -12,12 +12,12 @@ end
 
 callback!( 
     ClientsideFunction("clientside", "add1_break_at_11"),
-    app, callid"first.value=>second.value"
+    app, Output("second", "value"), Input("first", "value")
     )
 
 callback!( 
     ClientsideFunction("clientside", "add1_break_at_11"),
-    app, callid"second.value=>third.value"
+    app, Output("third", "value"), Input("second","value")
     )
 
 run_server(app)

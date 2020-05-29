@@ -23,34 +23,27 @@ end
 
 callback!( 
     ClientsideFunction("clientside", "add"),
-    app, callid"""
-            x.value,
-            y.value,
-            => x-plus-y.value
-            """) 
-callback!(app, callid"x-plus-y.value => x-plus-y-div-2.value") do value
+    app,
+    Output("x-plus-y", "value"),
+    [Input("x","value"), Input("y","value")]
+    ) 
+
+callback!(app, Output("x-plus-y-div-2", "value"), Input("x-plus-y", "value")) do value
     return Float64(value) / 2.
 end
 
-callback!(app, callid"""
-            x.value,
-            y.value,
-            x-plus-y.value,
-            x-plus-y-div-2.value
-            => display-all-of-the-values.value
-            """
-            ) do args...
+callback!(app, 
+        Output("display-all-of-the-values", "value"),
+        [Input("x","value"), Input("y","value"), Input("x-plus-y","value"), Input("x-plus-y-div-2","value")]
+        ) do args...
     return join(string.(args), "\n")
 end
 
 callback!( 
     ClientsideFunction("clientside", "mean"),
-    app, callid"""
-            x.value,
-            y.value,
-            x-plus-y.value,
-            x-plus-y-div-2.value
-            => mean-of-all-values.value
-            """) 
+    app, 
+    Output("mean-of-all-values","value"),
+    [Input("x","value"), Input("y","value"), Input("x-plus-y","value"), Input("x-plus-y-div-2","value")]
+)
 
 run_server(app)

@@ -12,12 +12,12 @@ end
 
 callback!( 
     ClientsideFunction("clientside", "add1_prevent_at_11"),
-    app, callid"{third.value} first.value=>second.value"
+    app, Output("second","value"), Input("first","value"), State("third","value")
     )
 
 callback!( 
     ClientsideFunction("clientside", "add1_prevent_at_11"),
-    app, callid"{third.value} second.value=>third.value"
+    app, Output("third","value"), Input("second","value"), State("third","value")
     )
 
 

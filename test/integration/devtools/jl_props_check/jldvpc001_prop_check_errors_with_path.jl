@@ -131,7 +131,7 @@ app.layout = html_div() do
     dcc_location(id="location")
 end
 
-callback!(app, callid"location.pathname => content.children") do pathname
+callback!(app, Output("content","children"), Input("location","pathname")) do pathname
     if isnothing(pathname) || pathname == "/"
         return "Initial state"
     end
