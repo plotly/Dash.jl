@@ -32,6 +32,8 @@ Julia backend for [Plotly Dash](https://github.com/plotly/dash)
 ```julia
 
 using Dash
+using DashHtmlComponents
+using DashCoreComponents
 app = dash(external_stylesheets=["https://codepen.io/chriddyp/pen/bWLwgP.css"]) do
     html_div() do
         dcc_input(id="graphTitle", value="Let's Dance!", type = "text"),
