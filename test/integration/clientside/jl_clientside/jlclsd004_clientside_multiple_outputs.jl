@@ -15,7 +15,7 @@ end
 callback!( 
     ClientsideFunction("clientside", "add_to_four_outputs"),
     app, 
-    [Output("output-1","value"), Output("output-2","value"), Output("output-3","value"), Output("output-4","value")],
+    Output("output-1","value"), Output("output-2","value"), Output("output-3","value"), Output("output-4","value"),
     Input("input","value")
     )
 

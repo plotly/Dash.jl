@@ -16,14 +16,16 @@ const IdProp = Tuple{Symbol, Symbol}
 
 
 struct CallbackDeps
-    output ::Vector{Output}    
+    output ::Vector{Output}
     input ::Vector{Input}
     state ::Vector{State}
-    CallbackDeps(output, input, state = State[]) = new(output, input, state)
-    CallbackDeps(;output, input, state = State[]) = new(output, input, state)
+    multi_out::Bool
+    CallbackDeps(output, input, state, multi_out) = new(output, input, state, multi_out)
+    CallbackDeps(output::Output, input, state = State[]) = new(output, input, state, false)
+    CallbackDeps(output::Vector{Output}, input, state = State[]) = new(output, input, state, true)
 end
 
-Base.convert(::Type{Vector{T}}, v::T) where {T <: Dependency} = [v]
+Base.convert(::Type{Vector{T}}, v::T) where {T<:Dependency}= [v]
 
 struct ClientsideFunction
     namespace ::String

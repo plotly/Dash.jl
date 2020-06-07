@@ -22,7 +22,7 @@ callback!(app, Output("regular_output","children"), Input("input","value")) do i
     return input
 end
 
-callback!(app, [Output("output1","children"), Output("output2","children")], Input("input","value")) do input
+callback!(app, Output("output1","children"), Output("output2","children"), Input("input","value")) do input
     input == "prevent" && throw(PreventUpdate())
     if input == "no_update1"
         return (no_update(), input)

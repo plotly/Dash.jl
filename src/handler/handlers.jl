@@ -54,7 +54,7 @@ function _process_callback(app::DashApp, body::String)
     end
     
     res = app.callbacks[output].func(args...)
-    if length(app.callbacks[output].dependencies.output) == 1
+    if !app.callbacks[output].dependencies.multi_out
         if !(res isa NoUpdate)
             return Dict(
                 :response => Dict(
@@ -212,7 +212,6 @@ validate_layout(layout) = error("The layout must be a component, tree of compone
 #For test purposes, with the ability to pass a custom registry
 function make_handler(app::DashApp, registry::ResourcesRegistry; check_layout = false)
             
-
     state = HandlerState(app, registry)
     prefix = get_setting(app, :routes_pathname_prefix)
     assets_url_path = get_setting(app, :assets_url_path)
