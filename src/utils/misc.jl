@@ -63,26 +63,3 @@ end
 function generate_hash()
     return strip(string(UUIDs.uuid4()), '-')    
 end
-
-"""
-    @callid_str"
-
-Macro for crating Dash CallbackId.
-Parse string in form "[{State1[, ...]}] Input1[, ...] => Output1[, ...]"
-
-#Examples
-```julia
-    id1 = callid"{inputDiv.children} input.value => output1.value, output2.value"
-```
-"""
-macro callid_str(s)
-    rex = r"(\{(?<state>.*)\})?(?<input>.*)=>(?<output>.*)"ms
-    m = match(rex, s)
-    if isnothing(m)
-        error("expected {state} input => output")
-    end
-    input = parse_props(strip(m[:input]))
-    output = parse_props(strip(m[:output]))
-    state = isnothing(m[:state]) ? Vector{IdProp}() : parse_props(strip(m[:state]))
-    return CallbackId(state, input, output) 
-end

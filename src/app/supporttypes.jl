@@ -1,25 +1,39 @@
-const IdProp = Tuple{Symbol, Symbol}
+struct TraitInput end
+struct TraitOutput end
+struct TraitState end
 
-struct CallbackId
-    state ::Vector{IdProp}
-    input ::Vector{IdProp}
-    output ::Vector{IdProp}    
+struct Dependency{T}
+    id ::String
+    property ::String
 end
 
-CallbackId(;input,
-            output,
-            state = Vector{IdProp}()
-            ) = CallbackId(state, input, output)
+const Input = Dependency{TraitInput}
+const State = Dependency{TraitState}
+const Output = Dependency{TraitOutput}
+
+const IdProp = Tuple{Symbol, Symbol}
 
 
-Base.convert(::Type{Vector{IdProp}}, v::IdProp) = [v]
+
+struct CallbackDeps
+    output ::Vector{Output}
+    input ::Vector{Input}
+    state ::Vector{State}
+    multi_out::Bool
+    CallbackDeps(output, input, state, multi_out) = new(output, input, state, multi_out)
+    CallbackDeps(output::Output, input, state = State[]) = new(output, input, state, false)
+    CallbackDeps(output::Vector{Output}, input, state = State[]) = new(output, input, state, true)
+end
+
+Base.convert(::Type{Vector{T}}, v::T) where {T<:Dependency}= [v]
+
 struct ClientsideFunction
     namespace ::String
     function_name ::String
 end
 struct Callback
     func ::Union{Function, ClientsideFunction}
-    id ::CallbackId
+    dependencies ::CallbackDeps
 end
 
 struct PreventUpdate <: Exception

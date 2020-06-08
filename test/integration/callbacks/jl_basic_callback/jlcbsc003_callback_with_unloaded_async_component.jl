@@ -16,7 +16,7 @@ app.layout = html_div() do
     end
 end
 
-callback!(app, callid"btn.n_clicks => output.children") do n_clicks
+callback!(app, Output("output","children"), Input("btn","n_clicks")) do n_clicks
     isnothing(n_clicks) && throw(PreventUpdate())
     return "Bye"
 end

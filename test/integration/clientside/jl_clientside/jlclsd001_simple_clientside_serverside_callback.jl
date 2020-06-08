@@ -10,12 +10,15 @@ app.layout = html_div() do
     html_div(id="output-serverside")
 end
 
-callback!(app, callid"input.value=>output-serverside.children") do value
+callback!(app, Output("output-serverside", "children"), Input("input","value")) do value
     return "Server says \"$(value)\""
 end
 
 callback!( 
     ClientsideFunction("clientside", "display"),
-    app, callid"input.value=>output-clientside.children") 
+    app, 
+    Output("output-clientside", "children"),
+    Input("input", "value")
+) 
 
 run_server(app)

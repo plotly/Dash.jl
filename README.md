@@ -81,17 +81,15 @@ julia> app.layout = html_div() do
         html_div(id = "my-div")        
     end
 
-julia> callback!(app, callid"my-id.value => my-div.children") do input_value
+julia> callback!(app, Output("my-div", "children"), Input("my-id", "value")) do input_value
     "You've entered $(input_value)"
 end
 
 julia> run_server(app, "0.0.0.0", 8080)
 ```
-
-* You can make your dashboard interactive by register callbacks for changes in frontend with function ``callback!(func::Function, app::Dash, id::CallbackId)``
-* Inputs and outputs (and states, see below) of callback are described by struct `CallbackId` which can easily created by string macro `callid""`
-* `callid""` parse string in form ``"[{state1 [,...]}] input1[,...] => output1[,...]"`` where all items is ``"<element id>.<property name>"``
-* Callback functions must have the signature(states..., inputs...), and provide a return value comparable (in terms of number of elements) to the outputs being updated.
+* You can make your dashboard interactive by register callbacks for changes in frontend with function ``callback!(func::Function, app::Dash, output, input, state)``
+* Inputs and outputs (and states, see below) of callback can be `Input`, `Output`, `State` objects or vectors of this objects
+* Callback function must have the signature(inputs..., states...), and provide a return value comparable (in terms of number of elements) to the outputs being updated.
 
 ### States and Multiple Outputs
 ```jldoctest
@@ -107,7 +105,7 @@ julia> app.layout = html_div() do
         html_div(id = "my-div2")        
     end
 
-julia> callback!(app, callid"{my-id.type} my-id.value => my-div.children, my-div2.children") do state_value, input_value
+julia> callback!(app, [Output("my-div"."children"), Output("my-div2"."children")], Input("my-id", "value"), State("my-id", "type")) do input_value, state_value
     "You've entered $(input_value) in input with type $(state_value)",
     "You've entered $(input_value)"
 end
@@ -163,9 +161,10 @@ def update_output(n_clicks, state1, state2):
 ```
 * Dash.jl:
 ```julia
-callback!(app, callid"""{state1.value, state2.value}
-                                   submit-button.n_clicks
-                                   => output.children""" ) do state1, state2, n_clicks
+callback!(app, Output("output", "children"),
+              [Input("submit-button", "n_clicks")],
+              [State("state-1", "value"),
+               State("state-2", "value")]) do  n_clicks, state1, state2
 .....
 end
 ```

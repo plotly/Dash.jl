@@ -9,7 +9,7 @@ app.layout = html_div(id="before-reload-content") do
     html_div(id="output")
 end
 
-callback!(app, callid"input.value => output.children") do value
+callback!(app, Output("output","children"), Input("input","value")) do value
     return "before reload $value"
 
 end

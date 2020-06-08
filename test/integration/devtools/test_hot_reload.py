@@ -27,7 +27,7 @@ app.layout = html_div(id="after-reload-content") do
     html_div(id="output")
 end
 
-callback!(app, callid"input.value => output.children") do value
+callback!(app, Output("output","children"), Input("input","value")) do value
     return "after reload $value"
 end
 

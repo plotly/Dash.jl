@@ -211,3 +211,22 @@ def test_jlcbsc008_prevent_update(dashjl):
     dashjl.wait_for_text_to_equal(
         "#output2", "no_update1", timeout=2
     )
+
+def test_jlcbsc009_single_element_array_output(dashjl):
+    fp = jl_test_file_path("jlcbsc009_single_element_array_output.jl") 
+    dashjl.start_server(fp)
+
+    dashjl.wait_for_element_by_css_selector(
+        "#input", timeout=2
+    ) 
+
+    dashjl.wait_for_text_to_equal(
+        "#output", "initial value", timeout=2
+    )
+    input_ = dashjl.find_element("#input")
+    dashjl.clear_input(input_)
+    input_.send_keys("hello world")
+
+    dashjl.wait_for_text_to_equal(
+        "#output", "hello world", timeout=1
+    )

@@ -46,20 +46,20 @@ function _process_callback(app::DashApp, body::String)
         return get(x, :value, nothing)        
     end 
     args = []
-    if haskey(params, :state)
-        append!(args, convert_values(params.state))        
-    end
     if haskey(params, :inputs)
         append!(args, convert_values(params.inputs))        
     end    
+    if haskey(params, :state)
+        append!(args, convert_values(params.state))        
+    end
     
     res = app.callbacks[output].func(args...)
-    if length(app.callbacks[output].id.output) == 1
+    if !app.callbacks[output].dependencies.multi_out
         if !(res isa NoUpdate)
             return Dict(
                 :response => Dict(
                     :props => Dict(
-                        Symbol(app.callbacks[output].id.output[1][2]) => Front.to_dash(res)
+                        Symbol(app.callbacks[output].dependencies.output[1].property) => Front.to_dash(res)
                     )
                 )
             )
@@ -68,11 +68,11 @@ function _process_callback(app::DashApp, body::String)
         end
     end
     response = Dict{Symbol, Any}()
-    for (ind, out) in enumerate(app.callbacks[output].id.output)
+    for (ind, out) in enumerate(app.callbacks[output].dependencies.output)
         if !(res[ind] isa NoUpdate)
             push!(response, 
-            Symbol(out[1]) => Dict(
-                Symbol(out[2]) => Front.to_dash(res[ind])
+            Symbol(out.id) => Dict(
+                Symbol(out.property) => Front.to_dash(res[ind])
             )
             )
         end
@@ -212,7 +212,6 @@ validate_layout(layout) = error("The layout must be a component, tree of compone
 #For test purposes, with the ability to pass a custom registry
 function make_handler(app::DashApp, registry::ResourcesRegistry; check_layout = false)
             
-
     state = HandlerState(app, registry)
     prefix = get_setting(app, :routes_pathname_prefix)
     assets_url_path = get_setting(app, :assets_url_path)

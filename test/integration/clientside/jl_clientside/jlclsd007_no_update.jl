@@ -12,7 +12,8 @@ end
 
 callback!( 
     ClientsideFunction("clientside", "add1_no_update_at_11"),
-    app, callid"{second.value, third.value} first.value=>second.value, third.value"
+    app, [Output("second","value"), Output("third","value")], Input("first","value"), 
+    [State("second","value"), State("third","value")]
     )
 
 

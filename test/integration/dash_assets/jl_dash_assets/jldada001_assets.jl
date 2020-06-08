@@ -24,10 +24,9 @@ app.layout = html_div(id="layout") do
     html_div("Content", id="content"),
     dcc_input(id="test")
 end
-callback!(app, CallbackId(
-    input = [(:input, :value)],
-    output = [(:output, :children)]
-    )
+callback!(app,
+    Output("output","children"),
+    Input("input","value")
     ) do value
     return value
 end

@@ -24,10 +24,9 @@ app.layout = html_div() do
  html_div(id="b") 
 end
 
-callback!(app, CallbackId(
-    input = [(:a, :value)],
-    output = [(:b, :children)]
-    )
+callback!(app, 
+    Output("b","children"),
+    Input("a","value")
     ) do inputValue
     return inputValue
 end
