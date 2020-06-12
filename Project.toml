@@ -5,6 +5,10 @@ version = "0.1.0"
 
 [deps]
 CodecZlib = "944b1d66-785c-5afd-91f1-9de20f533193"
+DashBase = "03207cf0-e2b3-4b91-9ca8-690cf0fb507e"
+DashCoreComponents = "1b08a953-4be3-4667-9a23-03c9473d1193"
+DashHtmlComponents = "1b08a953-4be3-4667-9a23-341813c6f7a5"
+DashTable = "1b08a953-4be3-4667-9a23-d3c7dd0aada8"
 DataStructures = "864edb3b-99cc-5e75-8d2d-829cb0a9cfe8"
 HTTP = "cd3eb016-35fb-5094-929b-558a96fad6f3"
 JSON = "682c06a0-de6a-54ab-a142-c8b1cf79cde6"

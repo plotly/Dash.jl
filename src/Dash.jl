@@ -1,17 +1,18 @@
 module Dash
 import HTTP, JSON2, CodecZlib, MD5
 using Sockets
-using MacroTools
+using DashBase
 const ROOT_PATH = realpath(joinpath(@__DIR__, ".."))
+const RESOURCE_PATH = realpath(joinpath(ROOT_PATH, "resources"))
+
 include("Components.jl")
 include("Front.jl")
-import .Front
-using .Components
 
 export dash, Component, Front, callback!,
 enable_dev_tools!, ClientsideFunction,
 run_server, PreventUpdate, no_update, @var_str,
-Input, Output, State, make_handler
+Input, Output, State, make_handler,
+DashBase
 
 
 
@@ -19,7 +20,6 @@ Input, Output, State, make_handler
 include("env.jl")
 include("utils.jl")
 include("app.jl")
-include("resources/registry.jl")
 include("resources/application.jl")
 include("handlers.jl")
 
@@ -162,5 +162,74 @@ function run_server(app::DashApp, host = HTTP.Sockets.localhost, port = 8050;
 end
 get_inetaddr(host::String, port::Integer) = Sockets.InetAddr(parse(IPAddr, host), port)
 get_inetaddr(host::IPAddr, port::Integer) = Sockets.InetAddr(host, port)
+
+
+function __init__()
+    DashBase.main_registry().dash_dependency = (
+        dev = ResourcePkg(
+            "dash_renderer",
+            RESOURCE_PATH, version = "1.2.2",
+            [
+                Resource(
+                relative_package_path = "react@16.8.6/umd/react.production.min.js",
+                external_url = "https://unpkg.com/react@16.8.6/umd/react.production.min.js",        
+                ),
+                Resource(
+                    relative_package_path = "react-dom@16.8.6/dist/react-dom.production.min.js",
+                    external_url = "https://unpkg.com/browse/react-dom@16.8.6/umd/react-dom.production.min.js"        
+                ),
+                Resource(
+                    relative_package_path = "polyfill@7.7.0/dist/polyfill.min.js",
+                    external_url = "https://unpkg.com/@babel/polyfill@7.7.0/dist/polyfill.min.js"        
+                ),
+                Resource(
+                    relative_package_path = "prop-types@15.7.2/prop-types/prop-types.js",
+                    external_url = "https://unpkg.com/prop-types@15.7.2/prop-types.js",                
+                ),
+            ]
+        ),
+        prod = ResourcePkg(
+            "dash_renderer",
+            RESOURCE_PATH, version = "1.2.2",
+            [
+                Resource(
+                relative_package_path = "react@16.8.6/umd/react.production.min.js",
+                external_url = "https://unpkg.com/react@16.8.6/umd/react.production.min.js",        
+                ),
+                Resource(
+                    relative_package_path = "react-dom@16.8.6/dist/react-dom.production.min.js",
+                    external_url = "https://unpkg.com/react-dom@16.8.6/umd/react-dom.production.min.js"        
+                ),
+                Resource(
+                    relative_package_path = "polyfill@7.7.0/dist/polyfill.min.js",
+                    external_url = "https://unpkg.com/@babel/polyfill@7.7.0/dist/polyfill.min.js"        
+                ),
+                Resource(
+                    relative_package_path = "prop-types@15.7.2/prop-types/prop-types.min.js",
+                    external_url = "https://unpkg.com/prop-types@15.7.2/prop-types.min.js",                
+                ),
+            ]
+        ) 
+    )
+
+    DashBase.main_registry().dash_renderer = ResourcePkg(
+        "dash_renderer",
+        RESOURCE_PATH, version = "1.2.2",
+        [
+            Resource(
+                relative_package_path = "dash-renderer@1.2.2/dash-renderer/dash_renderer.min.js",
+                dev_package_path = "dash-renderer@1.2.2/dash-renderer/dash_renderer.dev.js",
+                external_url = "https://unpkg.com/dash-renderer@1.2.2/dash_renderer/dash_renderer.min.js"                
+            ),
+            Resource(
+                relative_package_path = "dash-renderer@1.2.2/dash-renderer/dash_renderer.min.js.map",
+                dev_package_path = "dash-renderer@1.2.2/dash-renderer/dash_renderer.dev.js.map",                
+                dynamic = true,                
+            ),            
+        ]
+    )    
+
+
+end
 
 end # module

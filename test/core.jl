@@ -1,33 +1,28 @@
 import HTTP, JSON2
 using Test
 using Dash
-using Inflate
 @testset "Components" begin
     
     a_comp = html_a("test", id = "test-a")
-    @test a_comp.type == "A"
-    @test a_comp.namespace == "dash_html_components"
-    @test a_comp.props[:id] == "test-a"
-    @test a_comp.props[:children] == "test"
+    @test a_comp.id == "test-a"
+    @test a_comp.children == "test"
     
     input_comp = dcc_input(id = "test-input", type="text")
-    @test input_comp.type == "Input"
-    @test input_comp.namespace == "dash_core_components"
-    @test input_comp.props[:id] == "test-input"
-    @test input_comp.props[:type] == "text"
+    @test input_comp.id == "test-input"
+    @test input_comp.type == "text"
     
-    @test_throws ArgumentError html_a(undefined_prop = "rrrr")
+    @test_throws ErrorException html_a(undefined_prop = "rrrr")
 
     component_with_children = html_div() do 
         html_a("fffff"),
         html_h1("fffff")
     end
 
-    @test haskey(component_with_children.props, :children) 
-    @test component_with_children.props[:children] isa Tuple{Component, Component}
-    @test length(component_with_children.props[:children]) == 2
-    @test component_with_children.props[:children][1].type == "A"
-    @test component_with_children.props[:children][2].type == "H1"
+    @test !isnothing(component_with_children.children) 
+    @test component_with_children.children isa Tuple{Component, Component}
+    @test length(component_with_children.children) == 2
+    @test DashBase.get_type(component_with_children.children[1]) == "A"
+    @test DashBase.get_type(component_with_children.children[2]) == "H1"
 
 end
 
@@ -172,33 +167,6 @@ end
     @test result[:response][Symbol("my-div2")][:children] == "test"
 end
 
-
-@testset "HTTP Compression" begin
-    # test compression of assets
-    app = dash(assets_folder = "assets_compressed", compress = true)
-    app.layout = html_div() 
-    handler = Dash.make_handler(app)
-
-    # ensure no compression of assets when Accept-Encoding not passed
-    request = HTTP.Request("GET", "/assets/bootstrap.css")
-    body = read("assets_compressed/bootstrap.css", String)
-    response = HTTP.handle(handler, request)
-    @test String(response.body) == body
-    @test !in("Content-Encoding"=>"gzip", response.headers)
-
-    # ensure compression when Accept-Encoding = "gzip"
-    request = HTTP.Request("GET", "/assets/bootstrap.css", ["Accept-Encoding"=>"gzip"])
-    response = HTTP.handle(handler, request)
-    @test String(inflate_gzip(response.body)) == body
-    @test String(response.body) != body
-    @test in("Content-Encoding"=>"gzip", response.headers)
-
-    # test cases for compress = false
-    app = dash(assets_folder = "assets", compress=false)
-    app.layout = html_div() do
-            html_div("test")
-        end
-end
 
 @testset "layout validation" begin
     app = dash(assets_folder = "assets_compressed", compress = true)

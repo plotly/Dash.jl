@@ -59,7 +59,7 @@ function _process_callback(app::DashApp, body::String)
             return Dict(
                 :response => Dict(
                     :props => Dict(
-                        Symbol(app.callbacks[output].dependencies.output[1].property) => Front.to_dash(res)
+                        Symbol(app.callbacks[output].dependencies.output[1].property) => DashBase.to_dash(res)
                     )
                 )
             )
@@ -72,7 +72,7 @@ function _process_callback(app::DashApp, body::String)
         if !(res[ind] isa NoUpdate)
             push!(response, 
             Symbol(out.id) => Dict(
-                Symbol(out.property) => Front.to_dash(res[ind])
+                Symbol(out.property) => DashBase.to_dash(res[ind])
             )
             )
         end
