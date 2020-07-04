@@ -55,8 +55,8 @@ julia> HTTP.serve(handler, HTTP.Sockets.localhost, 8080)
 * The `Dash` struct represent dashboard application.
 * The constructor for `Dash` struct is ``Dash(layout_maker::Function, name::String;  external_stylesheets::Vector{String} = Vector{String}(), url_base_pathname="/", assets_folder::String = "assets")`` where `layout_maker` is a function with signature ()::Component
 * Unlike the python version where each Dash component is represented as a separate class, all components in Dashboard are represented by struct `Component`.
-* You can create `Component` specific for concrete Dash component by the set of functions in the form ``lowercase(<component package>)_lowercase(<component name>)``. For example, in python html `<div>` element is represented as `HTML.Div` in Dasboards it is created using function `html_div`
-* The list of all supported components is available in docstring for Dasboards module
+* You can create `Component` specific for concrete Dash component by the set of functions in the form ``lowercase(<component package>)_lowercase(<component name>)``. For example, in python html `<div>` element is represented as `HTML.Div` in Dashboards it is created using function `html_div`
+* The list of all supported components is available in docstring for Dashboards module
 * All functions for a component creation have the signature `(;kwargs...)::Component`. List of key arguments specific for the concrete component is available in the docstring for each function
 * Functions for creation components which have `children` property have two additional methods ``(children::Any; kwargs...)::Component`` and ``(children_maker::Function; kwargs..)::Component``. `children` must by string or number or single component or collection of components
 * ``make_handler(app::Dash; debug::Bool = false)`` makes handler function for using in HTTP package
@@ -105,7 +105,7 @@ julia> HTTP.serve(handler, HTTP.Sockets.localhost, 8080)
 ```
 * For multiple output callback must return any collection with element for each output
 
-## Comparation with original python syntax
+## Comparision with original python syntax
 
 ### component naming:
 

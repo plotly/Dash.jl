@@ -12,6 +12,6 @@ function from_dash(::Type{PlotlyBase.Plot}, t)
     PlotlyBase.Plot(data, layout)
 end
 
-#FIXME It's not elegant, but I didn't find elegant soluiton
+#FIXME It's not elegant, but I didn't find elegant solution
 JSON2.write(io::IO, p::PlotlyBase.Plot; kwargs...) = write(io, JSON.json(p))
 end

@@ -1,5 +1,5 @@
 function absolute_assets_path(assets_path::AbstractString)
-    #TODO app path, enviroment variable etc..
+    #TODO app path, environment variable etc..
     return joinpath(pwd(), assets_path)
 end
 
