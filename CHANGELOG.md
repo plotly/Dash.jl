@@ -1,9 +1,7 @@
 # Change Log for Dash for Julia
 All notable changes to this project will be documented in this file. This project adheres to Semantic Versioning.
 
-
-
-### [UNRELEASED]
+## [UNRELEASED]
 ### Added
 - Support for client side callbacks [#30](https://github.com/plotly/Dash.jl/pull/30)
 - Support for hot reloading on application or asset changes [#25](https://github.com/plotly/Dash.jl/pull/25)
