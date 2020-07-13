@@ -11,9 +11,6 @@ const Input = Dependency{TraitInput}
 const State = Dependency{TraitState}
 const Output = Dependency{TraitOutput}
 
-const IdProp = Tuple{Symbol, Symbol}
-
-
 
 struct CallbackDeps
     output ::Vector{Output}
@@ -35,6 +32,11 @@ struct Callback
     func ::Union{Function, ClientsideFunction}
     dependencies ::CallbackDeps
 end
+
+is_multi_out(cb::Callback) = cb.dependencies.multi_out == true
+get_output(cb::Callback) = cb.dependencies.output
+get_output(cb::Callback, i) = cb.dependencies.output[i]
+first_output(cb::Callback) = first(cb.dependencies.output)
 
 struct PreventUpdate <: Exception
     

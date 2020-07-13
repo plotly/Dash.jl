@@ -1,20 +1,15 @@
 from selenium.webdriver.support.select import Select
 import time, os
+import pathlib
+import os.path
 
-
-app = ''' 
-using Dash
-using DashHtmlComponents
-
-app = dash(meta_tags = [Dict(["name"=>"description", "content" => "some content"])])
-
-app.layout = html_div(children = "Hello world!", id = "hello-div")
-
-run_server(app)
-'''
+curr_path = pathlib.Path(__file__).parent.absolute()
+def jl_test_file_path(filename):
+    return os.path.join(curr_path, "jl_test_meta", filename)
 
 def test_jltm001_test_meta(dashjl):
-    dashjl.start_server(app)
+    fp = jl_test_file_path("jltm001_test_meta.jl") 
+    dashjl.start_server(fp)
     dashjl.wait_for_text_to_equal(
         "#hello-div",
         "Hello world!"
@@ -24,20 +19,9 @@ def test_jltm001_test_meta(dashjl):
     assert dashjl.find_element("meta[http-equiv='X-UA-Compatible']").get_attribute("content") == "IE=edge"
 
 
-app2 = ''' 
-using Dash
-using DashHtmlComponents
-
-app = dash(meta_tags = [Dict(["charset"=>"ISO-8859-1", "keywords"=>"dash,pleasant,productive", "http-equiv"=>"content-type", "content"=>"text/html"])])
-
-app.layout = html_div(children = "Hello world!", id = "hello-div")
-
-run_server(app)
-'''
-
-
 def test_jltm002_test_meta(dashjl):
-    dashjl.start_server(app2)
+    fp = jl_test_file_path("jltm002_test_meta.jl") 
+    dashjl.start_server(fp)
     dashjl.wait_for_text_to_equal(
         "#hello-div",
         "Hello world!"
