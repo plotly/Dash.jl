@@ -28,7 +28,7 @@ jobs:
       - run:
           name: 🔎 Unit tests
           command: |
-            julia -e test/ci_prepare.jl 
+            julia test/ci_prepare.jl 
 
       - run:
           name: ⚙️  Integration tests
