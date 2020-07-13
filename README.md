@@ -1,4 +1,4 @@
-## Dash for Julia
+# Dash for Julia
 
 #### Create beautiful, analytic applications in Julia.
 
@@ -36,7 +36,7 @@ julia> using DashHtmlComponents
 julia> using DashCoreComponents
 
 julia> app = dash(external_stylesheets = ["https://codepen.io/chriddyp/pen/bWLwgP.css"])
- 
+
 julia> app.layout = html_div() do
         html_h1("Hello Dash"),
         html_div("Dash.jl: Julia interface for Dash"),
@@ -56,18 +56,18 @@ julia> run_server(app, "0.0.0.0", 8080)
 ```
 
 * The `DashApp` struct represents a dashboard application.
-* To make `DashApp` struct use `dash(layout_maker::Function, name::String;  external_stylesheets::Vector{String} = Vector{String}(), url_base_pathname="/", assets_folder::String = "assets")`` where `layout_maker` is a function with signature ()::Component
+* To make `DashApp` struct use `dash(layout_maker::Function, name::String;  external_stylesheets::Vector{String} = Vector{String}(), url_base_pathname="/", assets_folder::String = "assets")` where `layout_maker` is a function with signature ()::Component
 * Unlike the Python version where each Dash component is represented as a separate class, all components in Dash.jl are represented by struct `Component`.
-* You can create `Component` specific for concrete Dash component by the set of functions in the form ``lowercase(<component package>)_lowercase(<component name>)``. For example, in Python html `<div>` element is represented as `HTML.Div` in Dasboards it is created using function `html_div`
-* The list of all supported components is available in docstring for Dasboards module.
+* You can create `Component` specific for concrete Dash component by the set of functions in the form ``lowercase(<component package>)_lowercase(<component name>)``. For example, in Python html `<div>` element is represented as `HTML.Div` in Dashboards it is created using function `html_div`
+* The list of all supported components is available in docstring for Dashboards module.
 * All functions for a component creation have the signature `(;kwargs...)::Component`. List of key arguments specific for the concrete component is available in the docstring for each function.
 * Functions for creation components which have `children` property have two additional methods ``(children::Any; kwargs...)::Component`` and ``(children_maker::Function; kwargs..)::Component``. `children` must by string or number or single component or collection of components.
 * ``make_handler(app::Dash; debug::Bool = false)`` makes a handler function for using in HTTP package.
 
-
 __Once you have run the code to create the Dashboard, go to `http://127.0.0.1:8080` in your browser to view the Dashboard!__
 
 ### Basic Callback
+
 ```jldoctest
 
 julia> using Dash
@@ -78,7 +78,7 @@ julia> app = dash(external_stylesheets = ["https://codepen.io/chriddyp/pen/bWLwg
 
 julia> app.layout = html_div() do
         dcc_input(id = "my-id", value="initial value", type = "text"),
-        html_div(id = "my-div")        
+        html_div(id = "my-div")
     end
 
 julia> callback!(app, Output("my-div", "children"), Input("my-id", "value")) do input_value
@@ -87,22 +87,24 @@ end
 
 julia> run_server(app, "0.0.0.0", 8080)
 ```
+
 * You can make your dashboard interactive by register callbacks for changes in frontend with function ``callback!(func::Function, app::Dash, output, input, state)``
 * Inputs and outputs (and states, see below) of callback can be `Input`, `Output`, `State` objects or vectors of this objects
 * Callback function must have the signature(inputs..., states...), and provide a return value comparable (in terms of number of elements) to the outputs being updated.
 
 ### States and Multiple Outputs
+
 ```jldoctest
 julia> using Dash
 julia> using DashHtmlComponents
 julia> using DashCoreComponents
 
 julia> app = dash(external_stylesheets = ["https://codepen.io/chriddyp/pen/bWLwgP.css"])
- 
+
 julia> app.layout = html_div() do
         dcc_input(id = "my-id", value="initial value", type = "text"),
         html_div(id = "my-div"),
-        html_div(id = "my-div2")        
+        html_div(id = "my-div2")
     end
 
 julia> callback!(app, [Output("my-div"."children"), Output("my-div2"."children")], Input("my-id", "value"), State("my-id", "type")) do input_value, state_value
@@ -112,7 +114,7 @@ end
 julia> run_server(app, "0.0.0.0", 8080)
 ```
 
-## Comparation with original Python syntax
+## Comparision with original Python syntax
 
 ### component naming:
 
@@ -131,25 +133,30 @@ html_div(id="outer-div") do
     end
 end
 ```
+
 ### application and layout:
 
 * python:
+
 ```python
 app = dash.Dash("Test", external_stylesheets=external_stylesheets)
 app.layout = html.Div(children=[....])
 ```
 
 * Dash.jl:
+
 ```julia
-app = dash("Test", external_stylesheets=external_stylesheets) 
+app = dash("Test", external_stylesheets=external_stylesheets)
 
 app.layout = html_div() do
     ......
    end
-
 ```
+
 ### callbacks:
+
 * Python:
+
 ```python
 @app.callback(Output('output', 'children'),
               [Input('submit-button', 'n_clicks')],
@@ -159,7 +166,9 @@ def update_output(n_clicks, state1, state2):
 .....
 
 ```
+
 * Dash.jl:
+
 ```julia
 callback!(app, Output("output", "children"),
               [Input("submit-button", "n_clicks")],
@@ -168,9 +177,11 @@ callback!(app, Output("output", "children"),
 .....
 end
 ```
+
 Be careful - in Dash.jl states come first in an arguments list.
 
 ### JSON:
-I use JSON2.jl for JSON serialization/deserialization, so in callbacks all JSON objects are `NamedTuples` rather than dictionaries. Within component properties you can use both `Dict` and `NamedTuple` for JSON objects. 
+
+I use JSON2.jl for JSON serialization/deserialization, so in callbacks all JSON objects are `NamedTuples` rather than dictionaries. Within component properties you can use both `Dict` and `NamedTuple` for JSON objects.
 
 Note when declaring elements with a single properly that `layout = (title = "Test graph")` is not interpreted as a `NamedTuple` by Julia  - you'll need to add a comma when declaring the layout, e.g. `layout = (title = "Test graph",)`

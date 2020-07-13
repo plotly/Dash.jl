@@ -1,0 +1,14 @@
+# MD001 Header levels should only increment by one level at a time
+MD001: false
+
+# MD013 Line length
+MD013: false
+
+# MD022 Headers should be surrounded by blank lines
+MD022: false
+
+# MD026 Trailing punctuation in header
+MD026: false
+
+# MD032 Lists should be surrounded by blank lines
+MD032: false
