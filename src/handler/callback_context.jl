@@ -23,8 +23,13 @@ function with_callback_context(f, context::CallbackContext)
     return with_context(f, _callback_context_storage, context)
 end 
 
+"""
+    callback_context()::CallbackContext
+
+    Get context of current callback, available only inside callback processing function
+"""
 function callback_context() 
-    !has_context(_callback_context_storage) && error("callback_context() is only available from a callback!")
+    !has_context(_callback_context_storage) && error("callback_context() is only available from a callback processing function")
     return get_context(_callback_context_storage)
 end
 
