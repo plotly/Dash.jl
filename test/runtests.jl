@@ -7,7 +7,7 @@ include("dash_creation.jl")
 include("handlers.jl")
 include("config_functional.jl")
 include("utils.jl")
-
+include("context.jl")
 include("core.jl")
 include("callbacks.jl")
 #include("dev.jl")

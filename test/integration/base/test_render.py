@@ -1,3 +1,12 @@
+import pathlib
+import os.path
+import logging
+logger = logging.getLogger(__name__)
+
+curr_path = pathlib.Path(__file__).parent.absolute()
+def jl_test_file_path(filename):
+    return os.path.join(curr_path, "jl_render", filename)
+
 def click_undo(self):
     undo_selector = "._dash-undo-redo span:first-child div:last-child"
     undo = self.wait_for_element_by_css_selector(undo_selector)
@@ -12,31 +21,10 @@ def click_redo(self):
     redo.click()
 
 
-app = ''' 
-using Dash
-using DashHtmlComponents
-using DashCoreComponents
-
-app = dash(show_undo_redo=true)
-
-app.layout = html_div() do
- dcc_input(id="a"),
- html_div(id="b") 
-end
-
-callback!(app, 
-    Output("b","children"),
-    Input("a","value")
-    ) do inputValue
-    return inputValue
-end
-
-run_server(app)
-'''
-
 
 def test_jltr001r_undo_redo(dashjl):
-    dashjl.start_server(app)
+    fp = jl_test_file_path("jltr001r_undo_redo.jl") 
+    dashjl.start_server(fp)
     dashjl.wait_for_element_by_css_selector(
         "#a"
     )   

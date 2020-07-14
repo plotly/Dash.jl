@@ -163,9 +163,13 @@ end
         no_update(), "test"
     end
 
+    handler = Dash.make_handler(app)
     test_json = """{"output":"..my-div.children...my-div2.children..","changedPropIds":["my-id.children"],"inputs":[{"id":"my-id","property":"children","value":10}]}"""
 
-    result = Dash._process_callback(app, test_json)
+    request = HTTP.Request("POST", "/_dash-update-component", [], Vector{UInt8}(test_json))
+    response = HTTP.handle(handler, request)
+    @test response.status == 200
+    result = JSON2.read(String(response.body))
     @test length(result[:response]) == 1
     @test haskey(result[:response], Symbol("my-div2"))
     @test !haskey(result[:response], Symbol("my-div"))

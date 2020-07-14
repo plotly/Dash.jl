@@ -2,7 +2,8 @@ using Test
 using HTTP
 using Dash
 using Dash: make_handler, compress_handler, process_resource, state_handler, HandlerState, 
-            process_resource, StaticRoute, DynamicRoute, try_handle, RouteHandler, Route, _make_route, Router, add_route!, make_handler
+            process_resource, Route, Router, add_route!, make_handler
+using Dash.HttpHelpers: StaticRoute, DynamicRoute, try_handle, RouteHandler, _make_route
 using CodecZlib
 using MD5
 

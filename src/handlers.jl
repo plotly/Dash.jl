@@ -1,5 +1,5 @@
-include("handler/router.jl")
-include("handler/base.jl")
 include("handler/index_page.jl")
 include("handler/state.jl")
-include("handler/handlers.jl")
+include("handler/misc.jl")
+include("handler/callback_context.jl")
+include("handler/make_handler.jl")

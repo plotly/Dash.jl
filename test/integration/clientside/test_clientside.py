@@ -12,7 +12,7 @@ def test_jlclsd001_simple_clientside_serverside_callback(dashjl):
     fp = jl_test_file_path("jlclsd001_simple_clientside_serverside_callback.jl") 
     dashjl.start_server(fp)
 
-    dashjl.wait_for_text_to_equal("#output-serverside", 'Server says "nothing"', timeout=2)
+    dashjl.wait_for_text_to_equal("#output-serverside", 'Server says "nothing"', timeout=3)
     dashjl.wait_for_text_to_equal("#output-clientside", 'Client says "undefined"', timeout=2)
 
     dashjl.find_element("#input").send_keys("hello world")
@@ -32,7 +32,7 @@ def test_jlclsd002_chained_serverside_clientside_callbacks(dashjl):
         ["#mean-of-all-values", str((3 + 6 + 9 + 4.5) / 4.0)],
     ]
     for selector, expected in test_cases:
-        dashjl.wait_for_text_to_equal(selector, expected, timeout=2)
+        dashjl.wait_for_text_to_equal(selector, expected, timeout=3)
 
     x_input = dashjl.wait_for_element_by_css_selector("#x", timeout=2)
     x_input.send_keys("1")
@@ -54,7 +54,7 @@ def test_jlclsd003_clientside_exceptions_halt_subsequent_updates(dashjl):
 
     test_cases = [["#first", "1"], ["#second", "2"], ["#third", "3"]]
     for selector, expected in test_cases:
-        dashjl.wait_for_text_to_equal(selector, expected, timeout=2)
+        dashjl.wait_for_text_to_equal(selector, expected, timeout=3)
 
     first_input = dashjl.wait_for_element("#first")
     first_input.send_keys("1")
@@ -146,7 +146,7 @@ def test_jlclsd008_clientside_inline_source(dashjl):
     fp = jl_test_file_path("jlclsd008_clientside_inline_source.jl") 
     dashjl.start_server(fp)
 
-    dashjl.wait_for_text_to_equal("#output-serverside", 'Server says "nothing"', timeout=2)
+    dashjl.wait_for_text_to_equal("#output-serverside", 'Server says "nothing"', timeout=3)
     dashjl.wait_for_text_to_equal("#output-clientside", 'Client says "undefined"')
 
     dashjl.find_element("#input").send_keys("hello world")
