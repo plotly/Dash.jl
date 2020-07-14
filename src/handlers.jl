@@ -1,5 +1,3 @@
-#include("handler/router.jl")
-#include("handler/base.jl")
 include("handler/index_page.jl")
 include("handler/state.jl")
 include("handler/misc.jl")

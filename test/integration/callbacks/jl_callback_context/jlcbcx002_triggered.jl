@@ -13,7 +13,7 @@ callback!(app,
     Output("output", "children"),
     [Input(btn, "n_clicks") for btn in btns]
 ) do args...
-    isnothing(callback_context().triggered) && throw(PreventUpdate())
+    isempty(callback_context().triggered) && throw(PreventUpdate())
     trigger = callback_context().triggered[1]
     name = split(trigger.prop_id, ".")[1]
     return "Just clicked $(name) for the $(trigger.value) time!"
