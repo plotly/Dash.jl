@@ -20,7 +20,7 @@ def test_jlcbwc001_todo_app(content_callback, dashjl):
     jl_file = "jlcbwc001_todo_app_true.jl" if content_callback else "jlcbwc001_todo_app_false.jl"
     fp = jl_test_file_path(jl_file) 
     dashjl.start_server(fp)
-    dashjl.wait_for_text_to_equal("#totals", "0 of 0 items completed", timeout = 3)
+    dashjl.wait_for_text_to_equal("#totals", "0 of 0 items completed", timeout = 4)
 
     new_item = dashjl.find_element("#new-item")
     add_item = dashjl.find_element("#add")
@@ -34,7 +34,7 @@ def test_jlcbwc001_todo_app(content_callback, dashjl):
         return dashjl.find_element(selector)
 
     def assert_item(item, text, done, prefix="", suffix=""):
-        dashjl.wait_for_text_to_equal(css_escape('#{"item":%d}' % item), text, timeout=2)
+        dashjl.wait_for_text_to_equal(css_escape('#{"item":%d}' % item), text, timeout=4)
 
         expected_note = "" if done else (prefix + " preceding items are done" + suffix)
         dashjl.wait_for_text_to_equal(
@@ -109,7 +109,7 @@ def test_jlcbwc002_fibonacci_app(clientside, dashjl):
     dashjl.start_server(fp)
 
     # app starts with 4 elements: 0, 1, 1, 2
-    dashjl.wait_for_text_to_equal("#sum", "4 elements, sum: 4", timeout = 3)
+    dashjl.wait_for_text_to_equal("#sum", "4 elements, sum: 4", timeout = 4)
 
     # add 5th item, "3"
     dashjl.find_element("#n").send_keys(Keys.UP)
