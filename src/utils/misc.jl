@@ -1,4 +1,3 @@
-using MacroTools
 using UUIDs
 
 function format_tag(name ::String, attributes::Dict{String, String}, inner::String = ""; opened = false, closed = false)
@@ -63,3 +62,7 @@ end
 function generate_hash()
     return strip(string(UUIDs.uuid4()), '-')    
 end
+
+sort_by_keys(data::NamedTuple) =  (;sort!(collect(pairs(data)), by = (x)->x[1])...,)
+
+sorted_json(data::NamedTuple) = JSON2.write(sort_by_keys(data))

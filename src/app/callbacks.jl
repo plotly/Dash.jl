@@ -1,4 +1,17 @@
-dependency_string(dep::Dependency) = "$(dep.id).$(dep.property)"
+dependency_id_string(id::NamedTuple) = sorted_json(id)
+dependency_id_string(id::String) = sorted_json(id)
+
+function dependency_string(dep::Dependency{Trait, String}) where {Trait} 
+    return "$(dep.id).$(dep.property)"
+end
+
+function dependency_string(dep::Dependency{Trait, <:NamedTuple}) where {Trait} 
+    id_str = replace(
+        sorted_json(dep.id),
+        "."=>"\\."
+    )
+    return "$(id_str).$(dep.property)"
+end
 
 
 
@@ -44,9 +57,9 @@ end
 """
 function callback!(func::Union{Function, ClientsideFunction, String},
      app::DashApp,
-     output::Union{Vector{Output}, Output},
-     input::Union{Vector{Input}, Input},
-     state::Union{Vector{State}, State} = State[]
+     output::Union{Vector{<:Output}, Output},
+     input::Union{Vector{<:Input}, Input},
+     state::Union{Vector{<:State}, State} = State[]
      )
      return _callback!(func, app, CallbackDeps(output, input, state))
 end
@@ -141,7 +154,7 @@ function check_callback(func, app::DashApp, deps::CallbackDeps)
     isempty(deps.output) && error("The callback method requires that one or more properly formatted outputs are passed.")
     isempty(deps.input) && error("The callback method requires that one or more properly formatted inputs are passed.")
 
-    length(deps.output) != length(unique(deps.output)) && error("One or more callback outputs have been duplicated; please confirm that all outputs are unique.")
+    !check_unique(deps.output) && error("One or more callback outputs have been duplicated; please confirm that all outputs are unique.")
 
     for out in deps.output
         if any(x->out in x.dependencies.output, values(app.callbacks))
