@@ -20,7 +20,7 @@ def test_jlcbwc001_todo_app(content_callback, dashjl):
     jl_file = "jlcbwc001_todo_app_true.jl" if content_callback else "jlcbwc001_todo_app_false.jl"
     fp = jl_test_file_path(jl_file) 
     dashjl.start_server(fp)
-    dashjl.wait_for_text_to_equal("#totals", "0 of 0 items completed", timeout = 4)
+    dashjl.wait_for_text_to_equal("#totals", "0 of 0 items completed", timeout = 10)
 
     new_item = dashjl.find_element("#new-item")
     add_item = dashjl.find_element("#add")
