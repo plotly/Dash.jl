@@ -22,10 +22,9 @@ end
 _dep_clientside_func(func::ClientsideFunction) = func
 _dep_clientside_func(func) = nothing
 function _dependencies_json(app::DashApp)
-    deps_tuple(p) = (id = p.id, property = p.property)
     result = map(values(app.callbacks)) do callback
-        (inputs = deps_tuple.(callback.dependencies.input),
-        state = deps_tuple.(callback.dependencies.state),
+        (inputs = dependency_tuple.(callback.dependencies.input),
+        state = dependency_tuple.(callback.dependencies.state),
         output = output_string(callback.dependencies),
         clientside_function = _dep_clientside_func(callback.func)
         )

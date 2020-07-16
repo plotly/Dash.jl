@@ -82,7 +82,7 @@ end
     @test response.status == 200
     body_str = String(response.body)
     
-    @test body_str == """{"response":{"props":{"children":"initial value3333"}}}"""
+    @test body_str == """{"response":{"my-div":{"children":"initial value3333"}},"multi":true}"""
 end
 
 @testset "layout as function" begin
@@ -168,8 +168,10 @@ end
 
     request = HTTP.Request("POST", "/_dash-update-component", [], Vector{UInt8}(test_json))
     response = HTTP.handle(handler, request)
+    
     @test response.status == 200
     result = JSON2.read(String(response.body))
+    
     @test length(result[:response]) == 1
     @test haskey(result[:response], Symbol("my-div2"))
     @test !haskey(result[:response], Symbol("my-div"))

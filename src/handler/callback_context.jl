@@ -39,8 +39,10 @@ function inputs_list_to_dict(list::Vector{Any})
     return result
 end
 
+dep_id_string(id::NamedTuple) = sorted_json(id)
+dep_id_string(id::AbstractString) = String(id)
 function _item_to_dict!(target::Dict{String, Any}, item)
-    target["$(item.id).$(item.property)"] = get(item, :value, nothing)
+    target["$(dep_id_string(item.id)).$(item.property)"] = get(item, :value, nothing)
 end
 
 _item_to_dict!(target::Dict{String, Any}, item::Vector) =  _item_to_dict!.(Ref(target), item)

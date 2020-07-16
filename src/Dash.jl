@@ -2,6 +2,7 @@ module Dash
 import HTTP, JSON2, CodecZlib, MD5
 using Sockets
 const ROOT_PATH = realpath(joinpath(@__DIR__, ".."))
+include("exceptions.jl")
 include("Components.jl")
 include("Front.jl")
 include("HttpHelpers/HttpHelpers.jl")
@@ -12,7 +13,8 @@ using .HttpHelpers
 export dash, Component, Front, callback!,
 enable_dev_tools!, ClientsideFunction,
 run_server, PreventUpdate, no_update, @var_str,
-Input, Output, State, make_handler, callback_context
+Input, Output, State, make_handler, callback_context,
+ALL, MATCH, ALLSMALLER
 
 include("Contexts/Contexts.jl")
 include("env.jl")
