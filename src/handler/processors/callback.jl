@@ -1,4 +1,4 @@
-function split_callback_id(callback_id::AbstractString)    
+function split_callback_id(callback_id::AbstractString)
     if startswith(callback_id, "..")
         result = []
         append!.(Ref(result), split_callback_id.(split(callback_id[3:end-2], "...", keepempty = false)))
@@ -19,8 +19,8 @@ res_to_vector(res::Vector) = res
 function _push_to_res!(res, value, out::Vector)
     _push_to_res!.(Ref(res), value, out)
 end
-function _push_to_res!(res, value, out)    
-    !(value isa NoUpdate) && push!(res, 
+function _push_to_res!(res, value, out)
+    !(value isa NoUpdate) && push!(res,
             dep_id_string(out.id) => Dict(
                 Symbol(out.property) => Front.to_dash(value)
             )
@@ -29,14 +29,14 @@ end
 
 function process_callback_call(app, callback_id, outputs, inputs, state)
     cb = app.callbacks[callback_id]
-    res = cb.func(make_args(inputs, state)...)    
+    res = cb.func(make_args(inputs, state)...)
     (res isa NoUpdate) && throw(PreventUpdate())
     res_vector = is_multi_out(cb) ? res : [res]
-    
+
     validate_callback_return(outputs, res_vector, callback_id)
 
     response = Dict{String, Any}()
-    
+
     _push_to_res!(response, res_vector, outputs)
 
     if length(response) == 0
@@ -49,6 +49,7 @@ outputs_to_vector(out::Vector) = out
 outputs_to_vector(out) = [out]
 
 function process_callback(request::HTTP.Request, state::HandlerState)
+    println(request.headers)
     app = state.app
     response = HTTP.Response(200, ["Content-Type" => "application/json"])
 
@@ -65,13 +66,13 @@ function process_callback(request::HTTP.Request, state::HandlerState)
             process_callback_call(app, output, outputs_list, inputs, state)
         end
         response.body = Vector{UInt8}(JSON2.write(cb_result))
-    catch e                                
-        if isa(e,PreventUpdate)                
-            return HTTP.Response(204)                                    
+    catch e
+        if isa(e,PreventUpdate)
+            return HTTP.Response(204)
         else
             rethrow(e)
         end
-    end 
+    end
 
     return response
 end
@@ -86,7 +87,7 @@ function validate_callback_return(outputs, value, callback_id)
             $value
             """
         ))
-    
+
     (length(value) != length(outputs)) &&
         throw(InvalidCallbackReturnValue(
             """
@@ -95,7 +96,7 @@ function validate_callback_return(outputs, value, callback_id)
             """
         ))
 
-    validate_return_item.(callback_id, eachindex(outputs), value, outputs)    
+    validate_return_item.(callback_id, eachindex(outputs), value, outputs)
 end
 
 function validate_return_item(callback_id, i, value::Union{<:Vector, <:Tuple}, spec::Vector)
@@ -115,7 +116,7 @@ function validate_return_item(callback_id, i, value, spec::Vector)
             The callback $callback_id ouput $i is a wildcard multi-output.
             Expected the output type to be a list or tuple but got:
             $value.
-            output spec: $spec            
+            output spec: $spec
             """
         ))
 end

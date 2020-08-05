@@ -5,7 +5,7 @@ function state_handler(base_handler, state)
             if response.status == 200
                 HTTP.defaultheader!(response, "Content-Type" => HTTP.sniff(response.body))
                 HTTP.defaultheader!(response, "Content-Length" => string(sizeof(response.body)))
-            end 
+            end
             return response
         end
     )
@@ -30,7 +30,7 @@ function compress_handler(base_handler; mime_types::Vector{String} = default_com
                 HTTP.setheader(response, "Content-Encoding" => "gzip")
                 response.body = transcode(CodecZlib.GzipCompressor, response.body)
                 HTTP.setheader(response, "Content-Length" => string(sizeof(response.body)))
-            
+
             end
             return response
         end
@@ -39,4 +39,29 @@ end
 
 function compress_handler(base_handler::Function; mime_types::Vector{String} = default_compress_mimes, compress_min_size = 500)
     return compress_handler(HTTP.RequestHandlerFunction(base_handler), mime_types = mime_types, compress_min_size = compress_min_size)
+end
+
+function exception_handling_handler(ex_handlig_func, base_handler)
+    return HTTP.RequestHandlerFunction(
+        function(request::HTTP.Request, args...)
+            try
+                return HTTP.handle(base_handler, request, args...)
+            catch e
+                return ex_handlig_func(e)
+            end
+
+        end
+    )
+end
+
+exception_handling_handler(ex_handlig_func, base_handler::Function) = exception_handling_handler(HTTP.RequestHandlerFunction(base_handler), state)
+
+function request_logging_handler(base_handler; exclude = Regex[])
+    return HTTP.RequestHandlerFunction(
+        function(request::HTTP.Request, args...)
+            response = HTTP.handle(base_handler, request, args...)
+
+            return response
+        end
+    )
 end
