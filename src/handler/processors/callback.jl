@@ -49,7 +49,6 @@ outputs_to_vector(out::Vector) = out
 outputs_to_vector(out) = [out]
 
 function process_callback(request::HTTP.Request, state::HandlerState)
-    println(request.headers)
     app = state.app
     response = HTTP.Response(200, ["Content-Type" => "application/json"])
 

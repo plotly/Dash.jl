@@ -52,7 +52,6 @@ function run_server(app::DashApp, host = HTTP.Sockets.localhost, port = 8050;
         handler = make_handler(app);
         server = Sockets.listen(get_inetaddr(host, port))
         task = @async HTTP.serve(handler, host, port; server = server, verbose = true)
-        @info string("Running on http://", host, ":", port)
         return (server, task)
     end
 
@@ -66,7 +65,6 @@ function run_server(app::DashApp, host = HTTP.Sockets.localhost, port = 8050;
         (server, task) = start_server()
         try
             wait(task)
-            println(task)
         catch e
             close(server)
             if e isa InterruptException
