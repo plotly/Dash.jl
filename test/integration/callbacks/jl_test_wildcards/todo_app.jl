@@ -41,14 +41,14 @@ function todo_app(content_callback)
         triggered = [t.prop_id for t in callback_context().triggered]
         adding = any((id)->id in ("add.n_clicks", "new-item.n_submit"), triggered)
         clearing = any((id)->id == "clear-done.n_clicks", triggered)
-        
+
         new_spec = Vector{Any}()
 
         push!.(Ref(new_spec),
             Iterators.filter(zip(items, items_done)) do (text, done)
                 return !(clearing && !isempty(done))
             end
-        ) 
+        )
 
         adding && push!(new_spec, (new_item, []))
         new_list = [
@@ -78,10 +78,10 @@ function todo_app(content_callback)
     end
 
     callback!(app,
-        Output((item = MATCH, preceding = true), "children"),        
+        Output((item = MATCH, preceding = true), "children"),
         Input((item = ALLSMALLER, action = "done"), "value"),
         Input((item = MATCH, action = "done"), "value"),
-        
+
     ) do done_before, this_done
         !isempty(this_done) && return ""
         all_before = length(done_before)
@@ -93,15 +93,15 @@ function todo_app(content_callback)
 
     callback!(app,
         Output("totals", "children"), Input((item = ALL, action = "done"), "value")
-    ) do done        
+    ) do done
         count_all = length(done)
         count_done = count((d)->!isempty(d), done)
         result = "$(count_done) of $(count_all) items completed"
-        (count_all > 0) && (result *= " - $(floor(Int, 100 * count_done / count_all))%")            
-        
+        (count_all > 0) && (result *= " - $(floor(Int, 100 * count_done / count_all))%")
+
         return result
     end
-    
+
     return app
-   
+
 end

@@ -23,7 +23,7 @@ julia> run_server(handler,  HTTP.Sockets.localhost, 8050)
 
 """
 function run_server(app::DashApp, host = HTTP.Sockets.localhost, port = 8050;
-            debug = nothing, 
+            debug = nothing,
             dev_tools_ui = nothing,
             dev_tools_props_check = nothing,
             dev_tools_serve_dev_bundles = nothing,
@@ -35,7 +35,7 @@ function run_server(app::DashApp, host = HTTP.Sockets.localhost, port = 8050;
             dev_tools_prune_errors = nothing
             )
     @env_default!(debug, Bool, false)
-    enable_dev_tools!(app, 
+    enable_dev_tools!(app,
         debug = debug,
         dev_tools_ui = dev_tools_ui,
         dev_tools_props_check = dev_tools_props_check,
@@ -47,27 +47,11 @@ function run_server(app::DashApp, host = HTTP.Sockets.localhost, port = 8050;
         dev_tools_silence_routes_logging = dev_tools_silence_routes_logging,
         dev_tools_prune_errors = dev_tools_prune_errors
     )
-    main_func = () -> begin
-        ccall(:jl_exit_on_sigint, Cvoid, (Cint,), 0)
-        handler = make_handler(app);
-        try
-            task = @async HTTP.serve(handler, host, port)
-            @info string("Running on http://", host, ":", port)
-            wait(task)
-        catch e
-            if e isa InterruptException
-                @info "exited"
-            else
-                rethrow(e)
-            end
 
-        end
-    end
     start_server = () -> begin
         handler = make_handler(app);
         server = Sockets.listen(get_inetaddr(host, port))
-        task = @async HTTP.serve(handler, host, port; server = server)
-        @info string("Running on http://", host, ":", port)
+        task = @async HTTP.serve(handler, host, port; server = server, verbose = true)
         return (server, task)
     end
 
@@ -81,10 +65,9 @@ function run_server(app::DashApp, host = HTTP.Sockets.localhost, port = 8050;
         (server, task) = start_server()
         try
             wait(task)
-            println(task)
         catch e
             close(server)
-            if e isa InterruptException 
+            if e isa InterruptException
                 println("finished")
                 return
             else
