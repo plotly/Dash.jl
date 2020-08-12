@@ -47,14 +47,15 @@ function exception_handling_handler(ex_handling_func, base_handler)
             try
                 return HTTP.handle(base_handler, request, args...)
             catch e
-                return ex_handlig_func(e)
+                return ex_handling_func(e)
             end
 
         end
     )
 end
 
-exception_handling_handler(ex_handlig_func, base_handler::Function) = exception_handling_handler(HTTP.RequestHandlerFunction(base_handler), state)
+exception_handling_handler(ex_handling_func, base_handler::Function) =
+         exception_handling_handler(ex_handling_func, HTTP.RequestHandlerFunction(base_handler))
 
 function request_logging_handler(base_handler; exclude = Regex[])
     return HTTP.RequestHandlerFunction(
