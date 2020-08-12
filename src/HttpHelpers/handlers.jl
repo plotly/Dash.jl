@@ -41,7 +41,7 @@ function compress_handler(base_handler::Function; mime_types::Vector{String} = d
     return compress_handler(HTTP.RequestHandlerFunction(base_handler), mime_types = mime_types, compress_min_size = compress_min_size)
 end
 
-function exception_handling_handler(ex_handlig_func, base_handler)
+function exception_handling_handler(ex_handling_func, base_handler)
     return HTTP.RequestHandlerFunction(
         function(request::HTTP.Request, args...)
             try
