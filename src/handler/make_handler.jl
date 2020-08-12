@@ -41,7 +41,9 @@ validate_layout(layout::Function) = validate_layout(layout())
 
 validate_layout(layout) = error("The layout must be a component, tree of components, or a function which returns a component.")
 
-function stack_from_callback(full_stack)
+function stack_from_callback(full_stack; prune_errors)
+    !prune_errors && return full_stack
+
     result = Base.StackTraces.StackFrame[]
     it = iterate(full_stack)
     while !isnothing(it) && it[1].func != :process_callback_call
@@ -52,15 +54,14 @@ function stack_from_callback(full_stack)
 end
 
 
-function exception_handling(ex)
-    st = stack_from_callback(stacktrace(catch_backtrace()))
-    @error exception = (ex, st)
+function exception_handling(ex; prune_errors)
+    st = stack_from_callback(stacktrace(catch_backtrace()), prune_errors = prune_errors)
+    @error "error handling request" exception = (ex, st)
     return HTTP.Response(500)
 end
 
-#<!DOCTYPE HTML><html><body><pre><h3>%s</h3><br>Error: %s: %s<br>%s</pre></body></html>
-# ### DashR Traceback (most recent/innermost call last) ###
-function debug_exception_handling(ex)
+
+function debug_exception_handling(ex; prune_errors)
     response = HTTP.Response(500, ["Content-Type" => "text/html"])
     io = IOBuffer()
     write(io,
@@ -95,7 +96,9 @@ function debug_exception_handling(ex)
         "<div class=\"plain\">",
         "<textarea cols=\"50\" rows=\"10\" name=\"code\" readonly>"
     )
-    st = stack_from_callback(stacktrace(catch_backtrace()))
+    st = stack_from_callback(stacktrace(catch_backtrace()), prune_errors = prune_errors)
+    showerror(io, ex)
+    write(io, "\n")
     Base.show_backtrace(io, st)
 
     write(io, "</textarea>")
@@ -104,7 +107,7 @@ function debug_exception_handling(ex)
 
     response.body = take!(io)
 
-    @error exception = (ex, st)
+    @error "error handling request"  exception = (ex, st)
 
     return response
 end
@@ -128,10 +131,14 @@ function make_handler(app::DashApp, registry::ResourcesRegistry; check_layout = 
     add_route!(process_index, router, "$prefix")
 
     handler = state_handler(router, state)
-    if get_devsetting(app, :prune_errors)
-        handler = exception_handling_handler(debug_exception_handling, handler)
+    if get_devsetting(app, :ui)
+        handler = exception_handling_handler(handler) do ex
+            debug_exception_handling(ex, prune_errors = get_devsetting(app, :prune_errors))
+        end
     else
-        handler = exception_handling_handler(exception_handling, handler)
+        handler = exception_handling_handler(handler) do ex
+            exception_handling(ex, prune_errors = get_devsetting(app, :prune_errors))
+        end
     end
     get_setting(app, :compress) && (handler = compress_handler(handler))
 
