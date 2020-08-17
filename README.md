@@ -114,7 +114,7 @@ end
 julia> run_server(app, "0.0.0.0", 8080)
 ```
 
-## Comparision with original Python syntax
+## Comparison with original Python syntax
 
 ### component naming:
 
