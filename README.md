@@ -107,7 +107,7 @@ julia> app.layout = html_div() do
         html_div(id = "my-div2")
     end
 
-julia> callback!(app, [Output("my-div"."children"), Output("my-div2"."children")], Input("my-id", "value"), State("my-id", "type")) do input_value, state_value
+julia> callback!(app, [Output("my-div","children"), Output("my-div2","children")], Input("my-id", "value"), State("my-id", "type")) do input_value, state_value
     "You've entered $(input_value) in input with type $(state_value)",
     "You've entered $(input_value)"
 end
