@@ -1,5 +1,6 @@
 using Pkg
 Pkg.update()
+Pkg.add(PackageSpec(url="https://github.com/plotly/DashBase.jl.git"))
 Pkg.add(PackageSpec(url="https://github.com/waralex/dash-html-components.git", rev="jl_generated"))
 Pkg.add(PackageSpec(url="https://github.com/waralex/dash-core-components.git", rev="jl_generated"))
 Pkg.add(PackageSpec(url="https://github.com/waralex/dash-table.git", rev="jl_generated"))
