@@ -1,8 +1,9 @@
 using Pkg
 Pkg.update()
+Pkg.add(PackageSpec(url="https://github.com/waralex/dash-html-components.git", rev="jl_generated"))
+Pkg.add(PackageSpec(url="https://github.com/waralex/dash-core-components.git", rev="jl_generated"))
+Pkg.add(PackageSpec(url="https://github.com/waralex/dash-table.git", rev="jl_generated"))
 Pkg.add(PackageSpec(url="https://github.com/plotly/Dash.jl.git", rev=ENV["CIRCLE_BRANCH"]))
-Pkg.add(PackageSpec(url="https://github.com/waralex/dash-html-components.git", rev="jl_generator_test"))
-Pkg.add(PackageSpec(url="https://github.com/waralex/dash-core-components.git", rev="jl_generator_test"))
 Pkg.add("HTTP")
 Pkg.build("Dash")
 Pkg.build("DashHtmlComponents")
