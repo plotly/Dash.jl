@@ -12,7 +12,7 @@ def test_jlcbsc001_simple_callback(dashjl):
     dashjl.start_server(fp)
 
     dashjl.wait_for_element_by_css_selector(
-        "#input", timeout=2
+        "#input", timeout=4
     )
 
     dashjl.wait_for_text_to_equal(
@@ -91,7 +91,7 @@ def test_jlcbsc006_multiple_outputs(dashjl):
     dashjl.start_server(fp)
 
     dashjl.wait_for_element_by_css_selector(
-        "#input", timeout=2
+        "#input", timeout=4
     )
 
     dashjl.wait_for_text_to_equal(
@@ -154,7 +154,7 @@ def test_jlcbsc008_prevent_update(dashjl):
     dashjl.start_server(fp)
 
     dashjl.wait_for_element_by_css_selector(
-        "#input", timeout=2
+        "#input", timeout=4
     )
     dashjl.find_element("#input").click()
     dashjl.find_elements("div.VirtualizedSelectOption")[0].click() #regular

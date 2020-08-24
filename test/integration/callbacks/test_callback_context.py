@@ -9,10 +9,10 @@ def jl_test_file_path(filename):
     return os.path.join(curr_path, "jl_callback_context", filename)
 
 def test_jlcbcx001_modified_response(dashjl):
-    fp = jl_test_file_path("jlcbcx001_modified_response.jl") 
+    fp = jl_test_file_path("jlcbcx001_modified_response.jl")
     dashjl.start_server(fp)
 
-    dashjl.wait_for_text_to_equal("#output", "ab - output", timeout=3)
+    dashjl.wait_for_text_to_equal("#output", "ab - output", timeout=4)
     input1 = dashjl.find_element("#input")
 
     input1.send_keys("cd")
@@ -25,7 +25,7 @@ def test_jlcbcx001_modified_response(dashjl):
     assert not dashjl.get_logs()
 
 def test_jlcbcx002_triggered(dashjl):
-    fp = jl_test_file_path("jlcbcx002_triggered.jl") 
+    fp = jl_test_file_path("jlcbcx002_triggered.jl")
     dashjl.start_server(fp)
     btns = ["btn-{}".format(x) for x in range(1, 6)]
     dashjl.wait_for_element_by_css_selector("#output", timeout=3)

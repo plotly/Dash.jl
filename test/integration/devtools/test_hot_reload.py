@@ -44,11 +44,11 @@ def jl_test_file_path(filename):
 
 
 def test_jldvhr001_hot_reload(dashjl):
-    fp = jl_test_file_path("jldvhr001_hot_reload.jl") 
+    fp = jl_test_file_path("jldvhr001_hot_reload.jl")
     dashjl.start_server(fp)
 
     dashjl.wait_for_text_to_equal(
-        "#tested", "Initial", timeout = 2
+        "#tested", "Initial", timeout = 4
     )
 
     # default overload color is blue
@@ -109,12 +109,12 @@ def test_jldvhr001_hot_reload(dashjl):
         "#tested", "Initial"
     )
 def test_jldvhr002_hot_restart(dashjl):
-    app_file = jl_test_file_path("jldvhr002_hot_restart.jl") 
+    app_file = jl_test_file_path("jldvhr002_hot_restart.jl")
     dashjl.start_server(app_file)
 
     dashjl.wait_for_element_by_css_selector(
-        "#before-reload-content", timeout=2
-    ) 
+        "#before-reload-content", timeout=4
+    )
 
     dashjl.wait_for_text_to_equal(
         "#output", "before reload initial", timeout=2
@@ -138,7 +138,7 @@ def test_jldvhr002_hot_restart(dashjl):
     try:
         dashjl.wait_for_element_by_css_selector(
             "#after-reload-content", timeout=30
-        ) 
+        )
 
         dashjl.wait_for_text_to_equal(
             "#output", "after reload init", timeout=1

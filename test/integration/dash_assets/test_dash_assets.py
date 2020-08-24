@@ -11,10 +11,10 @@ def jl_test_file_path(filename):
 
 
 def test_jldada001_assets(dashjl):
-    fp = jl_test_file_path("jldada001_assets.jl") 
+    fp = jl_test_file_path("jldada001_assets.jl")
     dashjl.start_server(fp)
 
-    dashjl.wait_for_element("body", timeout=2)
+    dashjl.wait_for_element("body", timeout=4)
 
     assert (
         dashjl.find_element("body").value_of_css_property("margin") == "0px"
@@ -40,7 +40,7 @@ def test_jldada001_assets(dashjl):
     assert order == tested, "the content and order is expected"
 
 def test_jldada002_external_files_init(dashjl):
-    fp = jl_test_file_path("jldada002_external_files_init.jl") 
+    fp = jl_test_file_path("jldada002_external_files_init.jl")
     js_files = [
         "https://www.google-analytics.com/analytics.js",
         {"src": "https://cdn.polyfill.io/v2/polyfill.min.js"},
@@ -67,7 +67,7 @@ def test_jldada002_external_files_init(dashjl):
     ]
 
     dashjl.start_server(fp)
-    dashjl.wait_for_element("body", timeout=2)
+    dashjl.wait_for_element("body", timeout=4)
 
     js_urls = [x["src"] if isinstance(x, dict) else x for x in js_files]
     css_urls = [x["href"] if isinstance(x, dict) else x for x in css_files]
