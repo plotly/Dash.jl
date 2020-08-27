@@ -21,9 +21,9 @@ To install the latest (stable) development version instead:
 ```julia
 using Pkg
 Pkg.add(PackageSpec(url="https://github.com/plotly/Dash.jl.git", rev="dev"))
-Pkg.add(PackageSpec(url="https://github.com/plotly/dash-html-components.git", rev="jl"))
-Pkg.add(PackageSpec(url="https://github.com/plotly/dash-core-components.git", rev="jl"))
-Pkg.add(PackageSpec(url="https://github.com/plotly/dash-table.git", rev="jl"))
+Pkg.add(PackageSpec(url="https://github.com/plotly/dash-html-components.git", rev="master"))
+Pkg.add(PackageSpec(url="https://github.com/plotly/dash-core-components.git", rev="master"))
+Pkg.add(PackageSpec(url="https://github.com/plotly/dash-table.git", rev="master"))
 ```
 
 ## Usage
