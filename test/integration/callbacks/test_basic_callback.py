@@ -8,12 +8,12 @@ def jl_test_file_path(filename):
     return os.path.join(curr_path, "jl_basic_callback", filename)
 
 def test_jlcbsc001_simple_callback(dashjl):
-    fp = jl_test_file_path("jlcbsc001_simple_callback.jl") 
+    fp = jl_test_file_path("jlcbsc001_simple_callback.jl")
     dashjl.start_server(fp)
 
     dashjl.wait_for_element_by_css_selector(
-        "#input", timeout=2
-    ) 
+        "#input", timeout=4
+    )
 
     dashjl.wait_for_text_to_equal(
         "#output", "initial value", timeout=3
@@ -27,11 +27,11 @@ def test_jlcbsc001_simple_callback(dashjl):
     )
 
 def test_jlcbsc002_callbacks_generating_children(dashjl):
-    fp = jl_test_file_path("jlcbsc002_callbacks_generating_children.jl") 
+    fp = jl_test_file_path("jlcbsc002_callbacks_generating_children.jl")
     dashjl.start_server(fp)
     dashjl.wait_for_element_by_css_selector(
         "#input", timeout=3
-    ) 
+    )
 
     dashjl.wait_for_text_to_equal(
         "#sub-output-1", "sub input initial value", timeout=3
@@ -59,7 +59,7 @@ def test_jlcbsc002_callbacks_generating_children(dashjl):
 
 
 def test_jlcbsc003_callback_with_unloaded_async_component(dashjl):
-    fp = jl_test_file_path("jlcbsc003_callback_with_unloaded_async_component.jl") 
+    fp = jl_test_file_path("jlcbsc003_callback_with_unloaded_async_component.jl")
     dashjl.start_server(fp)
     dashjl.wait_for_text_to_equal("#output", "Hello", timeout=3)
     dashjl.find_element("#btn").click()
@@ -67,7 +67,7 @@ def test_jlcbsc003_callback_with_unloaded_async_component(dashjl):
 
 
 def test_jlcbsc005_children_types(dashjl):
-    fp = jl_test_file_path("jlcbsc005_children_types.jl") 
+    fp = jl_test_file_path("jlcbsc005_children_types.jl")
     dashjl.start_server(fp)
 
     outputs = [
@@ -87,12 +87,12 @@ def test_jlcbsc005_children_types(dashjl):
         dashjl.wait_for_text_to_equal("#out", text, timeout=3)
 
 def test_jlcbsc006_multiple_outputs(dashjl):
-    fp = jl_test_file_path("jlcbsc006_multiple_outputs.jl") 
+    fp = jl_test_file_path("jlcbsc006_multiple_outputs.jl")
     dashjl.start_server(fp)
 
     dashjl.wait_for_element_by_css_selector(
-        "#input", timeout=2
-    ) 
+        "#input", timeout=4
+    )
 
     dashjl.wait_for_text_to_equal(
         "#output1", "initial value first", timeout=3
@@ -113,12 +113,12 @@ def test_jlcbsc006_multiple_outputs(dashjl):
     )
 
 def test_jlcbsc007_prevent_update(dashjl):
-    fp = jl_test_file_path("jlcbsc007_prevent_update.jl") 
+    fp = jl_test_file_path("jlcbsc007_prevent_update.jl")
     dashjl.start_server(fp)
 
     dashjl.wait_for_element_by_css_selector(
-        "#input", timeout=2
-    ) 
+        "#input", timeout=4
+    )
     dashjl.find_element("#input").click()
     dashjl.find_elements("div.VirtualizedSelectOption")[0].click()
 
@@ -150,12 +150,12 @@ def test_jlcbsc007_prevent_update(dashjl):
     )
 
 def test_jlcbsc008_prevent_update(dashjl):
-    fp = jl_test_file_path("jlcbsc008_prevent_update_multiple.jl") 
+    fp = jl_test_file_path("jlcbsc008_prevent_update_multiple.jl")
     dashjl.start_server(fp)
 
     dashjl.wait_for_element_by_css_selector(
-        "#input", timeout=2
-    ) 
+        "#input", timeout=4
+    )
     dashjl.find_element("#input").click()
     dashjl.find_elements("div.VirtualizedSelectOption")[0].click() #regular
 
@@ -213,12 +213,12 @@ def test_jlcbsc008_prevent_update(dashjl):
     )
 
 def test_jlcbsc009_single_element_array_output(dashjl):
-    fp = jl_test_file_path("jlcbsc009_single_element_array_output.jl") 
+    fp = jl_test_file_path("jlcbsc009_single_element_array_output.jl")
     dashjl.start_server(fp)
 
     dashjl.wait_for_element_by_css_selector(
         "#input", timeout=3
-    ) 
+    )
 
     dashjl.wait_for_text_to_equal(
         "#output", "initial value", timeout=2

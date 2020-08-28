@@ -22,7 +22,7 @@ end
 function _push_to_res!(res, value, out)
     !(value isa NoUpdate) && push!(res,
             dep_id_string(out.id) => Dict(
-                Symbol(out.property) => Front.to_dash(value)
+                Symbol(out.property) => DashBase.to_dash(value)
             )
         )
 end

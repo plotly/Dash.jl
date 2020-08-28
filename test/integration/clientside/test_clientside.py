@@ -9,7 +9,7 @@ def jl_test_file_path(filename):
     return os.path.join(curr_path, "jl_clientside", filename)
 
 def test_jlclsd001_simple_clientside_serverside_callback(dashjl):
-    fp = jl_test_file_path("jlclsd001_simple_clientside_serverside_callback.jl") 
+    fp = jl_test_file_path("jlclsd001_simple_clientside_serverside_callback.jl")
     dashjl.start_server(fp)
 
     dashjl.wait_for_text_to_equal("#output-serverside", 'Server says "nothing"', timeout=3)
@@ -20,7 +20,7 @@ def test_jlclsd001_simple_clientside_serverside_callback(dashjl):
     dashjl.wait_for_text_to_equal("#output-clientside", 'Client says "hello world"', timeout=2)
 
 def test_jlclsd002_chained_serverside_clientside_callbacks(dashjl):
-    fp = jl_test_file_path("jlclsd002_chained_serverside_clientside_callbacks.jl") 
+    fp = jl_test_file_path("jlclsd002_chained_serverside_clientside_callbacks.jl")
     dashjl.start_server(fp)
 
     test_cases = [
@@ -49,7 +49,7 @@ def test_jlclsd002_chained_serverside_clientside_callbacks(dashjl):
         dashjl.wait_for_text_to_equal(selector, expected, timeout=2)
 
 def test_jlclsd003_clientside_exceptions_halt_subsequent_updates(dashjl):
-    fp = jl_test_file_path("jlclsd003_clientside_exceptions_halt_subsequent_updates.jl") 
+    fp = jl_test_file_path("jlclsd003_clientside_exceptions_halt_subsequent_updates.jl")
     dashjl.start_server(fp)
 
     test_cases = [["#first", "1"], ["#second", "2"], ["#third", "3"]]
@@ -72,7 +72,7 @@ def test_jlclsd003_clientside_exceptions_halt_subsequent_updates(dashjl):
         dashjl.wait_for_text_to_equal(selector, expected, timeout=2)
 
 def test_jlclsd004_clientside_multiple_outputs(dashjl):
-    fp = jl_test_file_path("jlclsd004_clientside_multiple_outputs.jl") 
+    fp = jl_test_file_path("jlclsd004_clientside_multiple_outputs.jl")
     dashjl.start_server(fp)
 
     for selector, expected in [
@@ -96,7 +96,7 @@ def test_jlclsd004_clientside_multiple_outputs(dashjl):
         dashjl.wait_for_text_to_equal(selector, expected, timeout=2)
 
 def test_jlclsd005_clientside_fails_when_returning_a_promise(dashjl):
-    fp = jl_test_file_path("jlclsd005_clientside_fails_when_returning_a_promise.jl") 
+    fp = jl_test_file_path("jlclsd005_clientside_fails_when_returning_a_promise.jl")
     dashjl.start_server(fp)
 
     dashjl.wait_for_text_to_equal("#input", "hello", timeout=2)
@@ -104,10 +104,10 @@ def test_jlclsd005_clientside_fails_when_returning_a_promise(dashjl):
     dashjl.wait_for_text_to_equal("#output", "output")
 
 def test_jlclsd006_PreventUpdate(dashjl):
-    fp = jl_test_file_path("jlclsd006_PreventUpdate.jl") 
+    fp = jl_test_file_path("jlclsd006_PreventUpdate.jl")
     dashjl.start_server(fp)
 
-    dashjl.wait_for_text_to_equal("#first", "1", timeout=2)
+    dashjl.wait_for_text_to_equal("#first", "1", timeout=4)
     dashjl.wait_for_text_to_equal("#second", "2")
     dashjl.wait_for_text_to_equal("#third", "2")
 
@@ -124,7 +124,7 @@ def test_jlclsd006_PreventUpdate(dashjl):
     dashjl.wait_for_text_to_equal("#third", "3")
 
 def test_jlclsd007_no_update(dashjl):
-    fp = jl_test_file_path("jlclsd007_no_update.jl") 
+    fp = jl_test_file_path("jlclsd007_no_update.jl")
     dashjl.start_server(fp)
     dashjl.wait_for_text_to_equal("#first", "1")
     dashjl.wait_for_text_to_equal("#second", "2")
@@ -143,10 +143,10 @@ def test_jlclsd007_no_update(dashjl):
     dashjl.wait_for_text_to_equal("#third", "4")
 
 def test_jlclsd008_clientside_inline_source(dashjl):
-    fp = jl_test_file_path("jlclsd008_clientside_inline_source.jl") 
+    fp = jl_test_file_path("jlclsd008_clientside_inline_source.jl")
     dashjl.start_server(fp)
 
-    dashjl.wait_for_text_to_equal("#output-serverside", 'Server says "nothing"', timeout=3)
+    dashjl.wait_for_text_to_equal("#output-serverside", 'Server says "nothing"', timeout=4)
     dashjl.wait_for_text_to_equal("#output-clientside", 'Client says "undefined"')
 
     dashjl.find_element("#input").send_keys("hello world")

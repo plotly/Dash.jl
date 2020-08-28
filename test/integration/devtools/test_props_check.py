@@ -91,14 +91,14 @@ test_cases = {
 }
 
 def test_jldvpc001_prop_check_errors_with_path(dashjl):
-    fp = jl_test_file_path("jldvpc001_prop_check_errors_with_path.jl") 
+    fp = jl_test_file_path("jldvpc001_prop_check_errors_with_path.jl")
     dashjl.start_server(fp)
     for tc in test_cases:
         route_url = "{}/{}".format(dashjl.server_url, tc)
         dashjl.wait_for_page(url=route_url)
 
         if test_cases[tc]["fail"]:
-            dashjl.wait_for_element(".test-devtools-error-toggle", timeout=2).click()
+            dashjl.wait_for_element(".test-devtools-error-toggle", timeout=4).click()
             dashjl.wait_for_element(".dash-error-card")
         else:
             dashjl.wait_for_element("#new-component", timeout=2)

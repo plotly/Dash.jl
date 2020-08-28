@@ -23,11 +23,11 @@ def click_redo(self):
 
 
 def test_jltr001r_undo_redo(dashjl):
-    fp = jl_test_file_path("jltr001r_undo_redo.jl") 
+    fp = jl_test_file_path("jltr001r_undo_redo.jl")
     dashjl.start_server(fp)
     dashjl.wait_for_element_by_css_selector(
-        "#a"
-    )   
+        "#a", timeout=4
+    )
     input1 = dashjl.find_element("#a")
     input1.send_keys("xyz")
     dashjl.wait_for_text_to_equal(
