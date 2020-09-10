@@ -8,7 +8,7 @@ This image is pulled from within Dash.jl's [config.yml](https://github.com/plotl
 
 ```yaml
     docker:
-      - image: plotly/julia:ci 
+      - image: plotly/julia:ci
 ```
 
 ## Publication details
