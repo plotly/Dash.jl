@@ -1,26 +1,29 @@
 module Dash
-import HTTP, JSON2
-using MacroTools
-include("ComponentPackages.jl")
-include("ComponentMetas.jl")
+using DashBase
+import HTTP, JSON2, CodecZlib, MD5
+using Sockets
+const ROOT_PATH = realpath(joinpath(@__DIR__, ".."))
+const RESOURCE_PATH = realpath(joinpath(ROOT_PATH, "resources"))
+include("exceptions.jl")
 include("Components.jl")
 include("Front.jl")
+include("HttpHelpers/HttpHelpers.jl")
 
-import .ComponentPackages
-import .Front
-using .ComponentMetas
-using .Components
+using .HttpHelpers
 
-export dash, Component, Front, @use, <|, @callid_str, CallbackId, callback!,
-run_server, PreventUpdate, no_update, @wildprop
+export dash, Component, Front, callback!,
+enable_dev_tools!, ClientsideFunction,
+run_server, PreventUpdate, no_update, @var_str,
+Input, Output, State, make_handler, callback_context,
+ALL, MATCH, ALLSMALLER
 
-ComponentPackages.@reg_components()
+include("Contexts/Contexts.jl")
+include("env.jl")
 include("utils.jl")
-include("config.jl")
 include("app.jl")
-include("index_page.jl")
+include("resources/application.jl")
 include("handlers.jl")
-
+include("server.jl")
 
 @doc """
     module Dash
@@ -31,66 +34,105 @@ Julia backend for [Plotly Dash](https://github.com/plotly/dash)
 ```julia
 
 using Dash
-app = dash("Test", external_stylesheets=["https://codepen.io/chriddyp/pen/bWLwgP.css"]) do
+using DashHtmlComponents
+using DashCoreComponents
+app = dash(external_stylesheets=["https://codepen.io/chriddyp/pen/bWLwgP.css"]) do
     html_div() do
         dcc_input(id="graphTitle", value="Let's Dance!", type = "text"),
-        html_div(id="outputID"),            
+        html_div(id="outputID"),
         dcc_graph(id="graph",
             figure = (
                 data = [(x = [1,2,3], y = [3,2,8], type="bar")],
                 layout = Dict(:title => "Graph")
             )
         )
-                
+
     end
 end
-callback!(app, callid"{graphTitle.type} graphTitle.value => outputID.children") do type, value
+callback!(app, Output("outputID", "children"), Input("graphTitle","value"), State("graphTitle","type")) do value, type
     "You've entered: '\$(value)' into a '\$(type)' input control"
 end
-callback!(app, callid"graphTitle.value => graph.figure") do value
+callback!(app, Output("graph", "figure"), Input("graphTitle", "value")) do value
     (
         data = [
             (x = [1,2,3], y = abs.(randn(3)), type="bar"),
-            (x = [1,2,3], y = abs.(randn(3)), type="scatter", mode = "lines+markers", line = (width = 4,))                
+            (x = [1,2,3], y = abs.(randn(3)), type="scatter", mode = "lines+markers", line = (width = 4,))
         ],
         layout = (title = value,)
     )
 end
-handle = make_handler(app, debug = true)
-run_server(handle, HTTP.Sockets.localhost, 8080)
+run_server(app, HTTP.Sockets.localhost, 8050)
 ```
 
-# Available components
-$(ComponentPackages.component_doc_list())
-""" Dashboards
+""" Dash
 
 
-"""
-    run_server(app::DashApp, host = HTTP.Sockets.localhost, port = 8080; debug::Bool = false)
+function __init__()
+    DashBase.main_registry().dash_dependency = (
+        dev = ResourcePkg(
+            "dash_renderer",
+            RESOURCE_PATH, version = "1.5.0",
+            [
+                Resource(
+                relative_package_path = "react@16.13.0.js",
+                external_url = "https://unpkg.com/react@16.13.0/umd/react.development.js"
+                ),
+                Resource(
+                    relative_package_path = "react-dom@16.13.0.js",
+                    external_url = "https://unpkg.com/react-dom@16.13.0/umd/react-dom.development.js"
+                ),
+                Resource(
+                    relative_package_path = "polyfill@7.8.7.min.js",
+                    external_url = "https://unpkg.com/@babel/polyfill@7.8.7/dist/polyfill.min.js"
+                ),
+                Resource(
+                    relative_package_path = "prop-types@15.7.2.js",
+                    external_url = "https://unpkg.com/prop-types@15.7.2/prop-types.js",
+                ),
+            ]
+        ),
+        prod = ResourcePkg(
+            "dash_renderer",
+            RESOURCE_PATH, version = "1.2.2",
+            [
+                Resource(
+                relative_package_path = "react@16.13.0.min.js",
+                external_url = "https://unpkg.com/react@16.13.0/umd/react.production.min.js"
+                ),
+                Resource(
+                    relative_package_path = "react-dom@16.13.0.min.js",
+                    external_url = "https://unpkg.com/react-dom@16.13.0/umd/react-dom.production.min.js"
+                ),
+                Resource(
+                    relative_package_path = "polyfill@7.8.7.min.js",
+                    external_url = "https://unpkg.com/@babel/polyfill@7.8.7/dist/polyfill.min.js"
+                ),
+                Resource(
+                    relative_package_path = "prop-types@15.7.2.min.js",
+                    external_url = "https://unpkg.com/prop-types@15.7.2/prop-types.min.js"
+                ),
+            ]
+        )
+    )
 
-Run Dash server
+    DashBase.main_registry().dash_renderer = ResourcePkg(
+        "dash_renderer",
+        RESOURCE_PATH, version = "1.5.0",
+        [
+            Resource(
+                relative_package_path = "dash_renderer.min.js",
+                dev_package_path = "dash_renderer.dev.js",
+                external_url = "https://unpkg.com/dash-renderer@1.5.0/dash_renderer/dash_renderer.min.js"
+            ),
+            Resource(
+                relative_package_path = "dash_renderer.min.js.map",
+                dev_package_path = "dash_renderer.dev.js.map",
+                dynamic = true,
+            ),
+        ]
+    )
 
-#Arguments
-- `app` - Dash application
-- `host` - host
-- `port` - port
-- `debug::Bool = false` - Enable/disable all the dev tools
 
-#Examples
-```jldoctest
-julia> app = dash("Test") do
-    html_div() do
-        html_h1("Test Dashboard")
-    end
-end
-julia>
-julia> run_server(handler,  HTTP.Sockets.localhost, 8080)
-```
-
-"""
-function run_server(app::DashApp, host = HTTP.Sockets.localhost, port = 8080; debug = false)
-    handler = make_handler(app, debug = debug);
-    HTTP.serve(handler, host, port)
 end
 
 

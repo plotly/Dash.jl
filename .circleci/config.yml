@@ -3,11 +3,12 @@ version: 2
 jobs:
 
   test:
-    working_directory: /root/project/Dash
-
+    working_directory: ~/dashjl 
     docker:
-      - image: julia:latest
-
+      - image: plotly/julia:ci 
+        environment:
+          PERCY_PARALLEL_TOTAL: '-1'
+          PUPPETEER_SKIP_CHROMIUM_DOWNLOAD: 'True'
     steps:
       - checkout
 
@@ -26,7 +27,28 @@ jobs:
       - run:
           name: 🔎 Unit tests
           command: |
-              julia -e 'using Pkg; Pkg.update(); Pkg.add(PackageSpec(path=pwd())); Pkg.build("Dash"); Pkg.test("Dash", coverage=true);'
+            julia test/ci_prepare.jl 
+
+      - run:
+          name: ⚙️  Integration tests
+          command: |
+            python -m venv venv
+            . venv/bin/activate
+            git clone --depth 1 https://github.com/plotly/dash.git -b dev dash-main
+            cd dash-main && pip install -e .[dev,testing] --progress-bar off && cd ~/dashjl 
+            export PATH=$PATH:/home/circleci/.local/bin/
+            pytest --headless --nopercyfinalize --junitxml=test-reports/dashjl.xml --percy-assets=test/assets/ test/integration/
+      - store_artifacts:
+          path: test-reports
+      - store_test_results:
+          path: test-reports
+      - store_artifacts:
+          path: /tmp/dash_artifacts
+
+      - run:
+          name: 🦔 percy finalize
+          command: npx percy finalize --all
+          when: always
 
 workflows:
   version: 2
