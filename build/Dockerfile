@@ -7,6 +7,6 @@ RUN sudo apt-get update \
 RUN cd /usr/local/src \
  && sudo mkdir /usr/local/src/julia \
  && sudo curl -o julia.tar.gz --location --show-error \
- https://julialang-s3.julialang.org/bin/linux/x64/1.4/julia-1.4.1-linux-x86_64.tar.gz \
+ https://julialang-s3.julialang.org/bin/linux/x64/1.5/julia-1.5.1-linux-x86_64.tar.gz \
  && sudo tar --extract --gzip --strip 1 --directory=/usr/local/src/julia --file=julia.tar.gz \
  && sudo ln -s /usr/local/src/julia/bin/julia /usr/local/bin/julia 
