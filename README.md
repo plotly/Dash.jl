@@ -67,7 +67,7 @@ julia> run_server(app, "0.0.0.0", 8080)
 * The `DashApp` struct represents a dashboard application.
 * To make `DashApp` struct use `dash(layout_maker::Function, name::String;  external_stylesheets::Vector{String} = Vector{String}(), url_base_pathname="/", assets_folder::String = "assets")` where `layout_maker` is a function with signature ()::Component
 * Unlike the Python version where each Dash component is represented as a separate class, all components in Dash.jl are represented by struct `Component`.
-* You can create `Component` specific for concrete Dash component by the set of functions in the form ``lowercase(<component package>)_lowercase(<component name>)``. For example, in Python html `<div>` element is represented as `HTML.Div` in Dashboards it is created using function `html_div`
+* You can create `Component` specific for concrete Dash component by the set of functions in the form ``lowercase(<component package>)_lowercase(<component name>)``. For example, in Python html `<div>` element is represented as `HTML.Div` in Dash.jl it is created using function `html_div`
 * The list of all supported components is available in docstring for Dash.jl module.
 * All functions for a component creation have the signature `(;kwargs...)::Component`. List of key arguments specific for the concrete component is available in the docstring for each function.
 * Functions for creation components which have `children` property have two additional methods ``(children::Any; kwargs...)::Component`` and ``(children_maker::Function; kwargs..)::Component``. `children` must by string or number or single component or collection of components.
