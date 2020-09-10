@@ -108,7 +108,7 @@ julia> HTTP.serve(handler, HTTP.Sockets.localhost, 8080)
 
 * For multiple output callback must return any collection with element for each output
 
-## Comparision with original python syntax
+## Comparison with original python syntax
 
 ### component naming:
 
