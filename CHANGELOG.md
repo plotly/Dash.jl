@@ -3,7 +3,7 @@ All notable changes to this project will be documented in this file. This projec
 
 ## [UNRELEASED]
 ### Added
-- Support for client side callbacks [#30](https://github.com/plotly/Dash.jl/pull/30)
+- Support for clientside callbacks [#30](https://github.com/plotly/Dash.jl/pull/30)
 - Support for hot reloading on application or asset changes [#25](https://github.com/plotly/Dash.jl/pull/25)
 - Asset serving of CSS, JavaScript, and other resources [#18](https://github.com/plotly/Dash.jl/pull/18)
 - Support for passing functions as layouts [#18](https://github.com/plotly/Dash.jl/pull/18)
