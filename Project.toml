@@ -1,6 +1,7 @@
 name = "Dash"
 uuid = "1b08a953-4be3-4667-9a23-3db579824955"
-authors = ["Alexandr Romanenko"]
+authors = ["Chris Parmer <chris@plotly.com>",
+           "Alexandr Romanenko <waralex@gmail.com>"]
 version = "0.1.0"
 
 [deps]
