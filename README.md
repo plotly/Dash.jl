@@ -4,7 +4,6 @@
 [![GitHub](https://img.shields.io/github/license/plotly/dashR.svg?color=dark-green)](https://github.com/plotly/Dash.jl/blob/master/LICENSE)
 [![GitHub commit activity](https://img.shields.io/github/commit-activity/y/plotly/Dash.jl.svg?color=dark-green)](https://github.com/plotly/Dash.jl/graphs/contributors)
 
-
 ## Project Status
 
 The core Dash component libraries have been submitted to the Julia package registry; upon their acceptance, `Dash.jl` will be submitted. The initial release of `Dash.jl` is anticipated in September 2020. A Julia version of the Dash Tutorial is currently in preparation, and will be available online soon. As of v1.15.0 of Dash, Julia components can be generated in tandem with Python and R components. Interested in getting involved with the project? Sponsorship is a great way to accelerate the progress of open source projects like this one; please feel free to [reach out to us](https://plotly.com/consulting-and-oem/)!
