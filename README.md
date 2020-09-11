@@ -21,7 +21,7 @@ Please ensure that you are using a version of Julia >= 1.2.
 To install the most recently released version:
 
 ```julia
-using Pkg; Pkg.add(PackageSpec(url="https://github.com/plotly/Dash.jl.git"))
+pkg> add Dash DashCoreComponents DashHtmlComponents DashTable
 ```
 
 To install the latest (stable) development version instead:
