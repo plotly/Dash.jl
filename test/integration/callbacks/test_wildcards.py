@@ -144,6 +144,9 @@ def test_jlcbwc003_same_keys(dashjl):
     dashjl.start_server(fp)
 
     dashjl.wait_for_text_to_equal("#add-filter", "Add Filter", timeout = 10)
+    dashjl.wait_for_text_to_equal(
+        '#\\{\\"index\\"\\:0\\,\\"type\\"\\:\\"output\\"\\}', "Dropdown 0 = nothing", timeout = 10
+    )
     dashjl.select_dcc_dropdown(
         '#\\{\\"index\\"\\:0\\,\\"type\\"\\:\\"dropdown\\"\\}', "LA"
     )
@@ -151,6 +154,9 @@ def test_jlcbwc003_same_keys(dashjl):
         '#\\{\\"index\\"\\:0\\,\\"type\\"\\:\\"output\\"\\}', "Dropdown 0 = LA", timeout = 10
     )
     dashjl.find_element("#add-filter").click()
+    dashjl.wait_for_text_to_equal(
+        '#\\{\\"index\\"\\:1\\,\\"type\\"\\:\\"output\\"\\}', "Dropdown 1 = nothing", timeout = 10
+    )
     dashjl.select_dcc_dropdown(
         '#\\{\\"index\\"\\:1\\,\\"type\\"\\:\\"dropdown\\"\\}', "MTL"
     )
