@@ -21,16 +21,16 @@ UUIDs = "cf7118a7-6976-5b1a-9a39-7adc72f591a4"
 
 [compat]
 CodecZlib = "0.6, 0.7"
-DashBase = "0.1.0"
+DashBase = "0.1"
 DashCoreComponents = "1.10.2"
 DashHtmlComponents = "1.0.3"
 DashTable = "4.9.0"
-DataStructures = "0.17.5, 0.18"
+DataStructures = "0.17, 0.18"
 HTTP = "0.8.10"
-JSON = "0.21.0"
-JSON2 = "0.3.1"
-MD5 = "0.2.1"
-PlotlyBase = "0.3.0, 0.4"
+JSON = "0.21"
+JSON2 = "0.3"
+MD5 = "0.2"
+PlotlyBase = "0.3, 0.4"
 julia = "1.2"
 
 [extras]

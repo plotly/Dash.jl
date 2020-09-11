@@ -98,7 +98,7 @@ def test_jldvpc001_prop_check_errors_with_path(dashjl):
         dashjl.wait_for_page(url=route_url)
 
         if test_cases[tc]["fail"]:
-            dashjl.wait_for_element(".test-devtools-error-toggle", timeout=4).click()
+            dashjl.wait_for_element(".test-devtools-error-toggle", timeout=10).click()
             dashjl.wait_for_element(".dash-error-card")
         else:
             dashjl.wait_for_element("#new-component", timeout=2)

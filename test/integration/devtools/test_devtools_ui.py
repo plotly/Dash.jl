@@ -12,7 +12,7 @@ def test_jldvui001_disable_props_check_config(dashjl):
     fp = jl_test_file_path("jldvui001_disable_props_check_config.jl")
     dashjl.start_server(fp)
 
-    dashjl.wait_for_text_to_equal("#tcid", "Hello Props Check", timeout = 4)
+    dashjl.wait_for_text_to_equal("#tcid", "Hello Props Check", timeout = 10)
     assert dashjl.find_elements("#broken svg.main-svg"), "graph should be rendered"
 
     assert dashjl.find_elements(
@@ -23,7 +23,7 @@ def test_jldvui002_disable_ui_config(dashjl):
     fp = jl_test_file_path("jldvui002_disable_ui_config.jl")
     dashjl.start_server(fp)
 
-    dashjl.wait_for_text_to_equal("#tcid", "Hello Disable UI", timeout = 4)
+    dashjl.wait_for_text_to_equal("#tcid", "Hello Disable UI", timeout = 10)
     logs = str(wait.until(dashjl.get_logs, timeout=2))
     assert (
         "Invalid argument `animate` passed into Graph" in logs

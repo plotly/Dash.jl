@@ -14,7 +14,7 @@ def test_jldada001_assets(dashjl):
     fp = jl_test_file_path("jldada001_assets.jl")
     dashjl.start_server(fp)
 
-    dashjl.wait_for_element("body", timeout=4)
+    dashjl.wait_for_element("body", timeout=10)
 
     assert (
         dashjl.find_element("body").value_of_css_property("margin") == "0px"
