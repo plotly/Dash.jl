@@ -31,7 +31,7 @@ def test_jltr001r_undo_redo(dashjl):
     input1 = dashjl.find_element("#a")
     input1.send_keys("xyz")
     dashjl.wait_for_text_to_equal(
-        "#b", "xyz", timeout=2
+        "#b", "xyz", timeout=4
     )
     click_undo(dashjl)
     dashjl.wait_for_text_to_equal(
