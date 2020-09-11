@@ -48,7 +48,7 @@ def test_jldvhr001_hot_reload(dashjl):
     dashjl.start_server(fp)
 
     dashjl.wait_for_text_to_equal(
-        "#tested", "Initial", timeout = 4
+        "#tested", "Initial", timeout = 10
     )
 
     # default overload color is blue
@@ -82,7 +82,7 @@ def test_jldvhr001_hot_reload(dashjl):
     )
 
     dashjl.wait_for_text_to_equal(
-        "#tested", "Initial", timeout = 2
+        "#tested", "Initial", timeout = 10
     )
 
     hot_reload_js_file = os.path.join(
@@ -113,18 +113,18 @@ def test_jldvhr002_hot_restart(dashjl):
     dashjl.start_server(app_file)
 
     dashjl.wait_for_element_by_css_selector(
-        "#before-reload-content", timeout=4
+        "#before-reload-content", timeout=10
     )
 
     dashjl.wait_for_text_to_equal(
-        "#output", "before reload initial", timeout=2
+        "#output", "before reload initial", timeout=10
     )
     input_ = dashjl.find_element("#input")
     dashjl.clear_input(input_)
     input_.send_keys("test")
 
     dashjl.wait_for_text_to_equal(
-        "#output", "before reload test", timeout=2
+        "#output", "before reload test", timeout=10
     )
 
 
@@ -137,18 +137,18 @@ def test_jldvhr002_hot_restart(dashjl):
 
     try:
         dashjl.wait_for_element_by_css_selector(
-            "#after-reload-content", timeout=30
+            "#after-reload-content", timeout=60
         )
 
         dashjl.wait_for_text_to_equal(
-            "#output", "after reload init", timeout=1
+            "#output", "after reload init", timeout=10
         )
         input_ = dashjl.find_element("#input")
         dashjl.clear_input(input_)
         input_.send_keys("test")
 
         dashjl.wait_for_text_to_equal(
-            "#output", "after reload test", timeout=1
+            "#output", "after reload test", timeout=10
         )
     finally:
         sleep(1)  # ensure a new mod time
