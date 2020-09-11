@@ -109,7 +109,7 @@ def test_jlcbwc002_fibonacci_app(clientside, dashjl):
     dashjl.start_server(fp)
 
     # app starts with 4 elements: 0, 1, 1, 2
-    dashjl.wait_for_text_to_equal("#sum", "4 elements, sum: 4", timeout = 10)
+    dashjl.wait_for_text_to_equal("#sum", "4 elements, sum: 4", timeout = 20)
 
     # add 5th item, "3"
     dashjl.find_element("#n").send_keys(Keys.UP)
@@ -145,7 +145,7 @@ def test_jlcbwc003_same_keys(dashjl):
 
     dashjl.wait_for_text_to_equal("#add-filter", "Add Filter", timeout = 10)
     dashjl.wait_for_text_to_equal(
-        '#\\{\\"index\\"\\:0\\,\\"type\\"\\:\\"output\\"\\}', "Dropdown 0 = nothing", timeout = 10
+        '#\\{\\"index\\"\\:0\\,\\"type\\"\\:\\"output\\"\\}', "Dropdown 0 = nothing", timeout = 20
     )
     dashjl.select_dcc_dropdown(
         '#\\{\\"index\\"\\:0\\,\\"type\\"\\:\\"dropdown\\"\\}', "LA"
