@@ -27,12 +27,12 @@ function _push_to_res!(res, value, out)
         )
 end
 
+_single_element_vect(e::T) where {T} = T[e]
 function process_callback_call(app, callback_id, outputs, inputs, state)
     cb = app.callbacks[callback_id]
     res = cb.func(make_args(inputs, state)...)
     (res isa NoUpdate) && throw(PreventUpdate())
-    res_vector = is_multi_out(cb) ? res : [res]
-
+    res_vector = is_multi_out(cb) ? res : _single_element_vect(res)
     validate_callback_return(outputs, res_vector, callback_id)
 
     response = Dict{String, Any}()
