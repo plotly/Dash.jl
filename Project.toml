@@ -1,7 +1,7 @@
 name = "Dash"
 uuid = "1b08a953-4be3-4667-9a23-3db579824955"
 authors = ["Chris Parmer <chris@plotly.com>", "Alexandr Romanenko <waralex@gmail.com>"]
-version = "0.1.1"
+version = "0.1.2"
 
 [deps]
 CodecZlib = "944b1d66-785c-5afd-91f1-9de20f533193"
