@@ -1,0 +1,21 @@
+#my-sequence-viewer, #my-dashbio-sequenceviewer,
+#sequence-viewer-selection, #sequence-viewer-lines,
+#sequence-viewer-toolbar, #sequence-viewer-titlebadge {
+    width: 420px;
+    border: solid 1px gray;
+    border-radius: 5px;
+    padding: 5px;
+    display: inline-block;
+    margin-left: auto;
+    margin-right: auto;
+}
+#sequence-viewer-lines {
+    width: 200px;
+}
+#sequence-viewer-toolbar label, #sequence-viewer-toolbar .sequenceToolbar {
+    display: inline-block;
+    font-size: 12pt;
+}
+#sequence-viewer-toolbar {
+    width: auto;
+}

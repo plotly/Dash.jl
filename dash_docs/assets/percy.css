@@ -1,0 +1,8 @@
+@media only percy {
+    .hide-in-percy {
+        visibility: hidden;
+    }
+    .page-menu {
+        visibility: hidden;
+    }
+}

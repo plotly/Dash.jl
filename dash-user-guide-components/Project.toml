@@ -1,0 +1,12 @@
+
+name = "DashUserGuideComponents"
+uuid = "1b08a953-4be3-4667-9a23-e667f8ac7b1d"
+authors = ["Chris P <chris@plotly.com>"]
+version = "0.0.4"
+
+[deps]
+Dash = "1b08a953-4be3-4667-9a23-3db579824955"
+
+[compat]
+julia = "1.2"
+Dash = "0.1"

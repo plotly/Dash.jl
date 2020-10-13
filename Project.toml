@@ -1,0 +1,8 @@
+[deps]
+CSV = "336ed68f-0bac-5ca0-87d4-7b16caf5d00b"
+Dash = "1b08a953-4be3-4667-9a23-3db579824955"
+JSON3 = "0f8b85d8-7281-11e9-16c2-39a750bddbf1"
+Match = "7eb4fadd-790c-5f42-8a69-bfa0b872bfbf"
+PlotlyJS = "f0f68f2c-4968-5e81-91da-67840de0976a"
+Printf = "de0858da-6303-5e67-8744-51eddeeeb8d7"
+RDatasets = "ce6b1742-4840-55fa-b093-852dadbb1d8b"

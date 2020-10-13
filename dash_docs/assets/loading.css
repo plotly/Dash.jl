@@ -1,0 +1,18 @@
+/* Hide ._dash-loading on first paint since SSR content will be visible */
+._dash-loading {
+    display: none;
+}
+
+#chapter[data-dash-is-loading="true"] {
+    display: none;
+    cursor: progress;
+}
+
+#pagemenu[data-dash-is-loading="true"] {
+    display: none;
+    cursor: progress;
+}
+.backlinks[data-dash-is-loading="true"] {
+    display: none;
+    cursor: progress;
+}

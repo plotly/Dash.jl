@@ -1,0 +1,7 @@
+include dash_user_guide_components/dash_user_guide_components.min.js
+include dash_user_guide_components/dash_user_guide_components.min.js.map
+include dash_user_guide_components/metadata.json
+include dash_user_guide_components/package-info.json
+include README.md
+include LICENSE
+include package.json

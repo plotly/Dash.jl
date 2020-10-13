@@ -1,0 +1,15 @@
+Package: dashUserGuideComponents
+Title: Custom components for Dash's user guide
+Version: 0.0.4
+Description: Custom components for Dash's user guide
+Depends: R (>= 3.0.2)
+Imports: 
+Suggests: 
+License: MIT + file LICENSE
+URL: https://github.com/plotly/dash-user-guide-components
+BugReports: https://github.com/plotly/dash-user-guide-components/issues
+Encoding: UTF-8
+LazyData: true
+KeepSource: true
+Author: Chris P [aut]
+Maintainer: Chris P <chris@plotly.com>
