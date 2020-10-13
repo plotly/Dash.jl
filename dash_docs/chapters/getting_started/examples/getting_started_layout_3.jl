@@ -2,9 +2,7 @@ using DataFrames, CSV
 using Dash, DashHtmlComponents, DashCoreComponents
 
 
-url = "https://raw.githubusercontent.com/plotly/datasets/master/2011_us_ag_exports.csv"
-download(url, "usa-agriculture.csv")
-df3 = DataFrame(CSV.File("usa-agriculture.csv"))
+df3 = DataFrame(CSV.File("./datasets/usa-agricultural-exports-2011.csv"))
 
 function generate_table(dataframe, max_rows = 10)
     html_table([
