@@ -15,7 +15,7 @@ export dash, Component, Front, callback!,
 enable_dev_tools!, ClientsideFunction,
 run_server, PreventUpdate, no_update, @var_str,
 Input, Output, State, make_handler, callback_context,
-ALL, MATCH, ALLSMALLER
+ALL, MATCH, ALLSMALLER, DashBase
 
 include("Contexts/Contexts.jl")
 include("env.jl")
