@@ -67,7 +67,7 @@ callback!(
 
     for selected_data in [selection1, selection2, selection3]
         if selected_data != nothing
-            selectedpoints = [p[:customdata] for p in selected_data.points]
+            selectedpoints = [p[:customdata] - 1 for p in selected_data.points]
         end
     end
 

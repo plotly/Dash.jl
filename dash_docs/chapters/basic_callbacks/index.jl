@@ -4,6 +4,8 @@ using Dash, DashHtmlComponents, DashCoreComponents
 
 include("../../utils.jl")
 
+export examples
+
 examples_path = joinpath(@__DIR__, "examples")
 
 hello_slider = LoadExampleCode(string(examples_path, "/hello-slider.jl"))
@@ -19,6 +21,8 @@ basic_input = LoadExampleCode(string(examples_path, "/basic-input.jl"))
 basic_state = LoadExampleCode(string(examples_path, "/basic-state.jl"))
 
 callback_chain = LoadExampleCode(string(examples_path, "/getting-started-callback-chain.jl"))
+
+examples = [hello_slider, multi_inputs, multi_outputs, simple_callback, basic_input, basic_state, callback_chain]
 
 app =  dash()
 basic_input.callback!(app)

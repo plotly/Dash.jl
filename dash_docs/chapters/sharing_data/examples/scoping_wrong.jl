@@ -14,12 +14,12 @@ app.layout = html_div() do
                  ],
                  value="x"
     ),
-    html_div(id="output")
+    html_div(id="output-2")
 end
 
 callback!(
     app,
-    Output("output", "children"),
+    Output("output-2", "children"),
     Input("dropdown", "value"),
 ) do value
     # Here, `df7` is an example of a variable that is
