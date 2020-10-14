@@ -17,6 +17,7 @@ include("dash_docs/chapters/basic_callbacks/index.jl");
 include("dash_docs/chapters/graph_crossfiltering/index.jl");
 include("dash_docs/chapters/sharing_data/index.jl");
 include("dash_docs/chapters/faq_gotchas/index.jl");
+include("dash_docs/chapters/deployment/index.jl");
 
 for example in chapters_callbacks.examples
     example.callback!(app)
@@ -92,6 +93,7 @@ callback!(app,
             "/basic-callbacks" => chapters_callbacks.app.layout
             "/interactive-graphing" => chapters_interactive_graphing.app.layout
             "/sharing-data-between-callbacks" => chapters_sharing_data.app.layout
+            "/deployment" => chapters_deployment.app.layout
             "/faqs" => chapters_faq_gotchas.app.layout
             _ => html_div() do
                 html_h1("Dash for Julia User Guide"),
@@ -158,6 +160,16 @@ callback!(app,
                         "/faqs",
                         "If you have read through the rest of the tutorial and still have questions
                         or are encountering unexpected behaviour, this chapter may be useful."
+                        )
+                    )
+                ),
+                Section(
+                    "Production",
+                    (
+                        Chapter(
+                            "Deployment",
+                            "/deployment",
+                            ""
                         )
                     )
                 )
