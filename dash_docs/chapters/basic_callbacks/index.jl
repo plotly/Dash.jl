@@ -231,7 +231,10 @@ app.layout = html_div() do
     The next part of the Dash  tutorial covers interactive graphing.
 
     [Dash Tutorial Part 4: Interactive Graphing](/interactive-graphing)
-    """)
+    """),
+    html_hr(),
+    dcc_markdown("[Back to the table of contents](/)")
+
 end
 
 end

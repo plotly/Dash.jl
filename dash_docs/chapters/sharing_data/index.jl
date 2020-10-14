@@ -240,7 +240,10 @@ app.layout = html_div() do
     some common gotchas.
 
     [Dash Tutorial Part 6: FAQs and Gotchas](/faqs)
-    ")
+    "),
+    html_hr(),
+    dcc_markdown("[Back to the table of contents](/)")
+
 end
 
 end

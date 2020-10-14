@@ -161,7 +161,11 @@ app.layout = html_div() do
     The next part of the Dash tutorial covers how to make these apps interactive.
 
     [Dash Tutorial Part 3: Basic Callbacks](/basic-callbacks)
-    """)
+    """),
+
+    html_hr(),
+    dcc_markdown("[Back to the table of contents](/)")
+
 end
 
 end

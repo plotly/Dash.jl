@@ -95,7 +95,11 @@ app.layout = html_div() do
     callbacks.
 
     [Dash Tutorial Part 5: Sharing Data Between Callbacks](/sharing-data-between-callbacks)
-    """)
+    """),
+
+    html_hr(),
+    dcc_markdown("[Back to the table of contents](/)")
+
 end
 
 end
