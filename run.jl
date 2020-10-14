@@ -126,7 +126,7 @@ callback!(app,
                     Chapter(
                         "Part 1. Installation",
                         "/installation",
-                        "A quick paragraph about Dash and a link to the talk at Plotcon that started it all."
+                        "How to install and upgrade Dash libraries with the Pkg package manager."
                     ),
                     Chapter(
                         "Part 2. The Dash Layout",
