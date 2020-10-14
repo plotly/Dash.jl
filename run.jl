@@ -1,7 +1,10 @@
 # initialize outermost container Dash app
 include("app.jl");
 
-using Dash, DashCoreComponents, DashHtmlComponents, Match
+using Pkg
+Pkg.develop(path="./dash-user-guide-components")
+
+using Dash, DashCoreComponents, DashHtmlComponents, DashUserGuideComponents, Match
 
 # Load Chapter, Example, Header, Section, Syntax components
 map(include, filter(x->occursin(r".jl$", x), readdir("dash_docs/reusable_components/", join=true)));
@@ -72,17 +75,17 @@ app.layout = html_div() do
                     html_div(id = "backlinks-bottom", className = "backlinks")
                 ),
                 className = "rhs-content container-width"
-            )
-            #dugc_pagemenu(id = "pagemenu")
+            ),
+            dugc_pagemenu(id = "pagemenu")
         )
     )
 end;
 
 callback!(app,
     Output("chapter", "children"),
-    #Output("pagemenu", "dummy2"),
+    Output("pagemenu", "dummy2"),
     Input("url", "pathname")) do pathname
-        return @match pathname begin
+       get_content(pathname) = @match pathname begin
             "/introduction" => chapters_whats_dash.app.layout
             "/installation" => chapters_installation.app.layout
             "/getting-started" => chapters_getting_started.app.layout
@@ -160,14 +163,15 @@ callback!(app,
                 )
             end
         end
+    return get_content(pathname), ""
 end;
 
-#callback!(
-#    ClientsideFunction("clientside", "pagemenu"),
-#    app,
-#    Output("pagemenu", "dummy"),
-#    Input("chapter", "children")
-#)
+callback!(
+    ClientsideFunction("clientside", "pagemenu"),
+    app,
+    Output("pagemenu", "dummy"),
+    Input("chapter", "children")
+)
 
 port = parse(Int64, ENV["PORT"])
 

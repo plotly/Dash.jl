@@ -30,6 +30,6 @@ index_string = "
     </body>
 </html>"
 
-app = dash(assets_folder = "./dash_docs/assets", meta_tags = [Dict(["name"=>"description", "content" => "Dash for R User Guide and Documentation. Dash is a framework for building analytical web apps in Julia, R, and Python."])], index_string = index_string, suppress_callback_exceptions = true)
+app = dash(assets_folder = "./dash_docs/assets", meta_tags = [Dict(["name"=>"description", "content" => "Dash for Julia User Guide and Documentation. Dash is a framework for building analytical web apps in Julia, R, and Python."])], index_string = index_string, suppress_callback_exceptions = true)
 
 app.title = "Dash for Julia User Guide and Documentation | Plotly"
