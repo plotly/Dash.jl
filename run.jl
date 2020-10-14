@@ -37,6 +37,14 @@ header = html_div(
             style = Dict("height" => "95%"),
             className = "container-width",
             children = (
+                html_div("Welcome! The Dash.jl documentation is a work-in-progress; we accept and encourage community pull requests to improve this content.", style = Dict("background-color" => "#406ed8", "text-align" => "center", "color" => "#ffffff")),
+                html_div(
+                    children = (
+                        html_span("🙌 If you're interested, please visit the "),
+                        html_a("Dash Docs", className = "link", href="https://github.com/plotly/dash-docs"),
+                        html_span(" to learn more! 🙌")
+                    ),
+                    style = Dict("background-color" => "#80CFBE", "text-align" => "center", "color" => "#000000")),
                 html_a(
                     html_img(
                         style = Dict("height" => "100%"),
@@ -96,6 +104,7 @@ callback!(app,
             "/deployment" => chapters_deployment.app.layout
             "/faqs" => chapters_faq_gotchas.app.layout
             _ => html_div() do
+                html_br(),
                 html_h1("Dash for Julia User Guide"),
                 Section(
                     "What's Dash?",
