@@ -5,7 +5,7 @@ body {
   line-height: 17px;
   letter-spacing: 0px;
   font-family: "open-sans", sans-serif;
-  color: #20293d;
+  color: #3F4F75;
   font-weight: 400;
   font-stretch: normal;
   font-style: normal;
@@ -22,6 +22,7 @@ h1, h2, h3, h4, h5, h6 {
   margin-bottom: 0;
   font-weight: 300;
   letter-spacing: 1px;
+  color: rgb(32, 41, 61);
 }
 h1 { font-size: 50px; line-height: 1.2;  margin-bottom: 2rem; }
 h2 { font-size: 40px; line-height: 1.25; margin-bottom: 1.8rem; margin-top: 1.8rem;}
@@ -107,7 +108,7 @@ h6 { font-size: 20px; line-height: 1.6;  margin-bottom: 0.75rem; margin-top: 0.7
     border-bottom-style: solid;
     border-bottom-color: #0D67BF;
     opacity: 1;
-    color: #0D67BF;
+    color: #60BAB6;
 }
 
 .content {
@@ -280,7 +281,7 @@ summary:hover {
 
 .header .links .link:hover {
   border-bottom: #119DFF 2px solid;
-  color: #2A3F5F;
+  color: #60BAB6;
   height: 59px;
 }
 
@@ -345,8 +346,9 @@ a.logo-link img {
     text-decoration: underline;
     padding-left: 0px;
     list-style: none;
-    font-size: 18px;
+    font-size: 16px;
     line-height: 1;
+    font-weight: bold;
 }
 
 .toc--chapter-content {
@@ -378,7 +380,7 @@ a {
 }
 
 .content a:hover {
-  color: #0D67BF;
+  color: #60BAB6;
   text-decoration: underline;}
 
 .content a > img:hover {

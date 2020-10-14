@@ -47,7 +47,7 @@ header = html_div(
                     style = Dict("background-color" => "#80CFBE", "text-align" => "center", "color" => "#000000")),
                 html_a(
                     html_img(
-                        style = Dict("height" => "100%"),
+                        style = Dict("height" => "100%", "padding-left" => "80px"),
                         src = "https://dash.plotly.com/assets/images/logo-plotly.png"
                         ),
                         href = "https://plotly.com/products/dash",
@@ -79,7 +79,8 @@ app.layout = html_div() do
                     html_div(id = "backlinks-top", className = "backlinks"),
                     html_div(
                         html_div(id = "chapter", className = "content"), # the children of this component is the layout of a dash app, based on URL
-                        className = "content-container"
+                        className = "content-container",
+                        style = Dict("margin" => "70px")
                     ),
                     html_div(id = "backlinks-bottom", className = "backlinks")
                 ),
@@ -196,4 +197,4 @@ callback!(
 
 port = parse(Int64, ENV["PORT"])
 
-run_server(app, "0.0.0.0", port)
+run_server(app, "0.0.0.0", port, debug=true)
