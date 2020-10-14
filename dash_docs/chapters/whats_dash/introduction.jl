@@ -6,8 +6,7 @@ include("../../utils.jl")
 app = dash()
 
 app.layout = html_div() do
-    html_h2("Introduction to Dash")
-
+    html_h2("Introduction to Dash"),
     dcc_markdown("
     Dash is a productive framework for building web applications in Julia, Python, and R.
 
