@@ -148,7 +148,7 @@ callback!(app,
                         "Part 3. Basic Callbacks",
                         "/basic-callbacks",
                         "Dash apps are made interactive through Dash Callbacks:
-                        R functions that are automatically called whenever an input component's property changes. Callbacks can be chained,
+                        Julia functions that are automatically called whenever an input component's property changes. Callbacks can be chained,
                         allowing one update in the UI to trigger several updates across the app."
                     ),
                     Chapter(

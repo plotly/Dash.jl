@@ -51,6 +51,7 @@ app.layout = html_div() do
     """),
 
     html_hr(),
+    dcc_markdown("Ready? Now, [let's make your first Dash app.](/getting-started)"),
     dcc_markdown("[Back to the table of contents](/)")
 
 end
