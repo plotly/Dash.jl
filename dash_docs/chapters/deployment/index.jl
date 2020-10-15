@@ -124,7 +124,7 @@ Now, from the same prompt, install the packages (edit as needed for your own app
 
 
 Julia should now display a message indicating that the registry is being updated, and that package versions are being resolved
-and installed. Once finished, you should see the `pkg>` prompt again. Hold down the control and C keys, and this should return
+and installed. Once finished, you should see the `pkg>` prompt again. Hit the backspace key (or hold down the control and C keys), and this should return
 you to the `julia>` prompt. From here we can exit Julia, and we'll include the `Project.toml` and `Manifest.toml` files that
 were generated in Step 5.
 
