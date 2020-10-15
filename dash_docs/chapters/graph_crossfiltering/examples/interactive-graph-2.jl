@@ -1,8 +1,7 @@
-using CSV, DataFrames, Dash, DashHtmlComponents, DashCoreComponents
-using PlotlyJS
+using DataFrames, Dash, DashHtmlComponents, DashCoreComponents, UrlDownload, PlotlyJS
 
 
-df6 = DataFrame(CSV.File("./datasets/country_indicators.csv"))
+df6 = DataFrame(urldownload("https://raw.githubusercontent.com/plotly/datasets/master/country_indicators.csv"))
 
 rename!(df6, Dict(:"Year" => "year"))
 

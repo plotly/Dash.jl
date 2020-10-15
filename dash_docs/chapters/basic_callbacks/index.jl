@@ -71,7 +71,7 @@ app.layout = html_div() do
     and Dash updates the property of the output component with whatever was returned by the callback
     function.
 
-    4. Don't confuse the `Dash::Input` object with the `DashCoreComponents::Input` object. The former is just used to declare
+    4. Don't confuse the `Dash.Input` object with the `DashCoreComponents.Input` object. The former is just used to declare
     inputs of callback functions while the latter is an UI component which is used to render HTML input elements.
 
     5. Notice how we don't set a value for the `children` property of the `input` component in the `layout`. When
