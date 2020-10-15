@@ -196,4 +196,6 @@ callback!(
 
 port = parse(Int64, ENV["PORT"])
 
+print("Binding to PORT $(port)...")
+
 run_server(app, "0.0.0.0", port)
