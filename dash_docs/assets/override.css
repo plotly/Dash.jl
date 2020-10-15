@@ -106,7 +106,6 @@ h6 { font-size: 20px; line-height: 1.6;  margin-bottom: 0.75rem; margin-top: 0.7
 }
 .page-menu--link:hover {
     border-bottom-style: solid;
-    border-bottom-color: #0D67BF;
     opacity: 1;
     color: #60BAB6;
 }
@@ -280,7 +279,6 @@ summary:hover {
 }
 
 .header .links .link:hover {
-  border-bottom: #119DFF 2px solid;
   color: #60BAB6;
   height: 59px;
 }
