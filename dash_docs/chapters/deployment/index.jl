@@ -146,7 +146,7 @@ You should be able to access your app at `https://my-dash-app.herokuapp.com` (ch
 
 **Step 6.** Update the code and redeploy
 
-When you modify app.R with your own code, you will need to add the changes to git and push those changes to heroku.
+When you modify app.jl with your own code, you will need to add the changes to git and push those changes to heroku.
 
 ```
     \$ git status # view the changes
