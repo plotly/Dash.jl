@@ -6,7 +6,6 @@ include("../../styles.jl")
 
 include("../../reusable_components/Header.jl")
 include("../../reusable_components/Example.jl")
-include("../../reusable_components/Syntax.jl")
 
 
 getting_started_layout_1 = LoadExampleCode("./dash_docs/chapters/getting_started/examples/getting_started_layout_1.jl")
@@ -45,7 +44,7 @@ app.layout = html_div() do
 
     To get started, create a file called `app.jl` with the following code:
     """),
-    Syntax(getting_started_layout_1.source_code),
+    getting_started_layout_1.source_code,
     Example(getting_started_layout_1.layout),
 
     dcc_markdown("""
@@ -88,7 +87,7 @@ app.layout = html_div() do
     Let's customize the text in our app by modifying the inline styles of the components:
     """),
 
-    Syntax(getting_started_layout_2.source_code),
+    getting_started_layout_2.source_code,
     Example(getting_started_layout_2.layout),
 
     dcc_markdown("""
@@ -116,7 +115,7 @@ app.layout = html_div() do
     Here's a quick example that generates a `Table` from a `DataFrame`.
     Create a file named `app.jl` with the following code:
     """),
-    Syntax(getting_started_layout_3.source_code),
+    getting_started_layout_3.source_code,
     Example(getting_started_layout_3.layout),
     Header("More About Visualization"),
     dcc_markdown("""
@@ -133,7 +132,7 @@ app.layout = html_div() do
     Here's an example that creates a scatter plot from a `DataFrame`. Create a file named `app.jl`
     with the following code:
     """),
-    Syntax(getting_started_layout_4.source_code),
+    getting_started_layout_4.source_code,
     Example(getting_started_layout_4.layout),
     dcc_markdown("""
 
@@ -146,7 +145,7 @@ app.layout = html_div() do
     While Dash exposes HTML through the `DashHtmlComponents` package, it can be tedious to write your
     copy in HTML. For writing blocks of text, you can use the `dcc_markdown` component in the `DashCoreComponents` package.
     """),
-    Syntax(getting_started_layout_5.source_code),
+    getting_started_layout_5.source_code,
     Example(getting_started_layout_5.layout),
     Header("Core Components"),
     dcc_markdown("""
@@ -155,7 +154,7 @@ app.layout = html_div() do
     entirely declaratively. Every option that is configurable is available as a keyword
     argument to the component.
     """),
-    Syntax(getting_started_layout_6.source_code),
+    getting_started_layout_6.source_code,
     Example(getting_started_layout_6.layout),
     dcc_markdown("""
     The next part of the Dash tutorial covers how to make these apps interactive.
