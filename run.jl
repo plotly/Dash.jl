@@ -116,7 +116,7 @@ callback!(app,
                         ),
                         Chapter(
                             "Announcement Essay",
-                            "https://medium.com/plotly/dash-is-react-for-python-r-and-julia-c75822d1cc24",
+                            "https://medium.com/plotly/announcing-dash-for-julia-f017c90c6ef1",
                             "Our extended essay on Dash. An extended discussion of Dash's architecture and our motivation behind the project."
                         ),
                         Chapter(
