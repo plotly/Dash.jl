@@ -54,9 +54,12 @@ header = html_div(
                         ),
                         html_div(
                             children = (
-                                html_a("pricing", className = "link", href = "https://plotly.com/dash"),
-                                html_a("user guide", className = "link", href = "/"),
-                                html_a("plotly", className = "link", href = "https://plotly.com")
+                                html_a("Announcements", className = "links--announcements", href = "https://community.plotly.com/tag/announcements"),
+                                html_a("Gallery", className = "links--gallery", href = "https://dash-gallery.plotly.host"),
+                                html_a("Show & Tell", className = "links--show-and-tell", href = "https://community.plotly.com/tag/show-and-tell"),
+                                html_a("Community Forum", className = "links--community-forum", href = "https://community.plotly.com/c/dash/julia/20"),
+                                html_iframe(src="https://ghbtns.com/github-btn.html?user=plotly&repo=dash.jl&type=star&count=true&size=small", style = Dict("border" => "none", "height" => "30px", "verticalAlign" => "middle", "marginTop" => "9px", "width" => "120px")),
+                                html_a("dash enterprise demo", className = "link--demo-button", href = "https://plotly.com/get-demo/?utm_source=docs&utm_medium=banner&utm_campaign=sept&utm_content=demo", style = Dict("backgroundColor" => "#f4564e", "borderRadius" => "1.22rem", "color" => "white", "cursor" => "pointer", "display" => "inline-block", "fontStyle" => "italic", "fontWeight" => "700", "lineHeight" => "1.2", "letter-spacing" => "1.33px", "outline" => "none", "padding" => ".55rem 1.22rem", "marginRight" => "5px", "textAlign" => "center", "verticalAlign" => "middle", "textDecoration" => "none", "textTransform" => "uppercase", "transition" => "background-color .2s ease-in-out"))
                                 ),
                             className = "links"
                         )
