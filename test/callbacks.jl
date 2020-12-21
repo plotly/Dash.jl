@@ -143,7 +143,8 @@ end
             Symbol("..input-two.placeholder...input-two.type.."),
             [(id = "input-two", property = "placeholder"),
              (id = "input-two", property = "type")],
-            [(value = "text",)], [])[:response] == Dict("input-two" => Dict(:type => "text"))
+            [(value = "text",)], [])[:response] == Dict("input-two" => Dict(:type => "text",
+                                                                            :placeholder => "text ??"))
 
 end
 @testset "callback! checks" begin
