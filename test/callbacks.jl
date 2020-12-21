@@ -121,6 +121,31 @@ end
     @test app.callbacks[Symbol("my-div.children")].func("value", " value2") == "value value2"
 
 end
+@testset "callback! multi output same component id" begin
+    app = dash()
+    app.layout = html_div() do
+            dcc_input(id = "input-one",
+                      placeholder = "text or number?")
+            dcc_input(id = "input-two",
+                      placeholder = "")
+        end
+    callback!(app, Output("input-two","placeholder"), Output("input-two","type"),
+                   Input("input-one","value")) do val1
+        if val1 in ["text", "number"]
+            return "$val1 ??", val1
+        end
+        return "invalid", nothing
+    end
+    @test length(app.callbacks) == 1
+    @test haskey(app.callbacks, Symbol("..input-two.placeholder...input-two.type.."))
+    @test app.callbacks[Symbol("..input-two.placeholder...input-two.type..")].func("text") == ("text ??", "text")
+    @test Dash.process_callback_call(app,
+            Symbol("..input-two.placeholder...input-two.type.."),
+            [(id = "input-two", property = "placeholder"),
+             (id = "input-two", property = "type")],
+            [(value = "text",)], [])[:response] == Dict("input-two" => Dict(:type => "text"))
+
+end
 @testset "callback! checks" begin
 
     app = dash()
