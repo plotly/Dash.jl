@@ -20,11 +20,16 @@ function _push_to_res!(res, value, out::Vector)
     _push_to_res!.(Ref(res), value, out)
 end
 function _push_to_res!(res, value, out)
-    !(value isa NoUpdate) && push!(res,
-            dep_id_string(out.id) => Dict(
-                Symbol(out.property) => DashBase.to_dash(value)
-            )
-        )
+    if !(value isa NoUpdate)
+        id = dep_id_string(out.id)
+        prop = Symbol(out.property)
+        dashval = DashBase.to_dash(value)
+        if haskey(res, id)
+            push!(res[id], prop => dashval)
+        else
+            push!(res, id => Dict{Symbol, Any}(prop => dashval))
+        end
+    end
 end
 
 _single_element_vect(e::T) where {T} = T[e]
