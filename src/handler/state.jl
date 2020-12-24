@@ -23,10 +23,12 @@ _dep_clientside_func(func::ClientsideFunction) = func
 _dep_clientside_func(func) = nothing
 function _dependencies_json(app::DashApp)
     result = map(values(app.callbacks)) do callback
-        (inputs = dependency_tuple.(callback.dependencies.input),
-        state = dependency_tuple.(callback.dependencies.state),
-        output = output_string(callback.dependencies),
-        clientside_function = _dep_clientside_func(callback.func)
+        (
+            inputs = dependency_tuple.(callback.dependencies.input),
+            state = dependency_tuple.(callback.dependencies.state),
+            output = output_string(callback.dependencies),
+            clientside_function = _dep_clientside_func(callback.func),
+            prevent_initial_call = callback.prevent_initial_call
         )
     end
     return JSON2.write(result)
@@ -52,7 +54,7 @@ make_reload_state(app::DashApp) = get_devsetting(app, :hot_reload) ? StateReload
 get_cache(state::HandlerState) = state.cache
 
 function rebuild_cache!(state::HandlerState)
-    cache = get_cache(state) 
+    cache = get_cache(state)
     (cache.resources, cache.index_string, cache.dependencies_json) = _cache_tuple(state.app, state.registry)
     cache.need_recache = false
 end
