@@ -1,4 +1,3 @@
-
 """
     run_server(app::DashApp, host = HTTP.Sockets.localhost, port = 8050; debug::Bool = false)
 
@@ -22,7 +21,9 @@ julia> run_server(handler,  HTTP.Sockets.localhost, 8050)
 ```
 
 """
-function run_server(app::DashApp, host = HTTP.Sockets.localhost, port = 8050;
+function run_server(app::DashApp,
+            host = dash_env("HOST", "127.0.0.1", prefix = ""),
+            port = dash_env(Int64, "PORT", 8050, prefix = "");
             debug = nothing,
             dev_tools_ui = nothing,
             dev_tools_props_check = nothing,
