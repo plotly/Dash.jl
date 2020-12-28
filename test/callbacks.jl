@@ -3,12 +3,102 @@ using Test
 using Dash
 
 
+@testset "callback! prevent_initial_call" begin
+    #============= default ===========#
+    app = dash()
+    app.layout = html_div() do
+            dcc_input(id = "my-id", value="initial value", type = "text"),
+            html_div(id = "my-div"),
+            html_div(id = "my-div2")
+        end
+
+    callback!(app, Output("my-div", "children"), Input("my-id", "value")) do value
+        return value
+    end
+    callback!(app, Output("my-div2", "children"), Input("my-id", "value")) do value
+        return value
+    end
+
+    handler = make_handler(app)
+    request = HTTP.Request("GET", "/_dash-dependencies")
+    resp = HTTP.handle(handler, request)
+    deps = JSON2.read(String(resp.body))
+    @test deps[1].prevent_initial_call == false
+    @test deps[2].prevent_initial_call == false
+
+    #============= manual on single callback ===========#
+    app = dash()
+    app.layout = html_div() do
+            dcc_input(id = "my-id", value="initial value", type = "text"),
+            html_div(id = "my-div"),
+            html_div(id = "my-div2")
+        end
+
+    callback!(app, Output("my-div", "children"), Input("my-id", "value"), prevent_initial_call = true) do value
+        return value
+    end
+    callback!(app, Output("my-div2", "children"), Input("my-id", "value")) do value
+        return value
+    end
+
+    handler = make_handler(app)
+    request = HTTP.Request("GET", "/_dash-dependencies")
+    resp = HTTP.handle(handler, request)
+    deps = JSON2.read(String(resp.body))
+    @test deps[1].prevent_initial_call == true
+    @test deps[2].prevent_initial_call == false
+
+    #============= prevent_initial_callbacks ===========#
+    app = dash(prevent_initial_callbacks = true)
+    app.layout = html_div() do
+            dcc_input(id = "my-id", value="initial value", type = "text"),
+            html_div(id = "my-div"),
+            html_div(id = "my-div2")
+        end
+
+    callback!(app, Output("my-div", "children"), Input("my-id", "value")) do value
+        return value
+    end
+    callback!(app, Output("my-div2", "children"), Input("my-id", "value")) do value
+        return value
+    end
+
+    handler = make_handler(app)
+    request = HTTP.Request("GET", "/_dash-dependencies")
+    resp = HTTP.handle(handler, request)
+    deps = JSON2.read(String(resp.body))
+    @test deps[1].prevent_initial_call == true
+    @test deps[2].prevent_initial_call == true
+
+    #============= prevent_initial_callbacks + manual ===========#
+    app = dash(prevent_initial_callbacks = true)
+    app.layout = html_div() do
+            dcc_input(id = "my-id", value="initial value", type = "text"),
+            html_div(id = "my-div"),
+            html_div(id = "my-div2")
+        end
+
+    callback!(app, Output("my-div", "children"), Input("my-id", "value")) do value
+        return value
+    end
+    callback!(app, Output("my-div2", "children"), Input("my-id", "value"), prevent_initial_call = false) do value
+        return value
+    end
+
+    handler = make_handler(app)
+    request = HTTP.Request("GET", "/_dash-dependencies")
+    resp = HTTP.handle(handler, request)
+    deps = JSON2.read(String(resp.body))
+    @test deps[1].prevent_initial_call == true
+    @test deps[2].prevent_initial_call == false
+
+end
 
 @testset "callback! single output" begin
     app = dash()
     app.layout = html_div() do
             dcc_input(id = "my-id", value="initial value", type = "text"),
-            html_div(id = "my-div")        
+            html_div(id = "my-div")
         end
 
     callback!(app, Output("my-div", "children"), Input("my-id", "value")) do value
@@ -37,7 +127,7 @@ using Dash
     response = HTTP.handle(handler, request)
     @test response.status == 200
     resp_obj = JSON2.read(String(response.body))
-    @test in(:multi, keys(resp_obj))    
+    @test in(:multi, keys(resp_obj))
     @test resp_obj.response.var"my-div".children == "test"
 
 end
@@ -47,7 +137,7 @@ end
     app.layout = html_div() do
             dcc_input(id = "my-id", value="initial value", type = "text"),
             html_div(id = "my-div"),
-            html_div(id = "my-div2")    
+            html_div(id = "my-div2")
         end
     callback!(app, [Output("my-div","children"), Output("my-div2","children")], Input("my-id","value"), State("my-id","type")) do value, state
         return value, state
@@ -70,7 +160,7 @@ end
     app.layout = html_div() do
             dcc_input(id = "my-id", value="initial value", type = "text"),
             html_div(id = "my-div"),
-            html_div(id = "my-div2")    
+            html_div(id = "my-div2")
         end
     callback!(app, [Output("my-div","children")], Input("my-id","value"), State("my-id","type")) do value, state
         return (value,)
@@ -95,7 +185,7 @@ end
             dcc_input(id = "my-id", value="initial value", type = "text"),
             dcc_input(id = "my-id2", value="initial value", type = "text"),
             html_div(id = "my-div"),
-            html_div(id = "my-div2")    
+            html_div(id = "my-div2")
         end
     callback!(app, Output("my-div","children"), Output("my-div2","children"),
                    Input("my-id","value"), Input("my-id", "value"), State("my-id","type")) do value, value2, state
@@ -110,7 +200,7 @@ end
             dcc_input(id = "my-id", value="initial value", type = "text"),
             dcc_input(id = "my-id2", value="initial value", type = "text"),
             html_div(id = "my-div"),
-            html_div(id = "my-div2")    
+            html_div(id = "my-div2")
         end
     callback!(app, Output("my-div","children"),
                    Input("my-id","value"), Input("my-id", "value")) do value, value2
@@ -150,13 +240,13 @@ end
 @testset "callback! checks" begin
 
     app = dash()
-     
+
     app.layout = html_div() do
             dcc_input(id = "my-id", value="initial value", type = "text"),
             html_div(id = "my-div"),
-            html_div(id = "my-div2")    
+            html_div(id = "my-div2")
         end
-    
+
     callback!(app, Output("my-div","children"), Input("my-id","value")) do value
         return value
     end
@@ -176,7 +266,7 @@ end
     end
 
     #output same as input
-    @test_throws ErrorException callback!(app, 
+    @test_throws ErrorException callback!(app,
         Output("my-id","value"),
         Input("my-id","value"),
         State("my-id","value")) do value
@@ -184,21 +274,21 @@ end
     end
 
     #output same as input
-    @test_throws ErrorException callback!(app, 
+    @test_throws ErrorException callback!(app,
         Output("my-id","value"),
         [Input("my-id","value"), Input("my-div","children")]) do value
         return "v_$(value)"
     end
 
     #output same as input
-    @test_throws ErrorException callback!(app, 
+    @test_throws ErrorException callback!(app,
         [Output("my-id","value"), Output("my-div","children")],
         Input("my-id","value")) do value
         return "v_$(value)"
     end
 
     #empty input
-    @test_throws ErrorException callback!(app, 
+    @test_throws ErrorException callback!(app,
         [Output("my-id","value"), Output("my-div","children")],
         Input[]) do value
         return "v_$(value)"
@@ -206,43 +296,43 @@ end
 
 
     #duplicated output
-    @test_throws ErrorException callback!(app, 
+    @test_throws ErrorException callback!(app,
         [Output("my-div","value"), Output("my-div","value")],
         Input("my-id","value")) do value
         return "v_$(value)"
     end
 
     app = dash()
-     
+
     app.layout = html_div() do
             dcc_input(id = "my-id", value="initial value", type = "text"),
             dcc_input(id = "my-id2", value="initial value", type = "text"),
             html_div(id = "my-div"),
-            html_div(id = "my-div2")    
+            html_div(id = "my-div2")
         end
-    #empty output 
-    @test_throws ErrorException callback!(app, 
+    #empty output
+    @test_throws ErrorException callback!(app,
         Input("my-id","value")) do value
         return "v_$(value)"
     end
-    #empty input 
-    @test_throws ErrorException callback!(app, 
+    #empty input
+    @test_throws ErrorException callback!(app,
         Output("my-div2", "children")) do value
         return "v_$(value)"
     end
 
-    #wrong args order 
-    @test_throws ErrorException callback!(app, 
+    #wrong args order
+    @test_throws ErrorException callback!(app,
         Input("my-id","value"), Output("my-div", "children")) do value
         return "v_$(value)"
     end
 
-    @test_throws ErrorException callback!(app, 
+    @test_throws ErrorException callback!(app,
         Output("my-div2", "children"), Input("my-id","value"), Output("my-div", "children")) do value
         return "v_$(value)"
     end
 
-    @test_throws ErrorException callback!(app, 
+    @test_throws ErrorException callback!(app,
         Output("my-div2", "children"), Input("my-id","value"), State("my-div", "children"), Input("my-id2", "value")) do value, value2
         return "v_$(value)"
     end
@@ -280,11 +370,11 @@ end
         inputs = [
             (id = (index=2, type="test"), property = "value", value = "test")
         ]
-    ) 
+    )
     test_json = JSON2.write(request)
     request = HTTP.Request("POST", "/_dash-update-component", [], Vector{UInt8}(test_json))
     response = HTTP.handle(handler, request)
-    
+
     @test response.status == 200
     resp_obj = JSON2.read(String(response.body))
     @test in(:multi, keys(resp_obj))
@@ -325,7 +415,7 @@ end
            [
                 (id = (index=1, type="test-out"), property = "children"),
                 (id = (index=2, type="test-out"), property = "children")
-            ]            
+            ]
         ],
         changedPropIds = [changed_key],
         inputs = [
@@ -334,14 +424,14 @@ end
                 (id = (index=2, type="test"), property = "value", value = "test")
             ]
         ]
-    ) 
+    )
     test_json = JSON2.write(request)
     request = HTTP.Request("POST", "/_dash-update-component", [], Vector{UInt8}(test_json))
     response = HTTP.handle(handler, request)
     @test response.status == 200
     resp_obj = JSON2.read(String(response.body))
     @test in(:multi, keys(resp_obj))
-    
+
     @test resp_obj.response.var"{\"index\":1,\"type\":\"test-out\"}".children =="test 1"
     @test resp_obj.response.var"{\"index\":2,\"type\":\"test-out\"}".children =="test"
 
@@ -361,14 +451,14 @@ end
     callback!(app, [Output("b", "children")], Input("a", "children")) do a
         return (1,2)
     end
-    
+
     #invalid number of outputs
     @test_throws Dash.InvalidCallbackReturnValue Dash.process_callback_call(app, :var"..b.children..", [(id = "b", property = "children")], [(value = "aaa",)], [])
 
     callback!(app, Output("c", "children"), Output("d", "children"), Input("a", "children")) do a
         return 1
     end
-    #result not array    
+    #result not array
     @test_throws Dash.InvalidCallbackReturnValue Dash.process_callback_call(
             app, Symbol("..c.children...d.children.."),
             [(id = "b", property = "children")], [(value = "aaa",)], []
@@ -378,13 +468,13 @@ end
     app.layout = html_div() do
         html_div(id=(index = 1,)),
         html_div(id=(index = 2,)),
-        html_div(id=(index = 3,))        
+        html_div(id=(index = 3,))
     end
 
     callback!(app, Output((index = ALL,), "children"), Input((index = ALL,), "css")) do inputs
         return [1,2]
     end
-    
+
     #pattern-match output elements length not match to specs
     @test_throws Dash.InvalidCallbackReturnValue Dash.process_callback_call(
             app, Symbol("""{"index":["ALL"]}.children"""),
@@ -401,14 +491,14 @@ end
     app.layout = html_div() do
         html_div(id=(index = 1,)),
         html_div(id=(index = 2,)),
-        html_div(id=(index = 3,))        
+        html_div(id=(index = 3,))
     end
 
     callback!(app, Output((index = ALL,), "children"), Input((index = ALL,), "css")) do inputs
         return 1
     end
-    
-    #pattern-match output element not array 
+
+    #pattern-match output element not array
     @test_throws Dash.InvalidCallbackReturnValue Dash.process_callback_call(
             app, Symbol("""{"index":["ALL"]}.children"""),
             [[
@@ -426,7 +516,7 @@ end
     app = dash()
     app.layout = html_div() do
             dcc_input(id = "my-id", value="initial value", type = "text"),
-            html_div(id = "my-div")        
+            html_div(id = "my-div")
         end
 
     callback!(ClientsideFunction("namespace", "func_name"),app, Output("my-div","children"), Input("my-id","value"))
@@ -451,12 +541,12 @@ end
     @test :clientside_function in keys(cb)
     @test cb.clientside_function.namespace == "namespace"
     @test cb.clientside_function.function_name == "func_name"
-end 
+end
 @testset "clientside callbacks string" begin
     app = dash()
     app.layout = html_div() do
             dcc_input(id = "my-id", value="initial value", type = "text"),
-            html_div(id = "my-div")        
+            html_div(id = "my-div")
         end
 
     callback!(
@@ -471,7 +561,7 @@ end
         Output("my-div", "children"),
         Input("my-id", "value")
         )
-    
+
     @test length(app.callbacks) == 1
     @test haskey(app.callbacks, Symbol("my-div.children"))
     @test app.callbacks[Symbol("my-div.children")].func isa ClientsideFunction

@@ -265,6 +265,15 @@ If a parameter can be set by an environment variable, that is listed as:
         if your layout is dynamic, to bypass these checks.
         env: `DASH_SUPPRESS_CALLBACK_EXCEPTIONS`
 
+- `prevent_initial_callbacks::Bool`: Default ``false``: Sets the default value
+        of ``prevent_initial_call`` for all callbacks added to the app.
+        Normally all callbacks are fired when the associated outputs are first
+        added to the page. You can disable this for individual callbacks by
+        setting ``prevent_initial_call`` in their definitions, or set it
+        ``true`` here in which case you must explicitly set it ``false`` for
+        those callbacks you wish to have an initial call. This setting has no
+        effect on triggering callbacks when their inputs change later on.
+
 - `show_undo_redo::Bool`: Default ``false``, set to ``true`` to enable undo
         and redo buttons for stepping through the history of the app state.
 
@@ -283,6 +292,7 @@ function dash(;
         assets_ignore = "",
         serve_locally = true,
         suppress_callback_exceptions = dash_env(Bool, "suppress_callback_exceptions", false),
+        prevent_initial_callbacks = false,
         eager_loading = false,
         meta_tags = Dict{Symbol, String}[],
         index_string = default_index,
@@ -307,6 +317,7 @@ function dash(;
             assets_ignore,
             serve_locally,
             suppress_callback_exceptions,
+            prevent_initial_callbacks,
             eager_loading,
             meta_tags,
             assets_external_path,
