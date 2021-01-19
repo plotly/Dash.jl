@@ -6,7 +6,7 @@
 
 ## Project Status
 
-The core Dash component libraries have been submitted to the Julia package registry; upon their acceptance, `Dash.jl` will be submitted. The initial release of `Dash.jl` is anticipated in September 2020. A Julia version of the Dash Tutorial is currently in preparation, and will be available online soon. As of v1.15.0 of Dash, Julia components can be generated in tandem with Python and R components. Interested in getting involved with the project? Sponsorship is a great way to accelerate the progress of open source projects like this one; please feel free to [reach out to us](https://plotly.com/consulting-and-oem/)!
+As of v1.15.0 of Dash, Julia components can be generated in tandem with Python and R components. Interested in getting involved with the project? Sponsorship is a great way to accelerate the progress of open source projects like this one; please feel free to [reach out to us](https://plotly.com/consulting-and-oem/)! Just getting started? Check out the [Dash for Julia User Guide](https://dash-julia.plotly.com/)!
 
 #### Create beautiful, analytic applications in Julia
 
