@@ -57,5 +57,4 @@ workflows:
   version: 2
   build:
     jobs:
-      - "test":
-          context: dash-docker-hub
+      - "test"
