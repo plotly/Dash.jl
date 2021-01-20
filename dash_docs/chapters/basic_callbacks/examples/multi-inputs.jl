@@ -80,7 +80,7 @@ callback!(
         ),
         kind = "scatter",
         text = df2f[
-            df2f[Symbol("Indicator Name")] .== yaxis_column_name,
+            df2f[!, Symbol("Indicator Name")] .== yaxis_column_name,
             Symbol("Country Name"),
         ],
         mode = "markers",
