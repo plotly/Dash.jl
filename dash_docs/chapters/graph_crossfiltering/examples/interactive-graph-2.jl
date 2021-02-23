@@ -105,8 +105,8 @@ callback!(
     df6f = df6[df6.year .== year_slider_value, :]
 
     return Plot(
-        df6f[df6f[Symbol("Indicator Name")] .== xaxis_column_name, :Value],
-        df6f[df6f[Symbol("Indicator Name")] .== yaxis_column_name, :Value],
+        df6f[df6f[!, Symbol("Indicator Name")] .== xaxis_column_name, :Value],
+        df6f[df6f[!, Symbol("Indicator Name")] .== yaxis_column_name, :Value],
         Layout(
             xaxis_type = xaxis_type == "Linear" ? "linear" : "log",
             xaxis_title = xaxis_column_name,
@@ -117,11 +117,11 @@ callback!(
         ),
         kind = "scatter",
         text = df6f[
-            df6f[Symbol("Indicator Name")] .== yaxis_column_name,
+            df6f[!, Symbol("Indicator Name")] .== yaxis_column_name,
             Symbol("Country Name"),
         ],
         customdata = df6f[
-            df6f[Symbol("Indicator Name")] .== yaxis_column_name,
+            df6f[!, Symbol("Indicator Name")] .== yaxis_column_name,
             Symbol("Country Name"),
         ],
         mode = "markers",
