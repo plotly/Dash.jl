@@ -5,12 +5,12 @@ end
 
 function app_root_path()
     prog_path = program_path()
-    
+
     return isnothing(prog_path) ? pwd() : prog_path
 end
 
 function pathname_configs(url_base_pathname, requests_pathname_prefix, routes_pathname_prefix)
-    
+
     raise_error = (s) -> error("""
     $s This is ambiguous.
     To fix this, set `routes_pathname_prefix` instead of `url_base_pathname`.
@@ -42,8 +42,13 @@ function pathname_configs(url_base_pathname, requests_pathname_prefix, routes_pa
 
     !startswith(routes_pathname_prefix, "/") && error("routes_pathname_prefix` needs to start with `/`")
     !endswith(routes_pathname_prefix, "/") && error("routes_pathname_prefix` needs to end with `/`")
-    
-    if isnothing(requests_pathname_prefix)
+
+    app_name = dash_env("APP_NAME")
+
+
+    if isnothing(requests_pathname_prefix) && !isnothing(app_name)
+        requests_pathname_prefix = "/" * app_name * routes_pathname_prefix
+    elseif isnothing(requests_pathname_prefix)
         requests_pathname_prefix = routes_pathname_prefix
     end
 
@@ -51,6 +56,6 @@ function pathname_configs(url_base_pathname, requests_pathname_prefix, routes_pa
              error("requests_pathname_prefix` needs to start with `/`")
     !endswith(requests_pathname_prefix, routes_pathname_prefix) &&
              error("requests_pathname_prefix` needs to end with `routes_pathname_prefix`")
-    
+
     return (url_base_pathname, requests_pathname_prefix, routes_pathname_prefix)
 end
