@@ -6,11 +6,12 @@ struct DashConfig
     routes_pathname_prefix ::String
     assets_folder ::String
     assets_url_path ::String
-    assets_ignore ::String    
+    assets_ignore ::String
     serve_locally ::Bool
     suppress_callback_exceptions ::Bool
+    prevent_initial_callbacks ::Bool
     eager_loading ::Bool
-    meta_tags ::Vector{Dict{String, String}} 
+    meta_tags ::Vector{Dict{String, String}}
     assets_external_path ::Union{String, Nothing}
     include_assets_files ::Bool
     show_undo_redo ::Bool

@@ -6,18 +6,18 @@ using Dash
     app = dash()
     @test app.root_path == pwd()
     @test isempty(app.config.external_stylesheets)
-    @test isempty(app.config.external_scripts) 
+    @test isempty(app.config.external_scripts)
     @test app.config.requests_pathname_prefix == "/"
     @test app.config.routes_pathname_prefix == "/"
     @test app.config.assets_folder == "assets"
     @test app.config.assets_url_path == "assets"
     @test app.config.assets_ignore == ""
-    
+
     @test app.config.serve_locally == true
     @test app.config.suppress_callback_exceptions == false
     @test app.config.eager_loading == false
-    
-    @test isempty(app.config.meta_tags) 
+
+    @test isempty(app.config.meta_tags)
     @test app.index_string == Dash.default_index
     @test app.config.assets_external_path == nothing
 
@@ -33,8 +33,8 @@ end
     @test app.config.external_stylesheets == [
         Dict("url" => "https://test.css", "integrity" => "integrity")
         ]
-    
-    app = dash(; external_scripts = ["http://test.js"]) 
+
+    app = dash(; external_scripts = ["http://test.js"])
     @test app.config.external_scripts == ["http://test.js"]
 
     app = dash(; external_scripts=[Dict("url" => "https://test.js", "integrity" => "integrity")])
@@ -42,7 +42,7 @@ end
         Dict("url" => "https://test.js", "integrity" => "integrity")
         ]
 
-    app = dash(; url_base_pathname = "/base/") 
+    app = dash(; url_base_pathname = "/base/")
     @test app.config.url_base_pathname == "/base/"
     @test app.config.requests_pathname_prefix == "/base/"
     @test app.config.routes_pathname_prefix == "/base/"
@@ -56,7 +56,7 @@ end
     @test app.config.routes_pathname_prefix == "/prefix/"
 
     app = dash(; requests_pathname_prefix = "/reg/prefix/", routes_pathname_prefix = "/prefix/")
-    
+
     @test app.config.requests_pathname_prefix == "/reg/prefix/"
     @test app.config.routes_pathname_prefix == "/prefix/"
 
@@ -68,16 +68,16 @@ end
     @test_throws ErrorException app = dash(; requests_pathname_prefix = "prefix/")
     @test_throws ErrorException app = dash(; routes_pathname_prefix = "prefix/")
     @test_throws ErrorException app = dash(; requests_pathname_prefix = "/reg/prefix/", routes_pathname_prefix = "/ix/")
-    
 
-    app = dash(; assets_folder = "images") 
+
+    app = dash(; assets_folder = "images")
     @test app.config.assets_folder == "images"
 
-    app = dash(; assets_url_path = "/images") 
+    app = dash(; assets_url_path = "/images")
     @test app.config.assets_url_path == "images"
 
     app = dash(; assets_ignore = "ignore")
-    @test app.config.assets_ignore == "ignore"    
+    @test app.config.assets_ignore == "ignore"
 
     app = dash(; serve_locally = false)
     @test app.config.serve_locally == false
@@ -103,5 +103,9 @@ end
 
     app = dash(; show_undo_redo = false)
     @test app.config.show_undo_redo == false
-    
+
+    @test app.config.prevent_initial_callbacks == false
+    app = dash(; prevent_initial_callbacks = true)
+    @test app.config.prevent_initial_callbacks == true
+
 end
