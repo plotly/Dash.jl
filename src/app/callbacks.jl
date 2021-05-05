@@ -1,11 +1,11 @@
 dependency_id_string(id::NamedTuple) = sorted_json(id)
 dependency_id_string(id::String) = sorted_json(id)
 
-function dependency_string(dep::Dependency{Trait, String}) where {Trait} 
+function dependency_string(dep::Dependency{Trait, String}) where {Trait}
     return "$(dep.id).$(dep.property)"
 end
 
-function dependency_string(dep::Dependency{Trait, <:NamedTuple}) where {Trait} 
+function dependency_string(dep::Dependency{Trait, <:NamedTuple}) where {Trait}
     id_str = replace(
         sorted_json(dep.id),
         "."=>"\\."
@@ -33,7 +33,7 @@ end
         state::Union{Vector{State}, State} = []
         )
 
-Create a callback that updates the output by calling function `func`. 
+Create a callback that updates the output by calling function `func`.
 
 # Examples
 
@@ -59,9 +59,10 @@ function callback!(func::Union{Function, ClientsideFunction, String},
      app::DashApp,
      output::Union{Vector{<:Output}, Output},
      input::Union{Vector{<:Input}, Input},
-     state::Union{Vector{<:State}, State} = State[]
+     state::Union{Vector{<:State}, State} = State[];
+     prevent_initial_call = nothing
      )
-     return _callback!(func, app, CallbackDeps(output, input, state))
+     return _callback!(func, app, CallbackDeps(output, input, state), prevent_initial_call = prevent_initial_call)
 end
 
 """
@@ -70,7 +71,7 @@ end
         deps...
         )
 
-Create a callback that updates the output by calling function `func`. 
+Create a callback that updates the output by calling function `func`.
 "Flat" version of `callback!` function, `deps` must be ``Output..., Input...[,State...]``
 
 # Examples
@@ -85,7 +86,7 @@ app = dash() do
 
     end
 end
-callback!(app, 
+callback!(app,
     Output("outputID2", "children"),
     Output("outputID", "children"),
     Input("graphTitle", "value"),
@@ -97,13 +98,14 @@ end
 """
 function callback!(func::Union{Function, ClientsideFunction, String},
      app::DashApp,
-     deps::Dependency...
+     deps::Dependency...;
+     prevent_initial_call = nothing
      )
      output = Output[]
      input = Input[]
      state = State[]
      _process_callback_args(deps, (output, input, state))
-     return _callback!(func, app, CallbackDeps(output, input, state, length(output) > 1))
+     return _callback!(func, app, CallbackDeps(output, input, state, length(output) > 1), prevent_initial_call = prevent_initial_call)
 end
 
 function _process_callback_args(args::Tuple{T, Vararg}, dest::Tuple{Vector{T}, Vararg}) where {T}
@@ -115,20 +117,29 @@ end
 function _process_callback_args(args::Tuple, dest::Tuple{Vector{T}, Vararg}) where {T}
     _process_callback_args(args, Base.tail(dest))
 end
-function _process_callback_args(args::Tuple, dest::Tuple{}) 
+function _process_callback_args(args::Tuple, dest::Tuple{})
     error("The callback method must received first all Outputs, then all Inputs, then all States")
 end
-function _process_callback_args(args::Tuple{}, dest::Tuple{}) 
+function _process_callback_args(args::Tuple{}, dest::Tuple{})
 end
 
 
-function _callback!(func::Union{Function, ClientsideFunction, String}, app::DashApp, deps::CallbackDeps)    
-    
+function _callback!(func::Union{Function, ClientsideFunction, String}, app::DashApp, deps::CallbackDeps; prevent_initial_call)
+
     check_callback(func, app, deps)
-    
+
     out_symbol = Symbol(output_string(deps))
-    callback_func = make_callback_func!(app, func, deps)      
-    push!(app.callbacks, out_symbol => Callback(callback_func, deps))
+    callback_func = make_callback_func!(app, func, deps)
+    push!(
+        app.callbacks,
+        out_symbol => Callback(
+                callback_func,
+                deps,
+                isnothing(prevent_initial_call) ?
+                    get_setting(app, :prevent_initial_callbacks) :
+                    prevent_initial_call
+            )
+        )
 end
 
 

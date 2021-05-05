@@ -22,9 +22,9 @@ struct Dependency{Trait, IdT <: Union{String, NamedTuple}}
 end
 
 dep_id_string(dep::Dependency{Trait, String}) where {Trait} = dep.id
-dep_id_string(dep::Dependency{Trait, <:NamedTuple}) where {Trait} = sorted_json(dep.id)    
+dep_id_string(dep::Dependency{Trait, <:NamedTuple}) where {Trait} = sorted_json(dep.id)
 
-dependency_tuple(dep::Dependency) = (id = dep_id_string(dep), property = dep.property)    
+dependency_tuple(dep::Dependency) = (id = dep_id_string(dep), property = dep.property)
 
 const Input = Dependency{TraitInput}
 const State = Dependency{TraitState}
@@ -37,7 +37,7 @@ We use "==" to denote two deps that refer to the same prop on
 the same component. In the case of wildcard deps, this means
 the same prop on *at least one* of the same components.
 """
-function Base.:(==)(a::Dependency, b::Dependency) 
+function Base.:(==)(a::Dependency, b::Dependency)
     (a.property == b.property) && is_id_matches(a, b)
 end
 
@@ -59,7 +59,7 @@ end
 is_id_matches(a::Dependency{Trait1, String}, b::Dependency{Trait2, String}) where {Trait1, Trait2} = a.id == b.id
 is_id_matches(a::Dependency{Trait1, String}, b::Dependency{Trait2, <:NamedTuple}) where {Trait1, Trait2} = false
 is_id_matches(a::Dependency{Trait1, <:NamedTuple}, b::Dependency{Trait2, String}) where {Trait1, Trait2} = false
-function is_id_matches(a::Dependency{Trait1, <:NamedTuple}, b::Dependency{Trait2, <:NamedTuple}) where {Trait1, Trait2} 
+function is_id_matches(a::Dependency{Trait1, <:NamedTuple}, b::Dependency{Trait2, <:NamedTuple}) where {Trait1, Trait2}
     (Set(keys(a.id)) != Set(keys(b.id))) && return false
 
     for key in keys(a.id)
@@ -70,12 +70,12 @@ function is_id_matches(a::Dependency{Trait1, <:NamedTuple}, b::Dependency{Trait2
 
         a_wild = is_wild(a_value)
         b_wild = is_wild(b_value)
-        
+
         (!a_wild && !b_wild) && return false #Both not wild
-        !(a_wild && b_wild) && continue #One wild, one not 
+        !(a_wild && b_wild) && continue #One wild, one not
         ((a_value == ALL) || (b_value == ALL)) && continue #at least one is ALL
         ((a_value == MATCH) || (b_value == MATCH)) && return false #one is MATCH and one is ALLSMALLER
-        
+
     end
     return true
 end
@@ -100,6 +100,7 @@ end
 struct Callback
     func ::Union{Function, ClientsideFunction}
     dependencies ::CallbackDeps
+    prevent_initial_call ::Bool
 end
 
 is_multi_out(cb::Callback) = cb.dependencies.multi_out == true
@@ -108,7 +109,7 @@ get_output(cb::Callback, i) = cb.dependencies.output[i]
 first_output(cb::Callback) = first(cb.dependencies.output)
 
 struct PreventUpdate <: Exception
-    
+
 end
 
 
