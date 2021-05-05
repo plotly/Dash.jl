@@ -1,10 +1,10 @@
-struct Resource       
+struct Resource
     relative_package_path::Union{Nothing, Vector{String}}
     dev_package_path::Union{Nothing, Vector{String}}
     external_url::Union{Nothing, Vector{String}}
-    type::Symbol 
+    type::Symbol
     async::Symbol # :none, :eager, :lazy May be we should use enum
-    function Resource(;relative_package_path, dev_package_path = nothing, external_url = nothing, type = :js, dynamic = nothing, async=nothing) 
+    function Resource(;relative_package_path, dev_package_path = nothing, external_url = nothing, type = :js, dynamic = nothing, async=nothing)
         (!isnothing(dynamic) && !isnothing(async)) && throw(ArgumentError("Can't have both 'dynamic' and 'async'"))
         !in(type, [:js, :css]) &&  throw(ArgumentError("type must be `:js` or `:css`"))
         async_symbol = :none
@@ -35,14 +35,14 @@ isdynamic(resource::Resource, eager_loading::Bool) = resource.async == :lazy || 
 struct ResourcePkg
     namespace ::String
     path ::String
-    resources ::Vector{Resource}    
+    resources ::Vector{Resource}
     version ::String
     ResourcePkg(namespace, path, resources = Resource[]; version = "")  = new(namespace, path, resources, version)
 end
 
 
 
-struct ResourcesRegistry    
+struct ResourcesRegistry
     dash_dependency ::NamedTuple{(:dev, :prod), Tuple{ResourcePkg,ResourcePkg}}
     dash_renderer ::ResourcePkg
     components ::Dict{String, ResourcePkg}
@@ -68,14 +68,14 @@ const resources_registry = ResourcesRegistry(
     dash_dependency = (
         dev = ResourcePkg(
             "dash_renderer",
-            RESOURCE_PATH, version = "1.5.0",
+            RESOURCE_PATH, version = "1.9.1",
             [
                 Resource(
-                relative_package_path = "react@16.13.0.js",
-                external_url = "https://unpkg.com/react@16.13.0/umd/react.development.js"
+                relative_package_path = "react@16.14.0.js",
+                external_url = "https://unpkg.com/react@16.14.0/umd/react.development.js"
                 ),
                 Resource(
-                    relative_package_path = "react-dom@16.13.0.js",
+                    relative_package_path = "react-dom@16.14.0.js",
                     external_url = "https://unpkg.com/react-dom@16.13.0/umd/react-dom.development.js"
                 ),
                 Resource(
@@ -93,12 +93,12 @@ const resources_registry = ResourcesRegistry(
             RESOURCE_PATH, version = "1.2.2",
             [
                 Resource(
-                relative_package_path = "react@16.13.0.min.js",
-                external_url = "https://unpkg.com/react@16.13.0/umd/react.production.min.js"
+                relative_package_path = "react@16.14.0.min.js",
+                external_url = "https://unpkg.com/react@16.14.0/umd/react.production.min.js"
                 ),
                 Resource(
-                    relative_package_path = "react-dom@16.13.0.min.js",
-                    external_url = "https://unpkg.com/react-dom@16.13.0/umd/react-dom.production.min.js"
+                    relative_package_path = "react-dom@16.14.0.min.js",
+                    external_url = "https://unpkg.com/react-dom@16.14.0/umd/react-dom.production.min.js"
                 ),
                 Resource(
                     relative_package_path = "polyfill@7.8.7.min.js",
@@ -109,24 +109,24 @@ const resources_registry = ResourcesRegistry(
                     external_url = "https://unpkg.com/prop-types@15.7.2/prop-types.min.js"
                 ),
             ]
-        ) 
+        )
     ),
     dash_renderer = ResourcePkg(
         "dash_renderer",
-        RESOURCE_PATH, version = "1.5.0",
+        RESOURCE_PATH, version = "1.9.1",
         [
             Resource(
                 relative_package_path = "dash_renderer.min.js",
                 dev_package_path = "dash_renderer.dev.js",
-                external_url = "https://unpkg.com/dash-renderer@1.5.0/dash_renderer/dash_renderer.min.js"                
+                external_url = "https://unpkg.com/dash-renderer@1.9.1/dash_renderer/dash_renderer.min.js"
             ),
             Resource(
                 relative_package_path = "dash_renderer.min.js.map",
-                dev_package_path = "dash_renderer.dev.js.map",                
-                dynamic = true,                
-            ),            
+                dev_package_path = "dash_renderer.dev.js.map",
+                dynamic = true,
+            ),
         ]
-    )    
+    )
 )
 
 register_package(pkg::ResourcePkg) = register_package!(resources_registry, pkg)
