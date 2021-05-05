@@ -84,7 +84,8 @@ function config_html(app::DashApp)
         :ui => get_devsetting(app, :ui),
         :props_check => get_devsetting(app, :props_check),
         :show_undo_redo => get_setting(app, :show_undo_redo),
-        :suppress_callback_exceptions => get_setting(app, :suppress_callback_exceptions)
+        :suppress_callback_exceptions => get_setting(app, :suppress_callback_exceptions),
+        :update_title => get_setting(app, :update_title)
     )
     if get_devsetting(app, :hot_reload)
         config[:hot_reload] = (
