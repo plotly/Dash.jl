@@ -74,12 +74,12 @@ function __init__()
             RESOURCE_PATH, version = "1.5.0",
             [
                 Resource(
-                relative_package_path = "react@16.13.0.js",
-                external_url = "https://unpkg.com/react@16.13.0/umd/react.development.js"
+                relative_package_path = "react@16.14.0.js",
+                external_url = "https://unpkg.com/react@16.14.0/umd/react.development.js"
                 ),
                 Resource(
-                    relative_package_path = "react-dom@16.13.0.js",
-                    external_url = "https://unpkg.com/react-dom@16.13.0/umd/react-dom.development.js"
+                    relative_package_path = "react-dom@16.14.0.js",
+                    external_url = "https://unpkg.com/react-dom@16.14.0/umd/react-dom.development.js"
                 ),
                 Resource(
                     relative_package_path = "polyfill@7.8.7.min.js",
@@ -96,12 +96,12 @@ function __init__()
             RESOURCE_PATH, version = "1.2.2",
             [
                 Resource(
-                relative_package_path = "react@16.13.0.min.js",
-                external_url = "https://unpkg.com/react@16.13.0/umd/react.production.min.js"
+                relative_package_path = "react@16.14.0.min.js",
+                external_url = "https://unpkg.com/react@16.14.0/umd/react.production.min.js"
                 ),
                 Resource(
-                    relative_package_path = "react-dom@16.13.0.min.js",
-                    external_url = "https://unpkg.com/react-dom@16.13.0/umd/react-dom.production.min.js"
+                    relative_package_path = "react-dom@16.14.0.min.js",
+                    external_url = "https://unpkg.com/react-dom@16.14.0/umd/react-dom.production.min.js"
                 ),
                 Resource(
                     relative_package_path = "polyfill@7.8.7.min.js",
