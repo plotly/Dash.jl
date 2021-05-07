@@ -16,4 +16,5 @@ struct DashConfig
     include_assets_files ::Bool
     show_undo_redo ::Bool
     compress ::Bool
+    update_title ::String
 end
