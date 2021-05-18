@@ -185,7 +185,8 @@ get_assets_path(app::DashApp) = joinpath(app.root_path, get_setting(app, :assets
             assets_external_path,
             include_assets_files,
             show_undo_redo,
-            compress
+            compress,
+            update_title
         )
 
 Dash is a framework for building analytical web applications. No JavaScript required.
@@ -280,6 +281,12 @@ If a parameter can be set by an environment variable, that is listed as:
 - `compress::Bool`: Default ``true``, controls whether gzip is used to compress
         files and data served by HTTP.jl when supported by the client. Set to
         ``false`` to disable compression completely.
+
+- `update_title::String`: Default ``Updating...``. Configures the document.title
+        (the text that appears in a browser tab) text when a callback is being run.
+        Set to '' if you don't want the document.title to change or if you
+        want to control the document.title through a separate component or
+        clientside callback.
 """
 function dash(;
         external_stylesheets = ExternalSrcType[],
@@ -299,7 +306,8 @@ function dash(;
         assets_external_path = dash_env("assets_external_path"),
         include_assets_files = dash_env(Bool, "include_assets_files", true),
         show_undo_redo = false,
-        compress = true
+        compress = true,
+        update_title = "Updating..."
 
     )
 
@@ -323,7 +331,8 @@ function dash(;
             assets_external_path,
             include_assets_files,
             show_undo_redo,
-            compress
+            compress,
+            update_title
         )
         result = DashApp(app_root_path(), isinteractive(), config, index_string)
     return result
