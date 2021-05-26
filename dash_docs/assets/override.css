@@ -311,6 +311,10 @@ a.logo-link img {
   margin-bottom: 20px;
 }
 
+.fixed-height-example{
+    height: 200px;
+}
+
 .example-container h1,
 .example-container h2,
 .example-container h3,
