@@ -1,6 +1,4 @@
 using Dash
-using DashHtmlComponents
-using DashCoreComponents
 
 app = dash(assets_folder="hr_assets")
 app.index_string = """<!DOCTYPE html>

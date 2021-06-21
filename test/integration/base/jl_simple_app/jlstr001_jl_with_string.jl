@@ -1,5 +1,4 @@
 using Dash
-using DashHtmlComponents
 
 app = dash()
 

@@ -1,0 +1,12 @@
+[deps]
+Conda = "8f4d0f93-b110-5947-807f-2305c1781a2d"
+GitHub = "bc5e4493-9b4d-5f90-b8aa-2b2bcaad7a26"
+HTTP = "cd3eb016-35fb-5094-929b-558a96fad6f3"
+JSON = "682c06a0-de6a-54ab-a142-c8b1cf79cde6"
+JSON3 = "0f8b85d8-7281-11e9-16c2-39a750bddbf1"
+LibGit2 = "76f85450-5226-5b5a-8eaa-529ad045b433"
+Pkg = "44cfe95a-1eb2-52ea-b672-e2afdf69b78f"
+ProgressMeter = "92933f4c-e287-5a05-a399-4b506db050ca"
+Tar = "a4e569a6-e804-4fa4-b0f3-eef7a1d5b13e"
+YAML = "ddb6d928-2868-570f-bddf-ab3f9cf99eb6"
+ghr_jll = "07c12ed4-43bc-5495-8a2a-d5838ef8d533"

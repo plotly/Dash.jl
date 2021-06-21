@@ -1,6 +1,4 @@
 using Dash
-using DashHtmlComponents
-using DashCoreComponents
 
 app = dash()
 
@@ -14,7 +12,7 @@ callback!(app, Output("output-serverside","children"), Input("input","value")) d
     return "Server says \"$(value)\""
 end
 
-callback!( 
+callback!(
     """
     function (value) {
         return 'Client says "' + value + '"';

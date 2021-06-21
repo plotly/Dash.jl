@@ -1,6 +1,4 @@
 using Dash
-using DashHtmlComponents
-using DashCoreComponents
 
 app = dash()
 
@@ -12,9 +10,9 @@ app.layout = html_div() do
     dcc_input(id="output-4")
 end
 
-callback!( 
+callback!(
     ClientsideFunction("clientside", "add_to_four_outputs"),
-    app, 
+    app,
     Output("output-1","value"), Output("output-2","value"), Output("output-3","value"), Output("output-4","value"),
     Input("input","value")
     )

@@ -1,6 +1,4 @@
 using Dash
-using DashHtmlComponents
-using DashCoreComponents
 
 app = dash()
 
@@ -10,9 +8,9 @@ app.layout = html_div() do
     dcc_input(id="third", value = 1)
 end
 
-callback!( 
+callback!(
     ClientsideFunction("clientside", "add1_no_update_at_11"),
-    app, [Output("second","value"), Output("third","value")], Input("first","value"), 
+    app, [Output("second","value"), Output("third","value")], Input("first","value"),
     [State("second","value"), State("third","value")]
     )
 

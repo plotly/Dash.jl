@@ -1,6 +1,4 @@
 using Dash
-using DashHtmlComponents
-using DashCoreComponents
 
 app = dash()
 
@@ -21,27 +19,27 @@ app.layout = html_div() do
     dcc_input(id="mean-of-all-values")
 end
 
-callback!( 
+callback!(
     ClientsideFunction("clientside", "add"),
     app,
     Output("x-plus-y", "value"),
     [Input("x","value"), Input("y","value")]
-    ) 
+    )
 
 callback!(app, Output("x-plus-y-div-2", "value"), Input("x-plus-y", "value")) do value
     return Float64(value) / 2.
 end
 
-callback!(app, 
+callback!(app,
         Output("display-all-of-the-values", "value"),
         [Input("x","value"), Input("y","value"), Input("x-plus-y","value"), Input("x-plus-y-div-2","value")]
         ) do args...
     return join(string.(args), "\n")
 end
 
-callback!( 
+callback!(
     ClientsideFunction("clientside", "mean"),
-    app, 
+    app,
     Output("mean-of-all-values","value"),
     [Input("x","value"), Input("y","value"), Input("x-plus-y","value"), Input("x-plus-y-div-2","value")]
 )

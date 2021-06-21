@@ -1,7 +1,5 @@
 
 using Dash
-using DashHtmlComponents
-using DashCoreComponents
 
 app = dash()
 
@@ -12,7 +10,7 @@ app.layout = html_div() do
             (label="prevent", value="prevent"),
             (label="no_update1", value="no_update1"),
             (label="no_update2", value="no_update2"),
-        ] 
+        ]
     ),
     html_div(id="output1"),
     html_div(id="output2"),

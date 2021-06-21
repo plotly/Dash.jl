@@ -1,0 +1,24 @@
+[deploy]
+    repo = "waralex/DashCoreResources"
+[dash]
+    url = "https://github.com/plotly/dash.git"
+    tag = "v1.20.0"
+[dash_renderer]
+    module = "dash_renderer"
+    resources_path = "."
+[components]
+    [components.dash_html_components]
+        module = "dash_html_components"
+        prefix = "html"
+        resources_path = "."
+        metadata_file = "metadata.json"
+    [components.dash_core_components]
+        module = "dash_core_components"
+        prefix = "dcc"
+        resources_path = "."
+        metadata_file = "metadata.json"
+    [components.dash_table]
+        module = "dash_table"
+        prefix = "dash"
+        resources_path = "."
+        metadata_file = "metadata.json"
