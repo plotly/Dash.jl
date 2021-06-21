@@ -30,7 +30,7 @@ dash_module_resource_pkg(meta; resource_path, version) = ResourcePkg(
 )
 
 function setup_renderer_resources()
-    renderer_meta = load_meta("dash_renderer")
+    renderer_meta = _metadata.dash_renderer
     renderer_resource_path = joinpath(artifact"dash_resources", "dash_renderer_deps")
     DashBase.main_registry().dash_dependency = (
         dev = ResourcePkg(
@@ -52,8 +52,21 @@ function setup_renderer_resources()
             )
 end
 
-function setup_module_resources(name)
-    meta = load_meta(name)
+function load_all_metadata()
+    dash_meta = load_meta("dash")
+    renderer_meta = load_meta("dash_renderer")
+    components = Dict{Symbol, Any}()
+    for comp in dash_meta["embedded_components"]
+        components[Symbol(comp)] = filter(v->v.first!="components", load_meta(comp))
+    end
+    return (
+        dash = dash_meta,
+        dash_renderer = renderer_meta,
+        embedded_components = (;components...)
+    )
+end
+
+function setup_module_resources(name, meta)
     path = deps_path(name)
     version = meta["version"]
     for dep in meta["deps"]
@@ -67,8 +80,8 @@ function setup_module_resources(name)
     end
 end
 function setup_embeded_components_resources()
-    dash_meta = load_meta("dash")
+    dash_meta = _metadata.dash
     for c in dash_meta["embedded_components"]
-        setup_module_resources(c)
+        setup_module_resources(c, _metadata.embedded_components[Symbol(c)])
     end
 end

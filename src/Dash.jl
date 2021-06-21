@@ -101,10 +101,10 @@ function build_info()
 end
 
 @place_embedded_components
-
+const _metadata = load_all_metadata()
 function __init__()
-    setup_renderer_resources()
-    setup_embeded_components_resources()
+   setup_renderer_resources()
+   setup_embeded_components_resources()
 end
 
 
