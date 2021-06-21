@@ -1,5 +1,4 @@
 using Dash
-using DashHtmlComponents
 
 app = dash(meta_tags = [Dict(["charset"=>"ISO-8859-1", "keywords"=>"dash,pleasant,productive", "http-equiv"=>"content-type", "content"=>"text/html"])])
 

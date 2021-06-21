@@ -2,6 +2,7 @@ module Dash
 using DashBase
 import HTTP, JSON2, CodecZlib, MD5
 using Sockets
+using Pkg.Artifacts
 const ROOT_PATH = realpath(joinpath(@__DIR__, ".."))
 const RESOURCE_PATH = realpath(joinpath(ROOT_PATH, "resources"))
 include("exceptions.jl")
@@ -24,6 +25,7 @@ include("app.jl")
 include("resources/application.jl")
 include("handlers.jl")
 include("server.jl")
+include("init.jl")
 
 @doc """
     module Dash
@@ -34,8 +36,6 @@ Julia backend for [Plotly Dash](https://github.com/plotly/dash)
 ```julia
 
 using Dash
-using DashHtmlComponents
-using DashCoreComponents
 app = dash(external_stylesheets=["https://codepen.io/chriddyp/pen/bWLwgP.css"]) do
     html_div() do
         dcc_input(id="graphTitle", value="Let's Dance!", type = "text"),
@@ -66,74 +66,48 @@ run_server(app, HTTP.Sockets.localhost, 8050)
 
 """ Dash
 
+struct ComponentsInfo
+    name::String
+    version::VersionNumber
+end
+struct BuildInfo
+    dash_vesion ::VersionNumber
+    dash_renderer_version::VersionNumber
+    embedded_components::Vector{ComponentsInfo}
+end
+
+function Base.show(io::IO, ::MIME"text/plain", info::BuildInfo)
+    println(io, "Based on python `dash` version: ", info.dash_vesion)
+    println(io, "\t`dash_renderer` version: ", info.dash_renderer_version)
+    println(io, "Embedded components:")
+    for comp in info.embedded_components
+        println(io, "\t - `", comp.name, "` : ", comp.version)
+    end
+end
+function build_info()
+    dash_meta = load_meta("dash")
+    renderer_meta = load_meta("dash_renderer")
+    embedded = Vector{ComponentsInfo}()
+    for name in dash_meta["embedded_components"]
+        meta = load_meta(name)
+        push!(embedded, ComponentsInfo(name, VersionNumber(meta["version"])))
+    end
+
+    return BuildInfo(
+            VersionNumber(dash_meta["version"]),
+            VersionNumber(renderer_meta["version"]),
+            embedded
+        )
+end
+
+@place_embedded_components
 
 function __init__()
-    DashBase.main_registry().dash_dependency = (
-        dev = ResourcePkg(
-            "dash_renderer",
-            RESOURCE_PATH, version = "1.5.0",
-            [
-                Resource(
-                relative_package_path = "react@16.14.0.js",
-                external_url = "https://unpkg.com/react@16.14.0/umd/react.development.js"
-                ),
-                Resource(
-                    relative_package_path = "react-dom@16.14.0.js",
-                    external_url = "https://unpkg.com/react-dom@16.14.0/umd/react-dom.development.js"
-                ),
-                Resource(
-                    relative_package_path = "polyfill@7.8.7.min.js",
-                    external_url = "https://unpkg.com/@babel/polyfill@7.8.7/dist/polyfill.min.js"
-                ),
-                Resource(
-                    relative_package_path = "prop-types@15.7.2.js",
-                    external_url = "https://unpkg.com/prop-types@15.7.2/prop-types.js",
-                ),
-            ]
-        ),
-        prod = ResourcePkg(
-            "dash_renderer",
-            RESOURCE_PATH, version = "1.2.2",
-            [
-                Resource(
-                relative_package_path = "react@16.14.0.min.js",
-                external_url = "https://unpkg.com/react@16.14.0/umd/react.production.min.js"
-                ),
-                Resource(
-                    relative_package_path = "react-dom@16.14.0.min.js",
-                    external_url = "https://unpkg.com/react-dom@16.14.0/umd/react-dom.production.min.js"
-                ),
-                Resource(
-                    relative_package_path = "polyfill@7.8.7.min.js",
-                    external_url = "https://unpkg.com/@babel/polyfill@7.8.7/dist/polyfill.min.js"
-                ),
-                Resource(
-                    relative_package_path = "prop-types@15.7.2.min.js",
-                    external_url = "https://unpkg.com/prop-types@15.7.2/prop-types.min.js"
-                ),
-            ]
-        )
-    )
-
-    DashBase.main_registry().dash_renderer = ResourcePkg(
-        "dash_renderer",
-        RESOURCE_PATH, version = "1.5.0",
-        [
-            Resource(
-                relative_package_path = "dash_renderer.min.js",
-                dev_package_path = "dash_renderer.dev.js",
-                external_url = "https://unpkg.com/dash-renderer@1.5.0/dash_renderer/dash_renderer.min.js"
-            ),
-            Resource(
-                relative_package_path = "dash_renderer.min.js.map",
-                dev_package_path = "dash_renderer.dev.js.map",
-                dynamic = true,
-            ),
-        ]
-    )
-
-
+    setup_renderer_resources()
+    setup_embeded_components_resources()
 end
+
+
 
 
 end # module

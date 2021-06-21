@@ -1,6 +1,5 @@
 using Dash
-using DashHtmlComponents
-using DashCoreComponents
+
 app = dash(assets_ignore=".*ignored.*")
 app.index_string = """<!DOCTYPE html>
 <html>

@@ -1,6 +1,4 @@
 using Dash
-using DashHtmlComponents
-using DashCoreComponents
 
 app = dash()
 app.layout = html_div(id="before-reload-content") do

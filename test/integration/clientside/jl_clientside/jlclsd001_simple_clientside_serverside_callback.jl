@@ -1,6 +1,4 @@
 using Dash
-using DashHtmlComponents
-using DashCoreComponents
 
 app = dash()
 
@@ -14,11 +12,11 @@ callback!(app, Output("output-serverside", "children"), Input("input","value")) 
     return "Server says \"$(value)\""
 end
 
-callback!( 
+callback!(
     ClientsideFunction("clientside", "display"),
-    app, 
+    app,
     Output("output-clientside", "children"),
     Input("input", "value")
-) 
+)
 
 run_server(app)

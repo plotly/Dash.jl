@@ -12,3 +12,4 @@ docs/build
 venv
 *.pyc
 tmp
+gen_resources/build
