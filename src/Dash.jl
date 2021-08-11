@@ -6,7 +6,6 @@ const ROOT_PATH = realpath(joinpath(@__DIR__, ".."))
 const RESOURCE_PATH = realpath(joinpath(ROOT_PATH, "resources"))
 include("exceptions.jl")
 include("Components.jl")
-include("Front.jl")
 include("HttpHelpers/HttpHelpers.jl")
 
 using .HttpHelpers
