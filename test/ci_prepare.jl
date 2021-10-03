@@ -2,6 +2,7 @@ using Pkg
 Pkg.update()
 Pkg.develop(path = ".")
 Pkg.add("DashBase")
+Pkg.add("PlotlyBase")
 Pkg.add("HTTP")
 Pkg.instantiate()
 Pkg.build("Dash")
