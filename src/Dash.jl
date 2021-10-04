@@ -70,13 +70,13 @@ struct ComponentsInfo
     version::VersionNumber
 end
 struct BuildInfo
-    dash_vesion ::VersionNumber
+    dash_version ::VersionNumber
     dash_renderer_version::VersionNumber
     embedded_components::Vector{ComponentsInfo}
 end
 
 function Base.show(io::IO, ::MIME"text/plain", info::BuildInfo)
-    println(io, "Based on python `dash` version: ", info.dash_vesion)
+    println(io, "Based on python `dash` version: ", info.dash_version)
     println(io, "\t`dash_renderer` version: ", info.dash_renderer_version)
     println(io, "Embedded components:")
     for comp in info.embedded_components
