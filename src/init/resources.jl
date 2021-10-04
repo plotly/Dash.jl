@@ -66,8 +66,9 @@ function load_all_metadata()
     )
 end
 
-function setup_module_resources(name, meta)
-    path = deps_path(name)
+function setup_dash_resources()
+    meta = _metadata.dash
+    path = deps_path("dash")
     version = meta["version"]
     for dep in meta["deps"]
         DashBase.register_package(
@@ -77,11 +78,5 @@ function setup_module_resources(name, meta)
                 version = version
             )
         )
-    end
-end
-function setup_embeded_components_resources()
-    dash_meta = _metadata.dash
-    for c in dash_meta["embedded_components"]
-        setup_module_resources(c, _metadata.embedded_components[Symbol(c)])
     end
 end

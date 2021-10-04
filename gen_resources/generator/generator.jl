@@ -5,7 +5,7 @@ include("components.jl")
 include("deploy.jl")
 
 const HELP = """
-Usage: build_tarballs.jl [--deploy] [--help]
+Usage: generate.jl [--deploy] [--help]
 
 Options:
 

@@ -22,10 +22,12 @@ function install_dash(url, tag)
         Conda.pip("install", "./")
     end
     dashmodule = pyimport("dash")
+    println(dashmodule)
     return dashmodule.__version__
 end
 
 dash_version() = VersionNumber(pyimport("dash").__version__)
+dash_module_dir() = dirname(pyimport("dash").__file__)
 
 function convert_deps_part(relative, external)
     result = Dict{Symbol, String}[]
@@ -108,6 +110,8 @@ end
 function copy_files(resource_dir, files, dest_dir)
     for f in files
         full_path = joinpath(resource_dir, f)
+        path_dir = dirname(f)
+        mkpath(joinpath(dest_dir, path_dir))
         if isfile(full_path)
             cp(full_path, joinpath(dest_dir, f); force = true)
         else
@@ -125,8 +129,16 @@ function renderer_resources(module_name)
         :deps => convert_resources(m._js_dist, hasproperty(m, :_css_dist) ? m._css_dist : [])
     )
     files = vcat(deps_files(m._js_dist_dependencies[1]), resources_files(m._js_dist))
-
     return (dirname(m.__file__), meta, files)
+end
+
+function fill_components_deps!(deps::OrderedDict, files::Vector, module_name)
+    m = pyimport(module_name)
+    js_dist = hasproperty(m, :_js_dist) ? m._js_dist : []
+    css_dist = hasproperty(m, :_css_dist) ? m._css_dist : []
+    _process_dist_part!.(Ref(deps), js_dist, :js)
+    _process_dist_part!.(Ref(deps), css_dist, :css)
+    append!(files, vcat(resources_files(js_dist), resources_files(css_dist)))
 end
 
 function components_module_resources(module_name; name, prefix, metadata_file)
@@ -137,16 +149,12 @@ function components_module_resources(module_name; name, prefix, metadata_file)
         error("meta file $(metadata_file) don't exists for module $(name)")
     end
     components = process_components_meta(metafile)
-    js_dist = hasproperty(m, :_js_dist) ? m._js_dist : []
-    css_dist = hasproperty(m, :_css_dist) ? m._css_dist : []
     meta = OrderedDict(
         :version => m.__version__,
         :name => name,
-        :deps => convert_resources(js_dist, css_dist),
         :prefix => prefix,
         :components => components
     )
-    files = vcat(resources_files(js_dist), resources_files(css_dist))
 
-    return (dirname(m.__file__), meta, files)
+    return meta
 end

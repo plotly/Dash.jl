@@ -103,7 +103,7 @@ end
 const _metadata = load_all_metadata()
 function __init__()
    setup_renderer_resources()
-   setup_embeded_components_resources()
+   setup_dash_resources()
 end
 
 

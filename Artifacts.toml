@@ -1,6 +1,6 @@
 [dash_resources]
-git-tree-sha1 = "5221819aa12c212904a1922411cf8bbc9b787901"
+git-tree-sha1 = "c857e355d2c21dfc458fb315371431dda2506109"
 
     [[dash_resources.download]]
-    sha256 = "0f129069bed005e92a8061c4a3b71ba0aedf54911e01103b3261d586995836a6"
-    url = "https://github.com/waralex/DashCoreResources/releases/download/v1.20.0+0/DashCoreResources.v1.20.0.tar.gz"
+    sha256 = "4ff3910a8ff1f5420784397cfc6ad80341bbe03f1010eab38dcb9b8ce2423310"
+    url = "https://github.com/waralex/DashCoreResources/releases/download/v2.0.0+0/DashCoreResources.v2.0.0.tar.gz"

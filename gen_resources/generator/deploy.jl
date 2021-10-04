@@ -56,7 +56,19 @@ function fill_deploy_resources(sources, deploy_dir, info)
             :build => info.build,
             :embedded_components => Symbol.(collect(keys(sources["components"])))
         )
+
+        dash_deps = OrderedDict{Symbol, Any}()
+        dash_deps_files = Vector{String}()
+
+        for (name, props) in sources["components"]
+            fill_components_deps!(dash_deps, dash_deps_files, props["module"])
+        end
+        dash_meta[:deps] = collect(values(dash_deps))
+
         YAML.write_file("dash.yaml", dash_meta)
+
+        mkdir("dash_deps")
+        copy_files(dash_module_dir(), dash_deps_files, "dash_deps")
 
         @info "creating dash-renderer meta..."
         module_src, meta, files = renderer_resources(
@@ -78,24 +90,13 @@ function fill_deploy_resources(sources, deploy_dir, info)
         @info "processing components modules..."
         for (name, props) in sources["components"]
             @info "processing $name meta..."
-            (module_src, meta, files) = components_module_resources(
+            meta = components_module_resources(
                     props["module"];
                     name = name,
                     prefix = props["prefix"],
                     metadata_file = props["metadata_file"],
                 )
             YAML.write_file("$(name).yaml", meta)
-
-            resources_path = realpath(
-                joinpath(
-                    module_src,
-                    get(props, "resources_path", ".")
-                )
-            )
-            @info "copying $name files..."
-            deps_dir = name * "_deps"
-            mkdir(deps_dir)
-            copy_files(resources_path, files, deps_dir)
         end
     end
 end
