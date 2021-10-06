@@ -1,6 +1,4 @@
 using Dash
-using DashHtmlComponents
-using DashCoreComponents
 
 app = dash(meta_tags = [Dict(["name"=>"description", "content" => "some content"])])
 

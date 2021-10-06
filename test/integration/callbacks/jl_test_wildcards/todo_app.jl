@@ -1,6 +1,4 @@
 using Dash
-using DashHtmlComponents
-using DashCoreComponents
 function todo_app(content_callback)
     app = dash()
 

@@ -1,6 +1,4 @@
 using Dash
-using DashHtmlComponents
-using DashCoreComponents
 
 test_cases = Dict(
     "not-boolean" => Dict(
