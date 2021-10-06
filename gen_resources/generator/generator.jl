@@ -71,7 +71,7 @@ function generate(ARGS, sources, build_dir, artifact_file)
         @info "artifact binding succefully to" artifact_file
 
         cd(deploy_dir) do
-            upload_to_resleases(deploy_repo,
+            upload_to_releases(deploy_repo,
                 deploy_tagname(new_info),
                 realpath(joinpath(build_dir, tarball_name(new_info)))
             )

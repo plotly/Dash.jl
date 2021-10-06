@@ -29,7 +29,7 @@ function make_component_meta(name, props)
 end
 
 
-const _reserwed_words = Set(
+const _reserved_words = Set(
     ["baremodule",
     "begin",
     "break",
@@ -61,7 +61,7 @@ const _reserwed_words = Set(
     "while"]
 )
 function is_reserved_world(w)
-    return w in _reserwed_words
+    return w in _reserved_words
 end
 
 function filter_arg(argpair)

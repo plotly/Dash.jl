@@ -139,7 +139,7 @@ function push_repo(repo_name, deploy_dir, tag)
         )
     end
 end
-function upload_to_resleases(repo_name,  tag, tarball_path; attempts = 3)
+function upload_to_releases(repo_name,  tag, tarball_path; attempts = 3)
     gh_auth = github_auth(;allow_anonymous=false)
     for attempt in 1:attempts
         try
