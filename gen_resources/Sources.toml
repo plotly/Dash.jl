@@ -1,5 +1,5 @@
 [deploy]
-    repo = "waralex/DashCoreResources"
+    repo = "plotly/DashCoreResources"
 [dash]
     url = "https://github.com/plotly/dash.git"
     tag = "v2.0.0"
