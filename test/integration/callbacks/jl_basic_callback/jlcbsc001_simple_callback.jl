@@ -1,6 +1,4 @@
 using Dash
-using DashHtmlComponents
-using DashCoreComponents
 
 app = dash()
 
@@ -9,7 +7,7 @@ app.layout = html_div() do
     html_div() do
         html_div(
             [
-                1.5, 
+                1.5,
                 nothing,
                 "string",
                 html_div(id="output")
@@ -18,7 +16,7 @@ app.layout = html_div() do
     end
 end
 call_count = 0
-callback!(app, 
+callback!(app,
     Output("output","children"),
     Input("input","value")
     ) do value

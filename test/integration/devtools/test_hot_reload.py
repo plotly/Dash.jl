@@ -17,8 +17,6 @@ document.getElementById('tested').innerHTML  = 'Reloaded';
 
 reload_jl = """
 using Dash
-using DashHtmlComponents
-using DashCoreComponents
 
 app = dash()
 app.layout = html_div(id="after-reload-content") do

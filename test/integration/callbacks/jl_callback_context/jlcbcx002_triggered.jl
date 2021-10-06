@@ -1,6 +1,4 @@
 using Dash
-using DashHtmlComponents
-using DashCoreComponents
 
 app = dash()
 btns = ["btn-$i" for i in 1:6]
@@ -9,7 +7,7 @@ app.layout = html_div() do
     html_div(id = "output")
 end
 
-callback!(app, 
+callback!(app,
     Output("output", "children"),
     [Input(btn, "n_clicks") for btn in btns]
 ) do args...

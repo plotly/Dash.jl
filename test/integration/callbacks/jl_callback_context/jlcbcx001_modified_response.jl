@@ -1,7 +1,5 @@
 using HTTP
 using Dash
-using DashHtmlComponents
-using DashCoreComponents
 
 app = dash()
 app.layout = html_div() do
@@ -9,7 +7,7 @@ app.layout = html_div() do
     html_div(id = "output")
 end
 
-callback!(app, 
+callback!(app,
     Output("output", "children"),
     Input("input", "value")
 ) do value

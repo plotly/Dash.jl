@@ -1,6 +1,4 @@
 using Dash
-using DashHtmlComponents
-using DashCoreComponents
 
 app = dash(suppress_callback_exceptions = true)
 
@@ -13,7 +11,7 @@ callback!(app,
         Output("container", "children"),
         Input("add-filter", "n_clicks"),
         State("container", "children")
-    ) do n_clicks, children 
+    ) do n_clicks, children
     new_element = html_div() do
         dcc_dropdown(
             id = (type = "dropdown", index = n_clicks),
@@ -25,7 +23,7 @@ callback!(app,
     end
     return vcat(children, new_element)
 end
-   
+
 
 callback!(app,
     Output((type = "output", index = MATCH), "children"),

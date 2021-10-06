@@ -1,6 +1,4 @@
 using Dash
-using DashHtmlComponents
-using DashCoreComponents
 js_files = [
     "https://www.google-analytics.com/analytics.js",
     Dict("src"=> "https://cdn.polyfill.io/v2/polyfill.min.js"),

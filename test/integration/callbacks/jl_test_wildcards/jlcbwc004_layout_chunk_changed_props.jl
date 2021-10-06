@@ -1,6 +1,4 @@
 using Dash
-using DashHtmlComponents
-using DashCoreComponents
 
 app = dash()
 app.layout = html_div() do
@@ -23,14 +21,14 @@ callback!(app, Output("container", "children"), Input("btn", "n_clicks")) do n
         return "No content initially"
     end
 end
-    
+
 function trigger_info()
     triggered = callback_context().triggered
     trig_string = !isempty(triggered) ? "Truthy" : "Falsy"
     prop_ids = join(getproperty.(triggered, :prop_id), ", ")
     return "triggered is $trig_string with prop_ids $prop_ids"
 end
-    
+
 
 callback!(app,
     Output("output-inner", "children"),
@@ -41,7 +39,7 @@ end
 
 
 
-callback!(app, 
+callback!(app,
     Output("output-outer", "children"),
     Input((type = "input", index = ALL), "value")
     )  do value
