@@ -27,7 +27,7 @@ struct ApplicationResources
     files ::Dict{String, NamespaceFiles}
     css ::Vector{AppResource}
     js ::Vector{AppResource}
-    favicon ::Union{Nothing, String}
+    favicon ::Union{Nothing, AppAssetResource}
     ApplicationResources(files, css, js, favicon) = new(files, css, js, favicon)
 end
 
@@ -35,14 +35,14 @@ end
 function ApplicationResources(app::DashApp, registry::ResourcesRegistry)
     css = AppResource[]
     js = AppResource[]
-    favicon::Union{Nothing, String} = nothing
+    favicon::Union{Nothing, AppResource} = nothing
     files = Dict{String, NamespaceFiles}()
-    
+
     serve_locally = get_setting(app, :serve_locally)
     assets_external_path = get_setting(app, :assets_external_path)
     dev = get_devsetting(app, :serve_dev_bundles)
     eager_loading = get_setting(app, :eager_loading)
-    
+
     append_pkg = function(pkg)
         append!(css,
             _convert_resource_pkg(pkg, :css, dev = dev, serve_locally = serve_locally, eager_loading = eager_loading)
@@ -58,10 +58,10 @@ function ApplicationResources(app::DashApp, registry::ResourcesRegistry)
 
     append_pkg(get_dash_dependencies(registry, get_devsetting(app, :props_check)))
 
-    append!(css, 
+    append!(css,
         _convert_external.(get_setting(app, :external_stylesheets))
     )
-    append!(js, 
+    append!(js,
         _convert_external.(get_setting(app, :external_scripts))
     )
 
@@ -72,7 +72,7 @@ function ApplicationResources(app::DashApp, registry::ResourcesRegistry)
             elseif type == :css
                 push!(css, asset_resource(url, modified))
             elseif type == :favicon
-                favicon = url
+                favicon = AppAssetResource(url, modified)
             end
         end
     end
@@ -113,7 +113,7 @@ function walk_assets(callback, app::DashApp)
     assets_filter = isempty(assets_ignore) ?
         (f) -> true :
         (f) -> !occursin(assets_regex, f)
-        
+
     assets_path = get_assets_path(app)
     if get_setting(app, :include_assets_files) && isdir(assets_path)
         for (base, dirs, files) in walkdir(assets_path)
@@ -181,9 +181,9 @@ function _convert_resource_pkg(pkg::ResourcePkg, type::Symbol; dev, serve_locall
     ts = ispath(pkg.path) ? trunc(Int64, stat(pkg.path).mtime) : 0
     for resource in iterator
         append!(
-            result, 
+            result,
             _convert_resource(
-                    resource, 
+                    resource,
                     namespace = pkg.namespace,
                     version = pkg.version,
                     ts = ts,
