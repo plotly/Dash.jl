@@ -24,8 +24,14 @@ end
 
 function trigger_info()
     triggered = callback_context().triggered
-    trig_string = !isempty(triggered) ? "Truthy" : "Falsy"
-    prop_ids = join(getproperty.(triggered, :prop_id), ", ")
+    trig_string = ""
+    prop_ids = ""
+    if isempty(triggered)
+        trig_string =  "Falsy"
+    else
+        trig_string = "Truthy"
+        prop_ids = join(getproperty.(triggered, :prop_id), ", ")
+    end
     return "triggered is $trig_string with prop_ids $prop_ids"
 end
 
