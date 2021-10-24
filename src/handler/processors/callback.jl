@@ -9,14 +9,14 @@ function split_callback_id(callback_id::AbstractString)
 end
 
 input_to_arg(input) = get(input, :value, nothing)
-input_to_arg(input::Vector) = input_to_arg.(input)
+input_to_arg(input::AbstractVector) = input_to_arg.(input)
 
 make_args(inputs, state) = vcat(input_to_arg(inputs), input_to_arg(state))
 
 res_to_vector(res) = res
 res_to_vector(res::Vector) = res
 
-function _push_to_res!(res, value, out::Vector)
+function _push_to_res!(res, value, out::AbstractVector)
     _push_to_res!.(Ref(res), value, out)
 end
 function _push_to_res!(res, value, out)
@@ -44,20 +44,21 @@ function process_callback_call(app, callback_id, outputs, inputs, state)
 
     _push_to_res!(response, res_vector, outputs)
 
+
     if length(response) == 0
         throw(PreventUpdate())
     end
     return Dict(:response=>response, :multi=>true)
 end
 
-outputs_to_vector(out::Vector) = out
+outputs_to_vector(out::AbstractVector) = out
 outputs_to_vector(out) = [out]
 
 function process_callback(request::HTTP.Request, state::HandlerState)
     app = state.app
     response = HTTP.Response(200, ["Content-Type" => "application/json"])
 
-    params = JSON2.read(String(request.body))
+    params = JSON3.read(String(request.body))
     inputs = get(params, :inputs, [])
     state = get(params, :state, [])
     output = Symbol(params[:output])
@@ -69,7 +70,7 @@ function process_callback(request::HTTP.Request, state::HandlerState)
         cb_result = with_callback_context(context) do
             process_callback_call(app, output, outputs_list, inputs, state)
         end
-        response.body = Vector{UInt8}(JSON2.write(cb_result))
+        response.body = Vector{UInt8}(JSON3.write(cb_result))
     catch e
         if isa(e,PreventUpdate)
             return HTTP.Response(204)

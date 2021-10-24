@@ -1,4 +1,4 @@
-import HTTP, JSON2
+import HTTP, JSON3
 using Test
 using DashBase
 using Dash
@@ -55,15 +55,15 @@ end
     response = HTTP.handle(handler, request)
     @test response.status == 200
     body_str = String(response.body)
-    @test body_str == JSON2.write(app.layout)
+    @test body_str == JSON3.write(app.layout)
 
     request = HTTP.Request("GET", "/_dash-dependencies")
     response = HTTP.handle(handler, request)
     @test response.status == 200
     body_str = String(response.body)
-    resp_json = JSON2.read(body_str)
+    resp_json = JSON3.read(body_str)
 
-    @test resp_json isa Vector
+    @test resp_json isa AbstractVector
     @test length(resp_json) == 2
     @test haskey(resp_json[1], :inputs)
     @test haskey(resp_json[1], :state)
@@ -100,14 +100,14 @@ end
     response = HTTP.handle(handler, request)
     @test response.status == 200
     body_str = String(response.body)
-    @test body_str == JSON2.write(layout_func())
+    @test body_str == JSON3.write(layout_func())
     @test occursin("my_div2", body_str)
 
     global_id = "my_div3"
     response = HTTP.handle(handler, request)
     @test response.status == 200
     body_str = String(response.body)
-    @test body_str == JSON2.write(layout_func())
+    @test body_str == JSON3.write(layout_func())
     @test occursin("my_div3", body_str)
 
 end
@@ -168,7 +168,7 @@ end
     response = HTTP.handle(handler, request)
 
     @test response.status == 200
-    result = JSON2.read(String(response.body))
+    result = JSON3.read(String(response.body))
 
     @test length(result[:response]) == 1
     @test haskey(result[:response], Symbol("my-div2"))

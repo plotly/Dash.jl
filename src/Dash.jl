@@ -1,6 +1,6 @@
 module Dash
 using DashBase
-import HTTP, JSON2, CodecZlib, MD5
+import HTTP, JSON2, JSON3, CodecZlib, MD5
 using Sockets
 using Pkg.Artifacts
 const ROOT_PATH = realpath(joinpath(@__DIR__, ".."))
@@ -107,6 +107,7 @@ function __init__()
 end
 
 
-
+JSON3.StructTypes.StructType(::Type{DashBase.Component}) = JSON3.StructTypes.Struct()
+JSON3.StructTypes.excludes(::Type{DashBase.Component}) = (:name, :available_props, :wildcard_regex)
 
 end # module
