@@ -1,10 +1,10 @@
-function resource_url(app::DashApp, resource::AppRelativeResource) 
+function resource_url(app::DashApp, resource::AppRelativeResource)
     prefix = get_setting(app, :requests_pathname_prefix)
     return string(prefix,
          "_dash-component-suites/",
          resource.namespace,
          "/",
-         build_fingerprint(resource.relative_path, resource.version, resource.ts) 
+         build_fingerprint(resource.relative_path, resource.version, resource.ts)
      )
 end
 
@@ -19,7 +19,7 @@ function asset_path(app::DashApp, path::AbstractString)
 end
 
 resource_url(app::DashApp, resource::AppExternalResource) = resource.url
-function resource_url(app::DashApp, resource::AppAssetResource) 
+function resource_url(app::DashApp, resource::AppAssetResource)
     return string(
         asset_path(app, resource.path),
         "?m=", resource.ts
@@ -42,7 +42,7 @@ function metas_html(app::DashApp)
         get(tag, "http-equiv", "") == "X-UA-Compatible"
     end
     has_charset = any(tag -> haskey(tag, "charset"), meta_tags)
-    
+
     result = String[]
     !has_ie_compat && push!(result, "<meta http-equiv=\"X-UA-Compatible\" content=\"IE=edge\">")
     !has_charset && push!(result, "<meta charset=\"UTF-8\">")
@@ -52,7 +52,7 @@ function metas_html(app::DashApp)
 
 end
 
-function css_html(app::DashApp, resources::ApplicationResources) 
+function css_html(app::DashApp, resources::ApplicationResources)
      join(
          make_css_tag.(Ref(app), resources.css), "\n       "
          )
@@ -77,7 +77,7 @@ app_entry_html() = """
 </div>
 """
 
-function config_html(app::DashApp) 
+function config_html(app::DashApp)
     config = Dict{Symbol, Any}(
         :url_base_pathname => get_setting(app, :url_base_pathname),
         :requests_pathname_prefix => get_setting(app, :requests_pathname_prefix),
@@ -94,20 +94,35 @@ function config_html(app::DashApp)
         )
     end
     return """<script id="_dash-config" type="application/json">$(JSON2.write(config))</script>"""
-end 
+end
 
 
 renderer_html() = """<script id="_dash-renderer" type="application/javascript">var renderer = new DashRenderer();</script>"""
 
-favicon_html(app::DashApp) = "" 
+function favicon_html(app::DashApp, resources::ApplicationResources)
+    favicon_url = if !isnothing(resources.favicon)
+        asset_path(app, resources.favicon.path)
+    else
+        "$(get_setting(app, :requests_pathname_prefix))_favicon.ico?v=$(build_info().dash_version)"
+    end
+    return format_tag(
+        "link",
+        Dict(
+            "rel" => "icon",
+            "type" => "image/x-icon",
+            "href" => favicon_url
+        ),
+        opened = true
+        )
+end
 
 
-function index_page(app::DashApp, resources::ApplicationResources)    
-    
+function index_page(app::DashApp, resources::ApplicationResources)
+
     result = interpolate_string(app.index_string,
         metas = metas_html(app),
         title = app.title,
-        favicon = favicon_html(app),
+        favicon = favicon_html(app, resources),
         css = css_html(app, resources),
         app_entry = app_entry_html(),
         config = config_html(app),
@@ -121,7 +136,7 @@ function index_page(app::DashApp, resources::ApplicationResources)
             "#_dash_config" => r"id=\"_dash-config\"",
             "dash-renderer" => r"src=\"[^\"]*dash[-_]renderer[^\"]*\"",
             "new DashRenderer" => r"id=\"_dash-renderer",
-        ] 
+        ]
     )
     return result
 end
