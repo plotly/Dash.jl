@@ -2,16 +2,6 @@ using .Contexts
 const CallbackContextItems = Union{Nothing, Vector{NamedTuple}}
 const TriggeredParam = NamedTuple{(:prop_id, :value)}
 
-struct FakeTriggeredParams <: AbstractVector{TriggeredParam}
-end
-Base.size(v::FakeTriggeredParams) = (1,)
-Base.isempty(v::FakeTriggeredParams) = true
-Base.IndexStyle(::Type{FakeTriggeredParams}) = IndexLinear()
-Base.length(v::FakeTriggeredParams) = 1
-function Base.getindex(v::FakeTriggeredParams, i::Int)
-    i != 1 && throw(BoundsError(v, i))
-    return (prop_id = ".", value = nothing)
-end
 
 mutable struct CallbackContext
     response::HTTP.Response
@@ -20,15 +10,11 @@ mutable struct CallbackContext
     outputs_list::Vector{Any}
     inputs_list::Vector{Any}
     states_list::Vector{Any}
-    triggered::Union{Vector{TriggeredParam}, FakeTriggeredParams}
+    triggered::Vector{TriggeredParam}
     function CallbackContext(response, outputs_list, inputs_list, states_list, changed_props)
         input_values = inputs_list_to_dict(inputs_list)
         state_values = inputs_list_to_dict(states_list)
-        if !isempty(changed_props)
-            triggered = TriggeredParam[(prop_id = id, value = input_values[id]) for id in changed_props]
-        else
-            triggered = FakeTriggeredParams()
-        end
+        triggered = TriggeredParam[(prop_id = id, value = input_values[id]) for id in changed_props]
         return new(response, input_values, state_values, outputs_list, inputs_list, states_list, triggered)
     end
 end

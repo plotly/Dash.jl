@@ -315,9 +315,7 @@ end
 
     callback!(app, Output("test-out", "children"), Input("test-out", "value")) do value
         context = callback_context()
-        @test length(context.triggered) == 1
-        @test context.triggered[1].prop_id == "."
-        @test isnothing(context.triggered[1].value)
+        @test length(context.triggered) == 0
         @test isempty(context.triggered)
         return string(value)
     end
