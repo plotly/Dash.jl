@@ -306,7 +306,7 @@ end
 
 end
 
-@testset "fake triggered params" begin
+@testset "empty triggered params" begin
     app = dash()
     app.layout = html_div() do
             dcc_input(id = "test-in", value="initial value", type = "text"),
