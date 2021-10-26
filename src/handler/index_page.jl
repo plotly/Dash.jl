@@ -99,7 +99,22 @@ end
 
 renderer_html() = """<script id="_dash-renderer" type="application/javascript">var renderer = new DashRenderer();</script>"""
 
-favicon_html(app::DashApp) = ""
+function favicon_html(app::DashApp, resources::ApplicationResources)
+    favicon_url = if !isnothing(resources.favicon)
+        asset_path(app, resources.favicon.path)
+    else
+        "$(get_setting(app, :requests_pathname_prefix))_favicon.ico?v=$(build_info().dash_version)"
+    end
+    return format_tag(
+        "link",
+        Dict(
+            "rel" => "icon",
+            "type" => "image/x-icon",
+            "href" => favicon_url
+        ),
+        opened = true
+        )
+end
 
 
 function index_page(app::DashApp, resources::ApplicationResources)
@@ -107,7 +122,7 @@ function index_page(app::DashApp, resources::ApplicationResources)
     result = interpolate_string(app.index_string,
         metas = metas_html(app),
         title = app.title,
-        favicon = favicon_html(app),
+        favicon = favicon_html(app, resources),
         css = css_html(app, resources),
         app_entry = app_entry_html(),
         config = config_html(app),

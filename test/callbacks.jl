@@ -260,32 +260,6 @@ end
     @test app.callbacks[Symbol("my-div.children")].func("value") == "value"
     @test app.callbacks[Symbol("my-div2.children")].func("value") == "v_value"
 
-    #output already exists
-    @test_throws ErrorException callback!(app, Output("my-div2","children"), Input("my-id","value")) do value
-        return "v_$(value)"
-    end
-
-    #output same as input
-    @test_throws ErrorException callback!(app,
-        Output("my-id","value"),
-        Input("my-id","value"),
-        State("my-id","value")) do value
-        return "v_$(value)"
-    end
-
-    #output same as input
-    @test_throws ErrorException callback!(app,
-        Output("my-id","value"),
-        [Input("my-id","value"), Input("my-div","children")]) do value
-        return "v_$(value)"
-    end
-
-    #output same as input
-    @test_throws ErrorException callback!(app,
-        [Output("my-id","value"), Output("my-div","children")],
-        Input("my-id","value")) do value
-        return "v_$(value)"
-    end
 
     #empty input
     @test_throws ErrorException callback!(app,
@@ -294,13 +268,6 @@ end
         return "v_$(value)"
     end
 
-
-    #duplicated output
-    @test_throws ErrorException callback!(app,
-        [Output("my-div","value"), Output("my-div","value")],
-        Input("my-id","value")) do value
-        return "v_$(value)"
-    end
 
     app = dash()
 
@@ -339,6 +306,36 @@ end
 
 end
 
+@testset "empty triggered params" begin
+    app = dash()
+    app.layout = html_div() do
+            dcc_input(id = "test-in", value="initial value", type = "text"),
+            html_div(id = "test-out")
+        end
+
+    callback!(app, Output("test-out", "children"), Input("test-out", "value")) do value
+        context = callback_context()
+        @test length(context.triggered) == 0
+        @test isempty(context.triggered)
+        return string(value)
+    end
+    @test length(app.callbacks) == 1
+
+    handler = Dash.make_handler(app)
+    request = (
+        output = "test-out.children",
+        changedPropIds = [],
+        inputs = [
+            (id = "test-in", property = "value", value = "test")
+        ]
+    )
+    test_json = JSON2.write(request)
+    request = HTTP.Request("POST", "/_dash-update-component", [], Vector{UInt8}(test_json))
+    response = HTTP.handle(handler, request)
+
+    @test response.status == 200
+
+end
 @testset "pattern-match" begin
     app = dash()
     app.layout = html_div() do
@@ -382,7 +379,7 @@ end
 
 end
 
-@testset "pattern-match ALL" begin
+@testset "pattern-match ALL single out" begin
     app = dash()
     app.layout = html_div() do
             dcc_input(id = (type="test", index = 1), value="initial value", type = "text"),
@@ -413,10 +410,8 @@ end
     request = (
         output = string(out_key),
         outputs = [
-           [
                 (id = (index=1, type="test-out"), property = "children"),
                 (id = (index=2, type="test-out"), property = "children")
-            ]
         ],
         changedPropIds = [changed_key],
         inputs = [
@@ -436,6 +431,58 @@ end
     @test in(:multi, keys(resp_obj))
 
     println(resp_obj)
+    @test resp_obj.response.var"{\"index\":1,\"type\":\"test-out\"}".children =="test 1"
+    @test resp_obj.response.var"{\"index\":2,\"type\":\"test-out\"}".children =="test"
+
+end
+@testset "pattern-match ALL multi out" begin
+    app = dash()
+    app.layout = html_div() do
+            dcc_input(id = (type="test", index = 1), value="initial value", type = "text"),
+            dcc_input(id = (type="test", index = 2), value="initial value", type = "text"),
+            html_div(id = (type = "test-out", index = 1)),
+            html_div(id = (type = "test-out", index = 2))
+        end
+
+    first_key = """{"index":1,"type":"test"}.value"""
+    changed_key = """{"index":2,"type":"test"}.value"""
+    callback!(app, [Output((type = "test-out", index = ALL), "children")], Input((type="test", index = ALL), "value")) do value
+        context = callback_context()
+        @test haskey(context.inputs, first_key)
+        @test context.inputs[first_key] == "test 1"
+        @test haskey(context.inputs, changed_key)
+        @test context.inputs[changed_key] == "test"
+        @test length(context.triggered) == 1
+        @test context.triggered[1].prop_id == changed_key
+        @test context.triggered[1].value == "test"
+        return [value]
+    end
+    @test length(app.callbacks) == 1
+    out_key = Symbol("""..{"index":["ALL"],"type":"test-out"}.children..""")
+    @test haskey(app.callbacks, out_key)
+
+    handler = Dash.make_handler(app)
+    request = (
+        output = string(out_key),
+        outputs = [[
+                (id = (index=1, type="test-out"), property = "children"),
+                (id = (index=2, type="test-out"), property = "children")
+        ]],
+        changedPropIds = [changed_key],
+        inputs = [
+            [
+                (id = (index=1, type="test"), property = "value", value = "test 1"),
+                (id = (index=2, type="test"), property = "value", value = "test")
+            ]
+        ]
+    )
+    test_json = JSON2.write(request)
+    request = HTTP.Request("POST", "/_dash-update-component", [], Vector{UInt8}(test_json))
+    response = HTTP.handle(handler, request)
+    @test response.status == 200
+    resp_obj = JSON2.read(String(response.body))
+    @test in(:multi, keys(resp_obj))
+
     @test resp_obj.response.var"{\"index\":1,\"type\":\"test-out\"}".children =="test 1"
     @test resp_obj.response.var"{\"index\":2,\"type\":\"test-out\"}".children =="test"
 

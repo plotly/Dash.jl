@@ -165,21 +165,11 @@ function check_callback(func, app::DashApp, deps::CallbackDeps)
     isempty(deps.output) && error("The callback method requires that one or more properly formatted outputs are passed.")
     isempty(deps.input) && error("The callback method requires that one or more properly formatted inputs are passed.")
 
-    !check_unique(deps.output) && error("One or more callback outputs have been duplicated; please confirm that all outputs are unique.")
-
-    for out in deps.output
-        if any(x->out in x.dependencies.output, values(app.callbacks))
-            error("output \"$(out)\" already registered")
-        end
-    end
 
     args_count = length(deps.state) + length(deps.input)
 
     check_callback_func(func, args_count)
 
-    for id_prop in deps.input
-        id_prop in deps.output && error("Circular input and output arguments were found. Please verify that callback outputs are not also input arguments.")
-    end
 end
 
 function check_callback_func(func::Function, args_count)

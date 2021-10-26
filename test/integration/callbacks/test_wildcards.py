@@ -174,7 +174,7 @@ def test_jlcbwc004_layout_chunk_changed_props(dashjl):
 
     dashjl.wait_for_text_to_equal("#container", "No content initially", timeout = 10)
     dashjl.wait_for_text_to_equal(
-        "#output-outer", "triggered is Falsy with prop_ids", timeout = 10
+        "#output-outer", "triggered is Falsy with prop_ids", timeout = 30
     )
 
     dashjl.find_element("#btn").click()

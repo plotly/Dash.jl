@@ -1,6 +1,8 @@
 using .Contexts
 const CallbackContextItems = Union{Nothing, Vector{NamedTuple}}
 const TriggeredParam = NamedTuple{(:prop_id, :value)}
+
+
 mutable struct CallbackContext
     response::HTTP.Response
     inputs::Dict{String, Any}
