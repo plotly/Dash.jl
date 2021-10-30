@@ -18,4 +18,4 @@ callback!(app, Output("graph", "figure"), Output("status", "children"), Input("d
     return (plot, status)
 end
 
-run_server(app, debug = true)
+run_server(app, dev_tools_props_check = true)
