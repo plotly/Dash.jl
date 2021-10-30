@@ -3,6 +3,7 @@ using DashBase
 import HTTP, JSON2, JSON3, CodecZlib, MD5
 using Sockets
 using Pkg.Artifacts
+
 const ROOT_PATH = realpath(joinpath(@__DIR__, ".."))
 #const RESOURCE_PATH = realpath(joinpath(ROOT_PATH, "resources"))
 include("exceptions.jl")
@@ -25,6 +26,7 @@ include("resources/application.jl")
 include("handlers.jl")
 include("server.jl")
 include("init.jl")
+include("plotly_base.jl")
 
 @doc """
     module Dash
@@ -109,5 +111,6 @@ end
 
 JSON3.StructTypes.StructType(::Type{DashBase.Component}) = JSON3.StructTypes.Struct()
 JSON3.StructTypes.excludes(::Type{DashBase.Component}) = (:name, :available_props, :wildcard_regex)
+
 
 end # module

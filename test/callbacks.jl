@@ -399,7 +399,6 @@ end
         @test length(context.triggered) == 1
         @test context.triggered[1].prop_id == changed_key
         @test context.triggered[1].value == "test"
-        println(value)
         return value
     end
     @test length(app.callbacks) == 1
@@ -426,11 +425,9 @@ end
     response = HTTP.handle(handler, request)
     @test response.status == 200
     s = String(response.body)
-    println(s)
     resp_obj = JSON3.read(s)
     @test in(:multi, keys(resp_obj))
 
-    println(resp_obj)
     @test resp_obj.response.var"{\"index\":1,\"type\":\"test-out\"}".children =="test 1"
     @test resp_obj.response.var"{\"index\":2,\"type\":\"test-out\"}".children =="test"
 
