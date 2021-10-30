@@ -329,7 +329,7 @@ end
             (id = "test-in", property = "value", value = "test")
         ]
     )
-    test_json = JSON2.write(request)
+    test_json = JSON3.write(request)
     request = HTTP.Request("POST", "/_dash-update-component", [], Vector{UInt8}(test_json))
     response = HTTP.handle(handler, request)
 
@@ -476,11 +476,11 @@ end
             ]
         ]
     )
-    test_json = JSON2.write(request)
+    test_json = JSON3.write(request)
     request = HTTP.Request("POST", "/_dash-update-component", [], Vector{UInt8}(test_json))
     response = HTTP.handle(handler, request)
     @test response.status == 200
-    resp_obj = JSON2.read(String(response.body))
+    resp_obj = JSON3.read(String(response.body))
     @test in(:multi, keys(resp_obj))
 
     @test resp_obj.response.var"{\"index\":1,\"type\":\"test-out\"}".children =="test 1"
