@@ -1,6 +1,5 @@
 using Dash
 using PlotlyBase
-
 app = dash()
 app.layout = html_div() do
     dcc_graph(id = "graph",
@@ -18,4 +17,4 @@ callback!(app, Output("graph", "figure"), Output("status", "children"), Input("d
     return (plot, status)
 end
 
-run_server(app, dev_tools_props_check = true)
+run_server(app)
