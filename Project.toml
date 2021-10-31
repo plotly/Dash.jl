@@ -4,6 +4,7 @@ authors = ["Chris Parmer <chris@plotly.com>", "Alexandr Romanenko <waralex@gmail
 version = "1.0.0"
 
 [deps]
+Base64 = "2a0f44e3-6c83-55bd-87e4-b1978d98bd5f"
 CodecZlib = "944b1d66-785c-5afd-91f1-9de20f533193"
 DashBase = "03207cf0-e2b3-4b91-9ca8-690cf0fb507e"
 DashCoreComponents = "1b08a953-4be3-4667-9a23-9da06441d987"

@@ -25,6 +25,7 @@ include("resources/application.jl")
 include("handlers.jl")
 include("server.jl")
 include("init.jl")
+include("components_utils/_components_utils.jl")
 
 @doc """
     module Dash
