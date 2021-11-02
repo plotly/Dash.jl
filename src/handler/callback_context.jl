@@ -35,16 +35,16 @@ function callback_context()
     return get_context(_callback_context_storage)
 end
 
-function inputs_list_to_dict(list::Vector{Any})
+function inputs_list_to_dict(list::AbstractVector)
     result = Dict{String, Any}()
     _item_to_dict!.(Ref(result), list)
     return result
 end
 
-dep_id_string(id::NamedTuple) = sorted_json(id)
+dep_id_string(id::AbstractDict) = sorted_json(id)
 dep_id_string(id::AbstractString) = String(id)
 function _item_to_dict!(target::Dict{String, Any}, item)
     target["$(dep_id_string(item.id)).$(item.property)"] = get(item, :value, nothing)
 end
 
-_item_to_dict!(target::Dict{String, Any}, item::Vector) =  _item_to_dict!.(Ref(target), item)
+_item_to_dict!(target::Dict{String, Any}, item::AbstractVector) =  _item_to_dict!.(Ref(target), item)

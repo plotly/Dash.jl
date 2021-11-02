@@ -93,7 +93,7 @@ function config_html(app::DashApp)
             max_retry = get_devsetting(app, :hot_reload_max_retry)
         )
     end
-    return """<script id="_dash-config" type="application/json">$(JSON2.write(config))</script>"""
+    return """<script id="_dash-config" type="application/json">$(JSON3.write(config))</script>"""
 end
 
 

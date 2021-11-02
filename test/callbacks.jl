@@ -1,4 +1,4 @@
-import HTTP, JSON2
+import HTTP, JSON3
 using Test
 using Dash
 
@@ -22,7 +22,7 @@ using Dash
     handler = make_handler(app)
     request = HTTP.Request("GET", "/_dash-dependencies")
     resp = HTTP.handle(handler, request)
-    deps = JSON2.read(String(resp.body))
+    deps = JSON3.read(String(resp.body))
     @test deps[1].prevent_initial_call == false
     @test deps[2].prevent_initial_call == false
 
@@ -44,7 +44,7 @@ using Dash
     handler = make_handler(app)
     request = HTTP.Request("GET", "/_dash-dependencies")
     resp = HTTP.handle(handler, request)
-    deps = JSON2.read(String(resp.body))
+    deps = JSON3.read(String(resp.body))
     @test deps[1].prevent_initial_call == true
     @test deps[2].prevent_initial_call == false
 
@@ -66,7 +66,7 @@ using Dash
     handler = make_handler(app)
     request = HTTP.Request("GET", "/_dash-dependencies")
     resp = HTTP.handle(handler, request)
-    deps = JSON2.read(String(resp.body))
+    deps = JSON3.read(String(resp.body))
     @test deps[1].prevent_initial_call == true
     @test deps[2].prevent_initial_call == true
 
@@ -88,7 +88,7 @@ using Dash
     handler = make_handler(app)
     request = HTTP.Request("GET", "/_dash-dependencies")
     resp = HTTP.handle(handler, request)
-    deps = JSON2.read(String(resp.body))
+    deps = JSON3.read(String(resp.body))
     @test deps[1].prevent_initial_call == true
     @test deps[2].prevent_initial_call == false
 
@@ -111,7 +111,7 @@ end
     handler = make_handler(app)
     request = HTTP.Request("GET", "/_dash-dependencies")
     resp = HTTP.handle(handler, request)
-    deps = JSON2.read(String(resp.body))
+    deps = JSON3.read(String(resp.body))
 
     @test length(deps) == 1
     cb = deps[1]
@@ -126,7 +126,7 @@ end
     request = HTTP.Request("POST", "/_dash-update-component", [], Vector{UInt8}(test_json))
     response = HTTP.handle(handler, request)
     @test response.status == 200
-    resp_obj = JSON2.read(String(response.body))
+    resp_obj = JSON3.read(String(response.body))
     @test in(:multi, keys(resp_obj))
     @test resp_obj.response.var"my-div".children == "test"
 
@@ -151,7 +151,7 @@ end
     request = HTTP.Request("POST", "/_dash-update-component", [], Vector{UInt8}(test_json))
     response = HTTP.handle(handler, request)
     @test response.status == 200
-    resp_obj = JSON2.read(String(response.body))
+    resp_obj = JSON3.read(String(response.body))
     @test in(:multi, keys(resp_obj))
     @test resp_obj.response[Symbol("my-div")].children == "test"
     @test resp_obj.response[Symbol("my-div2")].children == "state"
@@ -174,7 +174,7 @@ end
     request = HTTP.Request("POST", "/_dash-update-component", [], Vector{UInt8}(test_json))
     response = HTTP.handle(handler, request)
     @test response.status == 200
-    resp_obj = JSON2.read(String(response.body))
+    resp_obj = JSON3.read(String(response.body))
     @test in(:multi, keys(resp_obj))
     @test resp_obj.response[Symbol("my-div")].children == "test"
 
@@ -329,7 +329,7 @@ end
             (id = "test-in", property = "value", value = "test")
         ]
     )
-    test_json = JSON2.write(request)
+    test_json = JSON3.write(request)
     request = HTTP.Request("POST", "/_dash-update-component", [], Vector{UInt8}(test_json))
     response = HTTP.handle(handler, request)
 
@@ -368,12 +368,12 @@ end
             (id = (index=2, type="test"), property = "value", value = "test")
         ]
     )
-    test_json = JSON2.write(request)
+    test_json = JSON3.write(request)
     request = HTTP.Request("POST", "/_dash-update-component", [], Vector{UInt8}(test_json))
     response = HTTP.handle(handler, request)
 
     @test response.status == 200
-    resp_obj = JSON2.read(String(response.body))
+    resp_obj = JSON3.read(String(response.body))
     @test in(:multi, keys(resp_obj))
     @test resp_obj.response.var"{\"index\":1,\"type\":\"test_out\"}".children == "test"
 
@@ -420,11 +420,12 @@ end
             ]
         ]
     )
-    test_json = JSON2.write(request)
+    test_json = JSON3.write(request)
     request = HTTP.Request("POST", "/_dash-update-component", [], Vector{UInt8}(test_json))
     response = HTTP.handle(handler, request)
     @test response.status == 200
-    resp_obj = JSON2.read(String(response.body))
+    s = String(response.body)
+    resp_obj = JSON3.read(s)
     @test in(:multi, keys(resp_obj))
 
     @test resp_obj.response.var"{\"index\":1,\"type\":\"test-out\"}".children =="test 1"
@@ -472,11 +473,11 @@ end
             ]
         ]
     )
-    test_json = JSON2.write(request)
+    test_json = JSON3.write(request)
     request = HTTP.Request("POST", "/_dash-update-component", [], Vector{UInt8}(test_json))
     response = HTTP.handle(handler, request)
     @test response.status == 200
-    resp_obj = JSON2.read(String(response.body))
+    resp_obj = JSON3.read(String(response.body))
     @test in(:multi, keys(resp_obj))
 
     @test resp_obj.response.var"{\"index\":1,\"type\":\"test-out\"}".children =="test 1"
@@ -578,7 +579,7 @@ end
     handler = make_handler(app)
     request = HTTP.Request("GET", "/_dash-dependencies")
     resp = HTTP.handle(handler, request)
-    deps = JSON2.read(String(resp.body))
+    deps = JSON3.read(String(resp.body))
 
     @test length(deps) == 1
     cb = deps[1]
@@ -621,7 +622,7 @@ end
     handler = make_handler(app)
     request = HTTP.Request("GET", "/_dash-dependencies")
     resp = HTTP.handle(handler, request)
-    deps = JSON2.read(String(resp.body))
+    deps = JSON3.read(String(resp.body))
 
     @test length(deps) == 1
     cb = deps[1]
