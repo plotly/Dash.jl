@@ -5,7 +5,7 @@ after the overall architecture emerges, I disable dev.jl and start writing full-
 =#
 using Test
 using Dash
-using JSON2
+using JSON3
 using HTTP
 @testset "dev" begin
     r = Dash.load_meta("dash_core_components")
