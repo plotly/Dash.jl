@@ -2,7 +2,9 @@ struct Wildcard
     type ::Symbol
 end
 
-JSON2.write(io::IO, wild::Wildcard; kwargs...) = Base.write(io, "[\"", wild.type, "\"]")
+JSON3.StructTypes.StructType(::Type{Wildcard}) = JSON3.RawType()
+
+JSON3.rawbytes(wild::Wildcard) = string("[\"", wild.type, "\"]")
 
 const MATCH = Wildcard(:MATCH)
 const ALL = Wildcard(:ALL)
@@ -29,6 +31,8 @@ dependency_tuple(dep::Dependency) = (id = dep_id_string(dep), property = dep.pro
 const Input = Dependency{TraitInput}
 const State = Dependency{TraitState}
 const Output = Dependency{TraitOutput}
+
+JSON3.StructTypes.StructType(::Type{<:Dependency}) = JSON3.StructTypes.Struct()
 
 """
     Base.==(a::Dependency, b::Dependency)
@@ -97,6 +101,9 @@ struct ClientsideFunction
     namespace ::String
     function_name ::String
 end
+
+JSON3.StructTypes.StructType(::Type{ClientsideFunction}) = JSON3.StructTypes.Struct()
+
 struct Callback
     func ::Union{Function, ClientsideFunction}
     dependencies ::CallbackDeps

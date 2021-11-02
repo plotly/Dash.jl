@@ -31,7 +31,7 @@ function _dependencies_json(app::DashApp)
             prevent_initial_call = callback.prevent_initial_call
         )
     end
-    return JSON2.write(result)
+    return JSON3.write(result)
 end
 
 function _cache_tuple(app::DashApp, registry::ResourcesRegistry)
