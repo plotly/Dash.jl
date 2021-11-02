@@ -1,4 +1,4 @@
-#=include("env.jl")
+include("env.jl")
 include("resources.jl")
 include("devtools.jl")
 include("dash_creation.jl")
@@ -9,6 +9,6 @@ include("context.jl")
 include("core.jl")
 include("misc.jl")
 include("callbacks.jl")
-include("components_utils.jl")=#
+include("components_utils.jl")
 include("table_format.jl")
 #include("dev.jl")

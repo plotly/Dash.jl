@@ -1,6 +1,7 @@
 using Test
 using Dash
 using Dash.TableFormat
+import JSON3
 @testset "named values" begin
    @test TableFormat.Align.left.value == "<"
    a = TableFormat.Align.default
@@ -172,4 +173,5 @@ end
     @test f.locale[:decimal] == ";"
     @test f.locale[:group] == ","
     @test f.locale[:grouping] == [2,2]
+
 end
