@@ -189,6 +189,5 @@ Be careful - in Dash.jl states come first in an arguments list.
 
 ### JSON:
 
-I use JSON2.jl for JSON serialization/deserialization, so in callbacks all JSON objects are `NamedTuples` rather than dictionaries. Within component properties you can use both `Dict` and `NamedTuple` for JSON objects.
-
+I use JSON3.jl for JSON serialization/deserialization.
 Note when declaring elements with a single properly that `layout = (title = "Test graph")` is not interpreted as a `NamedTuple` by Julia  - you'll need to add a comma when declaring the layout, e.g. `layout = (title = "Test graph",)`

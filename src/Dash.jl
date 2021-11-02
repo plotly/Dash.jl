@@ -1,6 +1,6 @@
 module Dash
 using DashBase
-import HTTP, JSON2, JSON3, CodecZlib, MD5
+import HTTP, JSON3, CodecZlib, MD5
 using Sockets
 using Pkg.Artifacts
 
