@@ -17,9 +17,10 @@ end
 
 """
     dcc_send_bytes(src::AbstractVector{UInt8}, filename; type = nothing)
-    dcc_send_bytes(src::Function, filename; type = nothing)
+    dcc_send_bytes(writer::Function, data, filename; type = nothing)
 
 Convert vector of bytes into the format expected by the Download component.
+`writer` function must have signature `(io::IO, data)`
 
 # Examples
 
@@ -37,9 +38,7 @@ using DataFrames, Arrow
 ...
 df = DataFrame(...)
 callback!(app, Output("download", "data"), Input("download-btn", "n_clicks"), prevent_initial_call = true) do n_clicks
-    return dcc_send_bytes("df.arr") do io
-        Arrow.write(io, df)
-    end
+    return dcc_send_bytes(Arrow.write, df, "df.arr")
 end
 ```
 """
@@ -53,18 +52,18 @@ function dcc_send_bytes(src::AbstractVector{UInt8}, filename; type = nothing)
     )
 end
 
-function dcc_send_bytes(src::Function, filename; type = nothing)
+function dcc_send_bytes(writer::Function, data, filename; type = nothing)
     io = IOBuffer()
-    src(io)
+    writer(io, data)
     return dcc_send_bytes(take!(io), filename, type = type)
 end
 
 """
     dcc_send_data(src::AbstractString, filename; type = nothing)
-    dcc_send_data(src::Function, filename; type = nothing)
+    dcc_send_data(writer::Function, data, filename; type = nothing)
 
 Convert string into the format expected by the Download component.
-`src` is a string or function that takes a single argument - io and writes data to it
+`writer` function must have signature `(io::IO, data)`
 
 # Examples
 
@@ -82,9 +81,7 @@ using DataFrames, CSV
 ...
 df = DataFrame(...)
 callback!(app, Output("download", "data"), Input("download-btn", "n_clicks"), prevent_initial_call = true) do n_clicks
-    return dcc_send_string("df.csv") do io
-        CSV.write(io, df)
-    end
+    return dcc_send_string(CSV.write, df, "df.csv")
 end
 ```
 """
@@ -98,8 +95,8 @@ function dcc_send_string(src::AbstractString, filename; type = nothing)
     )
 end
 
-function dcc_send_string(src::Function, filename; type = nothing)
+function dcc_send_string(writer::Function, data, filename; type = nothing)
     io = IOBuffer()
-    src(io)
+    writer(io, data)
     return dcc_send_string(String(take!(io)), filename, type = type)
 end
