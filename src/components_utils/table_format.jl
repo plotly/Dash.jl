@@ -312,7 +312,7 @@ module TableFormat
         )
         return JSON3.write(
             (
-                locale = deepcopy(f.locale),
+                locale = f.locale,
                 nully = f.nully,
                 prefix = f.prefix,
                 specifier = String(take!(spec_io))
