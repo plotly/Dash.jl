@@ -10,8 +10,8 @@ using Base64
     @test !res[:base64]
 
     data2 = "test 2 string"
-    res = dcc_send_string("test_file.csv"; type = "text/csv") do io
-        write(io, data2)
+    res = dcc_send_string(data2, "test_file.csv"; type = "text/csv") do io, data
+        write(io, data)
     end
     @test res[:content] == data2
     @test res[:filename] == "test_file.csv"
@@ -27,9 +27,7 @@ end
     @test res[:base64]
 
     data2 = "test 2 string"
-    res = dcc_send_bytes("test_file.csv"; type = "text/csv") do io
-        write(io, data2)
-    end
+    res = dcc_send_bytes(write, data2, "test_file.csv"; type = "text/csv")
     @test res[:content] == Base64.base64encode(data2)
     @test res[:filename] == "test_file.csv"
     @test res[:type] == "text/csv"
