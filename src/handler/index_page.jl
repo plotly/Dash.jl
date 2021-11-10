@@ -103,7 +103,7 @@ function favicon_html(app::DashApp, resources::ApplicationResources)
     favicon_url = if !isnothing(resources.favicon)
         asset_path(app, resources.favicon.path)
     else
-        "$(get_setting(app, :requests_pathname_prefix))_favicon.ico?v=$(build_info().dash_version)"
+        "$(get_setting(app, :requests_pathname_prefix))_favicon.ico?v=$(_metadata.dash["version"])"
     end
     return format_tag(
         "link",
