@@ -3,7 +3,7 @@ version: 2
 jobs:
 
   test:
-    working_directory: ~/dashjl 
+    working_directory: ~/dashjl
     docker:
       - image: plotly/julia:ci
         auth:
@@ -30,7 +30,7 @@ jobs:
       - run:
           name: 🔎 Unit tests
           command: |
-            julia test/ci_prepare.jl 
+            julia test/ci_prepare.jl
 
       - run:
           name: ⚙️  Integration tests
@@ -38,7 +38,7 @@ jobs:
             python -m venv venv
             . venv/bin/activate
             git clone --depth 1 https://github.com/plotly/dash.git -b dev dash-main
-            cd dash-main && pip install -e .[dev,testing] --progress-bar off && cd ~/dashjl 
+            cd dash-main && pip install -e .[dev,testing] --progress-bar off && cd ~/dashjl
             export PATH=$PATH:/home/circleci/.local/bin/
             pytest --headless --nopercyfinalize --junitxml=test-reports/dashjl.xml --percy-assets=test/assets/ test/integration/
       - store_artifacts:
@@ -51,7 +51,6 @@ jobs:
       - run:
           name: 🦔 percy finalize
           command: npx percy finalize --all
-          when: on_fail
 
 workflows:
   version: 2

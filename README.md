@@ -10,8 +10,6 @@ As of v1.15.0 of Dash, Julia components can be generated in tandem with Python a
 
 #### Create beautiful, analytic applications in Julia
 
-🚧 Dash.jl is a work-in-progress. Feel free to test the waters and submit issues.
-
 Built on top of Plotly.js, React and HTTP.jl, [Dash](https://plotly.com/dash/) ties modern UI elements like dropdowns, sliders, and graphs directly to your analytical Julia code.
 
 ## Installation
@@ -191,6 +189,5 @@ Be careful - in Dash.jl states come first in an arguments list.
 
 ### JSON:
 
-I use JSON2.jl for JSON serialization/deserialization, so in callbacks all JSON objects are `NamedTuples` rather than dictionaries. Within component properties you can use both `Dict` and `NamedTuple` for JSON objects.
-
+I use JSON3.jl for JSON serialization/deserialization.
 Note when declaring elements with a single properly that `layout = (title = "Test graph")` is not interpreted as a `NamedTuple` by Julia  - you'll need to add a comma when declaring the layout, e.g. `layout = (title = "Test graph",)`

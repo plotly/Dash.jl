@@ -1,22 +1,25 @@
+function split_single_callback_id(callback_id::AbstractString)
+    parts = rsplit(callback_id, ".")
+    return (id = parts[1], property = parts[2])
+end
 function split_callback_id(callback_id::AbstractString)
     if startswith(callback_id, "..")
         result = []
-        append!.(Ref(result), split_callback_id.(split(callback_id[3:end-2], "...", keepempty = false)))
+        push!.(Ref(result), split_single_callback_id.(split(callback_id[3:end-2], "...", keepempty = false)))
         return result
     end
-    parts = rsplit(callback_id, ".")
-    return [(id = parts[1], property = parts[2])]
+    return split_single_callback_id(callback_id)
 end
 
 input_to_arg(input) = get(input, :value, nothing)
-input_to_arg(input::Vector) = input_to_arg.(input)
+input_to_arg(input::AbstractVector) = input_to_arg.(input)
 
 make_args(inputs, state) = vcat(input_to_arg(inputs), input_to_arg(state))
 
 res_to_vector(res) = res
 res_to_vector(res::Vector) = res
 
-function _push_to_res!(res, value, out::Vector)
+function _push_to_res!(res, value, out::AbstractVector)
     _push_to_res!.(Ref(res), value, out)
 end
 function _push_to_res!(res, value, out)
@@ -44,32 +47,35 @@ function process_callback_call(app, callback_id, outputs, inputs, state)
 
     _push_to_res!(response, res_vector, outputs)
 
+
     if length(response) == 0
         throw(PreventUpdate())
     end
     return Dict(:response=>response, :multi=>true)
 end
 
-outputs_to_vector(out::Vector) = out
-outputs_to_vector(out) = [out]
+outputs_to_vector(out, is_multi) = is_multi ? out : [out]
 
 function process_callback(request::HTTP.Request, state::HandlerState)
     app = state.app
     response = HTTP.Response(200, ["Content-Type" => "application/json"])
 
-    params = JSON2.read(String(request.body))
+    params = JSON3.read(String(request.body))
     inputs = get(params, :inputs, [])
     state = get(params, :state, [])
     output = Symbol(params[:output])
-    outputs_list = outputs_to_vector(get(params, :outputs, split_callback_id(params[:output])))
-    changedProps = get(params, :changedPropIds, [])
-    context = CallbackContext(response, outputs_list, inputs, state, changedProps)
 
     try
+        is_multi = is_multi_out(app.callbacks[output])
+        outputs_list = outputs_to_vector(
+                get(params, :outputs, split_callback_id(params[:output])),
+                is_multi)
+        changedProps = get(params, :changedPropIds, [])
+        context = CallbackContext(response, outputs_list, inputs, state, changedProps)
         cb_result = with_callback_context(context) do
             process_callback_call(app, output, outputs_list, inputs, state)
         end
-        response.body = Vector{UInt8}(JSON2.write(cb_result))
+        response.body = Vector{UInt8}(JSON3.write(cb_result))
     catch e
         if isa(e,PreventUpdate)
             return HTTP.Response(204)

@@ -174,4 +174,4 @@ Be careful - in Dashboards states came first in arguments list
 
 ### json:
 
-I use JSON2 for json serialization/deserialization, so in callbacks all json objects are NamedTuples not Dicts. In component props you can use both Dicts and NamedTuples for json objects. But be careful with single property objects: `layout = (title = "Test graph")` is not interpreted as NamedTuple by Julia  - you need add comma at the end `layout = (title = "Test graph",)`
+I use JSON3 for json serialization/deserialization. In component props you can use both Dicts and NamedTuples for json objects. But be careful with single property objects: `layout = (title = "Test graph")` is not interpreted as NamedTuple by Julia  - you need add comma at the end `layout = (title = "Test graph",)`
