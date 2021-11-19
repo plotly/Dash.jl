@@ -3,6 +3,8 @@ struct ChangedAsset
     modified ::Int
     is_css ::Bool
 end
+JSON3.StructTypes.StructType(::Type{ChangedAsset}) = JSON3.StructTypes.Struct()
+
 mutable struct StateReload
     hash::Union{String, Nothing}
     hard::Bool
