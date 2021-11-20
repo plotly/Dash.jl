@@ -14,7 +14,8 @@ function start_reload_poll(state::HandlerState)
     for pkg in values(state.registry.components)
         push!(folders, pkg.path)
     end
-    state.reload.task = @async poll_folders(folders; interval = get_devsetting(state.app, :hot_reload_watch_interval)) do file, ts, deleted
+    initial_watched = init_watched(folders)
+    state.reload.task = @async poll_folders(folders, initial_watched; interval = get_devsetting(state.app, :hot_reload_watch_interval)) do file, ts, deleted
         state.reload.hard = true
         state.reload.hash = generate_hash()
         assets_path = get_assets_path(state.app)
