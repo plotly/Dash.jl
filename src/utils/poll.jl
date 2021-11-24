@@ -12,7 +12,7 @@ function poll_until_changed(files::Set{String}; interval = 1.)
     active = true
     while active
         for w in watched
-            if !isfile(w.filename) 
+            if !isfile(w.filename)
                 active = false
                 break;
             end
@@ -25,17 +25,32 @@ function poll_until_changed(files::Set{String}; interval = 1.)
     end
 end
 
-function poll_folders(on_change, folders; interval = 1.)
+function init_watched(folders)
     watched = Dict{String, Float64}()
+    for folder in folders
+        !isdir(folder) && continue
+        for (base, _, files) in walkdir(folder)
+            for f in files
+                path = joinpath(base, f)
+                new_time = mtime(path)
+                watched[path] = new_time
+            end
+        end
+    end
+    return watched
+end
+
+function poll_folders(on_change, folders, initial_watched; interval = 1.)
+    watched = initial_watched
     while true
         walked = Set{String}()
         for folder in folders
             !isdir(folder) && continue
             for (base, _, files) in walkdir(folder)
                 for f in files
-                    path = joinpath(base, f)   
+                    path = joinpath(base, f)
                     new_time = mtime(path)
-                    if new_time > get(watched, path, -1.) 
+                    if new_time > get(watched, path, -1.)
                         on_change(path, new_time, false)
                     end
                     watched[path] = new_time
