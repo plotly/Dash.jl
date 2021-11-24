@@ -72,6 +72,7 @@ end
     app = dash()
     @test app.config.routes_pathname_prefix == "/"
     @test app.config.requests_pathname_prefix == "/test-app/"
+    delete!(ENV, "DASH_APP_NAME")
 
 end
 
