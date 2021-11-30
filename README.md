@@ -6,7 +6,7 @@
 
 ## Project Status
 
-As of v1.15.0 of Dash, Julia components can be generated in tandem with Python and R components. Interested in getting involved with the project? Sponsorship is a great way to accelerate the progress of open source projects like this one; please feel free to [reach out to us](https://plotly.com/consulting-and-oem/)! Just getting started? Check out the [Dash for Julia User Guide](https://dash-julia.plotly.com/)!
+As of v1.15.0 of Dash, Julia components can be generated in tandem with Python and R components. Interested in getting involved with the project? Sponsorship is a great way to accelerate the progress of open source projects like this one; please feel free to [reach out to us](https://plotly.com/consulting-and-oem/)! Just getting started? Check out the [Dash for Julia User Guide](https://dash.plotly.com/julia)!
 
 #### Create beautiful, analytic applications in Julia
 
