@@ -306,6 +306,24 @@ end
 
 end
 
+@testset "multiple callbacks targeting same output" begin
+    app = dash()
+
+    app.layout = html_div() do
+            dcc_input(id = "my-id", value="initial value", type = "text"),
+            dcc_input(id = "my-id2", value="initial value2", type = "text"),
+            html_div(id = "my-div")
+        end
+
+    callback!(app, Output("my-div","children"), Input("my-id","value")) do value
+        return value
+    end
+
+    @test_throws ErrorException callback!(app, Output("my-div","children"), Input("my-id2","value")) do value
+        return "v_$(value)"
+    end
+end
+
 @testset "empty triggered params" begin
     app = dash()
     app.layout = html_div() do
