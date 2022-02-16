@@ -319,9 +319,10 @@ end
         return value
     end
 
-    @test_throws ErrorException callback!(app, Output("my-div","children"), Input("my-id2","value")) do value
+    testresult = @test_throws ErrorException callback!(app, Output("my-div","children"), Input("my-id2","value")) do value
         return "v_$(value)"
     end
+    @test testresult.value.msg == "Multiple callbacks can not target the same output. Offending output: my-div.children"
 end
 
 @testset "empty triggered params" begin
