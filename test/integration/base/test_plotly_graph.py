@@ -30,7 +30,7 @@ def test_jlpg002_plotlyjs_graph(dashjl):
     fp = jl_test_file_path("jlpg002_plotlyjs_graph.jl")
     dashjl.start_server(fp)
     dashjl.wait_for_element_by_css_selector(
-        "#graph", timeout=40
+        "#graph", timeout=120
     )
 
     dashjl.wait_for_text_to_equal("#status", "first", timeout=10)
