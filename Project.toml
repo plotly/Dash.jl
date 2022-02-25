@@ -1,7 +1,7 @@
 name = "Dash"
 uuid = "1b08a953-4be3-4667-9a23-3db579824955"
 authors = ["Chris Parmer <chris@plotly.com>", "Alexandr Romanenko <waralex@gmail.com>"]
-version = "1.1.1"
+version = "1.1.2"
 
 [deps]
 Base64 = "2a0f44e3-6c83-55bd-87e4-b1978d98bd5f"
@@ -17,6 +17,7 @@ JSON3 = "0f8b85d8-7281-11e9-16c2-39a750bddbf1"
 MD5 = "6ac74813-4b46-53a4-afec-0b5dc9d7885c"
 Pkg = "44cfe95a-1eb2-52ea-b672-e2afdf69b78f"
 PlotlyBase = "a03496cd-edff-5a9b-9e67-9cda94a718b5"
+Requires = "ae029012-a4dd-5104-9daa-d747884805df"
 Sockets = "6462fe0b-24de-5631-8697-dd941f90decc"
 Test = "8dfed614-e22c-5e08-85e1-65c5234f0b40"
 UUIDs = "cf7118a7-6976-5b1a-9a39-7adc72f591a4"

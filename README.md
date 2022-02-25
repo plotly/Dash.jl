@@ -6,7 +6,7 @@
 
 ## Project Status
 
-As of v1.15.0 of Dash, Julia components can be generated in tandem with Python and R components. Interested in getting involved with the project? Sponsorship is a great way to accelerate the progress of open source projects like this one; please feel free to [reach out to us](https://plotly.com/consulting-and-oem/)! Just getting started? Check out the [Dash for Julia User Guide](https://dash-julia.plotly.com/)!
+As of v1.15.0 of Dash, Julia components can be generated in tandem with Python and R components. Interested in getting involved with the project? Sponsorship is a great way to accelerate the progress of open source projects like this one; please feel free to [reach out to us](https://plotly.com/consulting-and-oem/)! Just getting started? Check out the [Dash for Julia User Guide](https://dash.plotly.com/julia)!
 
 #### Create beautiful, analytic applications in Julia
 
@@ -25,12 +25,7 @@ pkg> add Dash DashCoreComponents DashHtmlComponents DashTable
 To install the latest (stable) development version instead:
 
 ```julia
-using Pkg
-Pkg.add(PackageSpec(url="https://github.com/plotly/DashBase.jl.git"))
-Pkg.add(PackageSpec(url="https://github.com/plotly/dash-html-components.git", rev="master"))
-Pkg.add(PackageSpec(url="https://github.com/plotly/dash-core-components.git", rev="master"))
-Pkg.add(PackageSpec(url="https://github.com/plotly/dash-table.git", rev="master"))
-Pkg.add(PackageSpec(url="https://github.com/plotly/Dash.jl.git", rev="dev"))
+pkg> add Dash#dev
 ```
 
 ## Usage

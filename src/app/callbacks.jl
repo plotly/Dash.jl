@@ -129,6 +129,7 @@ function _callback!(func::Union{Function, ClientsideFunction, String}, app::Dash
     check_callback(func, app, deps)
 
     out_symbol = Symbol(output_string(deps))
+    haskey(app.callbacks, out_symbol) && error("Multiple callbacks can not target the same output. Offending output: $(out_symbol)")
     callback_func = make_callback_func!(app, func, deps)
     push!(
         app.callbacks,
