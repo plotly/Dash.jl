@@ -124,7 +124,7 @@ end
 add_route!(handler::Function, router::Router, method, url) = add_route!(router, Route(handler, method, url))
 add_route!(handler::Function, router::Router, url) = add_route!(handler, router, nothing, url)
 
-function HTTP.handle(router::Router, request::HTTP.Request, args...)
+function handle(router::Router, request::HTTP.Request, args...)
     path = HTTP.URI(request.target).path
     return handle(router.routes, path, request, args...)
 end

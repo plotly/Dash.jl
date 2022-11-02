@@ -19,7 +19,7 @@ using Dash
 
     @test isempty(app.config.meta_tags)
     @test app.index_string == Dash.default_index
-    @test app.config.assets_external_path == nothing
+    @test app.config.assets_external_path === nothing
 
     @test app.config.include_assets_files == true
     @test app.config.show_undo_redo == false

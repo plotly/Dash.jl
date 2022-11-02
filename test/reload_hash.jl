@@ -30,7 +30,7 @@ end
     handler = make_handler(app)
     write("assets/test2.css", "")
     sleep(2)
-    response = HTTP.handle(handler, HTTP.Request("GET", "/_reload-hash"))
+    response = Dash.HttpHelpers.handle(handler, HTTP.Request("GET", "/_reload-hash"))
     data = JSON3.read(response.body)
     @test length(data.files) == 1
     @test data.files[1].url == "/assets/test2.css"

@@ -147,7 +147,7 @@ function make_handler(app::DashApp, registry::ResourcesRegistry; check_layout = 
 
     compile_request = HTTP.Request("GET", prefix)
     HTTP.setheader(compile_request, "Accept-Encoding" => "gzip")
-    HTTP.handle(handler, compile_request) #For handler precompilation
+    handle(handler, compile_request) #For handler precompilation
 
     get_devsetting(app, :hot_reload) && start_reload_poll(state)
 
