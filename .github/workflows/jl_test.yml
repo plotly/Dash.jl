@@ -8,7 +8,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        jl_version: ["1.3", "1.6", "1.8"]
+        jl_version: ["1.4", "1.6", "1.8"]
     steps:
       - uses: actions/checkout@v2
       - uses: julia-actions/setup-julia@v1
