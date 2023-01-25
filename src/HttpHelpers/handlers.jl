@@ -1,9 +1,10 @@
 struct RequestHandlerFunction <: HTTP.Handler
 	func::Function # func(req)
 end
+(x::RequestHandlerFunction)(args...) = x.func(args...)
 
 function handle(h::RequestHandlerFunction, request::HTTP.Request, args...)
-	h.func(request, args...)
+	h(request, args...)
 end
 
 function handle(handler::Function, request::HTTP.Request, args...)
@@ -11,7 +12,7 @@ function handle(handler::Function, request::HTTP.Request, args...)
 end
 
 function handle(h::RequestHandlerFunction, request::HTTP.Request, state, args...)
-	h.func(request, state, args...)
+	h(request, state, args...)
 end
 
 function handle(handler::Function, request::HTTP.Request, state, args...)
