@@ -165,6 +165,15 @@ end
 end 
 
 @testset "base_handler" begin
+	function structsequal(a::T, b::T)::Bool where T
+		for name in propertynames(a)
+			if getfield(a, name) != getfield(b, name)
+				return false
+			end
+		end
+		return true
+	end
+
     base_handler = function(request, state)
         @test request.target == "/test_path" 
         @test state isa TestState
@@ -176,6 +185,7 @@ end
     test_handler = state_handler(base_handler, state)
     test_request = HTTP.Request("GET", "/test_path")
     res = Dash.HttpHelpers.handle(test_handler, test_request)
+	 @test structsequal(res, test_handler(test_request)) 		#RequestHandlerFunction must be directly callable since HTTP.jl will use it
     @test res.status == 200
     @test String(res.body) == "test1"
     @test startswith(HTTP.header(res, "Content-Type", ""), "text/plain")
@@ -192,7 +202,8 @@ end
     test_handler = state_handler(base_handler_http, state)
     test_request = HTTP.Request("GET", "/test_path2")
     res = Dash.HttpHelpers.handle(test_handler, test_request)
-    @test res.status == 200
+	 @test structsequal(res, test_handler(test_request)) 
+	 @test res.status == 200
     @test String(res.body) == "<html></html>"
     @test startswith(HTTP.header(res, "Content-Type", ""), "text/html")
     @test parse(Int, HTTP.header(res, "Content-Length", "0")) == sizeof("<html></html>")
@@ -207,7 +218,8 @@ end
     test_handler = state_handler(base_handler_js, state)
     test_request = HTTP.Request("GET", "/test_path3")
     res = Dash.HttpHelpers.handle(test_handler, test_request)
-    @test res.status == 200
+	 @test structsequal(res, test_handler(test_request)) 
+	 @test res.status == 200
     @test String(res.body) == "<html></html>"
     @test startswith(HTTP.header(res, "Content-Type", ""), "text/javascript")
     @test parse(Int, HTTP.header(res, "Content-Length", "0")) == sizeof("<html></html>")
