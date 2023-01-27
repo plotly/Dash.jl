@@ -48,9 +48,9 @@ jobs:
       - store_artifacts:
           path: /tmp/dash_artifacts
 
-      - run:
-          name: 🦔 percy finalize
-          command: npx percy finalize --all
+      # - run:
+      #     name: 🦔 percy finalize
+      #     command: npx percy finalize --all
 
 workflows:
   version: 2
