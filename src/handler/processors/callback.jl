@@ -75,7 +75,7 @@ function process_callback(request::HTTP.Request, state::HandlerState)
         cb_result = with_callback_context(context) do
             process_callback_call(app, output, outputs_list, inputs, state)
         end
-        response.body = Vector{UInt8}(JSON3.write(cb_result))
+        response.body = Vector{UInt8}(JSON3.write(cb_result, allow_inf = true))
     catch e
         if isa(e,PreventUpdate)
             return HTTP.Response(204)
