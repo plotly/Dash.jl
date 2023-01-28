@@ -52,7 +52,7 @@ function run_server(app::DashApp,
     start_server = () -> begin
         handler = make_handler(app);
         server = Sockets.listen(get_inetaddr(host, port))
-        task = @async HTTP.serve(handler, host, port; server = server, verbose = true)
+        task = @async HTTP.serve(handler, host, port; server = server, verbose = debug==true)
         return (server, task)
     end
 
