@@ -47,18 +47,18 @@ end
     handler = Dash.make_handler(app)
 
     request = HTTP.Request("GET", "/")
-    response = HTTP.handle(handler, request)
+    response = Dash.HttpHelpers.handle(handler, request)
     @test response.status == 200
     body_str = String(response.body)
 
     request = HTTP.Request("GET", "/_dash-layout")
-    response = HTTP.handle(handler, request)
+    response = Dash.HttpHelpers.handle(handler, request)
     @test response.status == 200
     body_str = String(response.body)
     @test body_str == JSON3.write(app.layout)
 
     request = HTTP.Request("GET", "/_dash-dependencies")
-    response = HTTP.handle(handler, request)
+    response = Dash.HttpHelpers.handle(handler, request)
     @test response.status == 200
     body_str = String(response.body)
     resp_json = JSON3.read(body_str)
@@ -76,7 +76,7 @@ end
 
     test_json = """{"output":"my-div.children","changedPropIds":["my-id.value"],"inputs":[{"id":"my-id","property":"value","value":"initial value3333"}]}"""
     request = HTTP.Request("POST", "/_dash-update-component", [], Vector{UInt8}(test_json))
-    response = HTTP.handle(handler, request)
+    response = Dash.HttpHelpers.handle(handler, request)
     @test response.status == 200
     body_str = String(response.body)
 
@@ -97,14 +97,14 @@ end
     handler = Dash.make_handler(app)
     request = HTTP.Request("GET", "/_dash-layout")
 
-    response = HTTP.handle(handler, request)
+    response = Dash.HttpHelpers.handle(handler, request)
     @test response.status == 200
     body_str = String(response.body)
     @test body_str == JSON3.write(layout_func())
     @test occursin("my_div2", body_str)
 
     global_id = "my_div3"
-    response = HTTP.handle(handler, request)
+    response = Dash.HttpHelpers.handle(handler, request)
     @test response.status == 200
     body_str = String(response.body)
     @test body_str == JSON3.write(layout_func())
@@ -120,12 +120,12 @@ end
     @test Dash.get_assets_path(app) == joinpath(pwd(),"assets")
     handler = Dash.make_handler(app)
     request = HTTP.Request("GET", "/assets/test.png")
-    response = HTTP.handle(handler, request)
+    response = Dash.HttpHelpers.handle(handler, request)
     @test response.status == 200
     body_str = String(response.body)
 
     request = HTTP.Request("GET", "/assets/wrong.png")
-    response = HTTP.handle(handler, request)
+    response = Dash.HttpHelpers.handle(handler, request)
     @test response.status == 404
     body_str = String(response.body)
 
@@ -147,7 +147,7 @@ end
     test_json = """{"output":"my-div.children","changedPropIds":["my-id.children"],"inputs":[{"id":"my-id","property":"children","value":10}]}"""
 
     request = HTTP.Request("POST", "/_dash-update-component", [], Vector{UInt8}(test_json))
-    response = HTTP.handle(handler, request)
+    response = Dash.HttpHelpers.handle(handler, request)
     @test response.status == 204
     @test length(response.body) == 0
 
@@ -165,7 +165,7 @@ end
     test_json = """{"output":"..my-div.children...my-div2.children..","changedPropIds":["my-id.children"],"inputs":[{"id":"my-id","property":"children","value":10}]}"""
 
     request = HTTP.Request("POST", "/_dash-update-component", [], Vector{UInt8}(test_json))
-    response = HTTP.handle(handler, request)
+    response = Dash.HttpHelpers.handle(handler, request)
 
     @test response.status == 200
     result = JSON3.read(String(response.body))
