@@ -1,7 +1,7 @@
 name = "Dash"
 uuid = "1b08a953-4be3-4667-9a23-3db579824955"
 authors = ["Chris Parmer <chris@plotly.com>", "Alexandr Romanenko <waralex@gmail.com>"]
-version = "1.1.2"
+version = "1.2.0"
 
 [deps]
 Base64 = "2a0f44e3-6c83-55bd-87e4-b1978d98bd5f"
