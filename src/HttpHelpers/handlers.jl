@@ -1,7 +1,28 @@
+struct RequestHandlerFunction <: HTTP.Handler
+    func::Function # func(req)
+end
+(x::RequestHandlerFunction)(args...) = x.func(args...)
+
+function handle(h::RequestHandlerFunction, request::HTTP.Request, args...)
+    h(request, args...)
+end
+
+function handle(handler::Function, request::HTTP.Request, args...)
+    handler(request, args)
+end
+
+function handle(h::RequestHandlerFunction, request::HTTP.Request, state, args...)
+    h(request, state, args...)
+end
+
+function handle(handler::Function, request::HTTP.Request, state, args...)
+    handler(request, state, args)
+end
+
 function state_handler(base_handler, state)
-    return HTTP.RequestHandlerFunction(
+    return RequestHandlerFunction(
         function(request::HTTP.Request, args...)
-            response = HTTP.handle(base_handler, request, state, args...)
+            response = handle(base_handler, request, state, args...)
             if response.status == 200
                 HTTP.defaultheader!(response, "Content-Type" => HTTP.sniff(response.body))
                 HTTP.defaultheader!(response, "Content-Length" => string(sizeof(response.body)))
@@ -11,7 +32,7 @@ function state_handler(base_handler, state)
     )
 end
 
-state_handler(base_handler::Function, state) = state_handler(HTTP.RequestHandlerFunction(base_handler), state)
+state_handler(base_handler::Function, state) = state_handler(RequestHandlerFunction(base_handler), state)
 
 function check_mime(message::HTTP.Message, mime_list)
     !HTTP.hasheader(message, "Content-Type") && return false
@@ -22,9 +43,9 @@ end
 
 const default_compress_mimes = ["text/plain", "text/html", "text/css", "text/xml", "application/json", "application/javascript", "application/css"]
 function compress_handler(base_handler; mime_types::Vector{String} = default_compress_mimes, compress_min_size = 500)
-    return HTTP.RequestHandlerFunction(
+    return RequestHandlerFunction(
         function(request::HTTP.Request, args...)
-            response = HTTP.handle(base_handler, request, args...)
+            response = handle(base_handler, request, args...)
             if response.status == 200 && sizeof(response.body) >= compress_min_size &&
             occursin("gzip", HTTP.header(request, "Accept-Encoding", "")) && check_mime(response, mime_types)
                 HTTP.setheader(response, "Content-Encoding" => "gzip")
@@ -38,14 +59,14 @@ function compress_handler(base_handler; mime_types::Vector{String} = default_com
 end
 
 function compress_handler(base_handler::Function; mime_types::Vector{String} = default_compress_mimes, compress_min_size = 500)
-    return compress_handler(HTTP.RequestHandlerFunction(base_handler), mime_types = mime_types, compress_min_size = compress_min_size)
+    return compress_handler(RequestHandlerFunction(base_handler), mime_types = mime_types, compress_min_size = compress_min_size)
 end
 
 function exception_handling_handler(ex_handling_func, base_handler)
-    return HTTP.RequestHandlerFunction(
+    return RequestHandlerFunction(
         function(request::HTTP.Request, args...)
             try
-                return HTTP.handle(base_handler, request, args...)
+                return handle(base_handler, request, args...)
             catch e
                 return ex_handling_func(e)
             end
@@ -55,12 +76,12 @@ function exception_handling_handler(ex_handling_func, base_handler)
 end
 
 exception_handling_handler(ex_handling_func, base_handler::Function) =
-         exception_handling_handler(ex_handling_func, HTTP.RequestHandlerFunction(base_handler))
+         exception_handling_handler(ex_handling_func, RequestHandlerFunction(base_handler))
 
 function request_logging_handler(base_handler; exclude = Regex[])
-    return HTTP.RequestHandlerFunction(
+    return RequestHandlerFunction(
         function(request::HTTP.Request, args...)
-            response = HTTP.handle(base_handler, request, args...)
+            response = handle(base_handler, request, args...)
 
             return response
         end

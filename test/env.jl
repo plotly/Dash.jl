@@ -52,6 +52,7 @@ end
     @test dash_env("host") == "localhost"
     @test isnothing(dash_env("host", prefix = ""))
 
+	delete!(ENV, "PORT")
     @test dash_env(Int64, "port", 8050, prefix = "") == 8050
     ENV["PORT"] = "2001"
     @test isnothing(dash_env(Int64, "port"))
