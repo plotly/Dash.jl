@@ -1,7 +1,7 @@
 using Test
 using HTTP
 using Dash
-using Dash: make_handler, compress_handler, process_resource, state_handler, HandlerState, 
+using Dash: make_handler, compress_handler, process_resource, state_handler, HandlerState,
             process_resource, Route, Router, add_route!, make_handler
 using Dash.HttpHelpers: StaticRoute, DynamicRoute, try_handle, RouteHandler, _make_route
 using CodecZlib
@@ -22,17 +22,17 @@ end
 
     route = DynamicRoute("/ddd/<var1>/fff/<var2>")
     @test route.static_segments == ((1,"ddd"), (3, "fff"))
-    route.variables.var1 == 2 
+    route.variables.var1 == 2
     route.variables.var2 == 4
-    
-    route = _make_route("/fff/sss/ggg/vvvv") 
+
+    route = _make_route("/fff/sss/ggg/vvvv")
     @test route isa StaticRoute
     @test route.url == "/fff/sss/ggg/vvvv"
 
-    route = _make_route("/fff/sss/<var1>/vvvv") 
+    route = _make_route("/fff/sss/<var1>/vvvv")
     @test route isa DynamicRoute
 
-    route = _make_route("/test_req/test1") 
+    route = _make_route("/test_req/test1")
     handler = (req) -> HTTP.Response(200)
     route_handler = RouteHandler(route, handler)
     res = try_handle(route_handler, path_request("/test_req/test2")...)
@@ -43,7 +43,7 @@ end
     @test res.status == 200
 
 
-    route = _make_route("/test_req/<var1>/test1") 
+    route = _make_route("/test_req/<var1>/test1")
     handler = (req;kwargs...) ->
         begin
             tmp = String[]
@@ -63,7 +63,7 @@ end
     @test res.status == 200
     @test String(res.body) == "var1->asdasd"
 
-    route = _make_route("/test_req/*/test1") 
+    route = _make_route("/test_req/*/test1")
     route_handler = RouteHandler(route, handler)
     res = try_handle(route_handler, path_request("/test_req/asdasd/test2")...)
     @test isnothing(res)
@@ -71,15 +71,15 @@ end
     @test res.status == 200
     @test String(res.body) == ""
 
-    route = _make_route("/test_req/*/test1/<var1>") 
+    route = _make_route("/test_req/*/test1/<var1>")
     route_handler = RouteHandler(route, handler)
     res = try_handle(route_handler, path_request("/test_req/asdasd/test1")...)
     @test isnothing(res)
     res = try_handle(route_handler, path_request("/test_req/asdasd/test1/ddd")...)
     @test res.status == 200
     @test String(res.body) == "var1->ddd"
-    
-    route = _make_route("/test_req/<var2>/test1/<var1>") 
+
+    route = _make_route("/test_req/<var2>/test1/<var1>")
     route_handler = RouteHandler(route, handler)
     res = try_handle(route_handler, path_request("/test_req/asdasd/test1")...)
     @test isnothing(res)
@@ -109,73 +109,73 @@ end
 
     handler1 = (req;var1) -> HTTP.Response(200, "var1=$var1")
     add_route!(handler1, router, "/var/<var1>/")
-    
-    add_route!((req;var1, var2) -> HTTP.Response(200, "var1=$var1,var2=$var2"), 
-        router, "/var/<var1>/<var2>/")    
-        
-    res = Dash.HttpHelpers.handle(router, HTTP.Request("GET","")) 
+
+    add_route!((req;var1, var2) -> HTTP.Response(200, "var1=$var1,var2=$var2"),
+        router, "/var/<var1>/<var2>/")
+
+    res = Dash.HttpHelpers.handle(router, HTTP.Request("GET",""))
     @test res.status == 200
     @test String(res.body) == "index"
 
-    res = Dash.HttpHelpers.handle(router, HTTP.Request("GET","/")) 
+    res = Dash.HttpHelpers.handle(router, HTTP.Request("GET","/"))
     @test res.status == 200
     @test String(res.body) == "index"
 
-    res = Dash.HttpHelpers.handle(router, HTTP.Request("GET","/test_post")) 
+    res = Dash.HttpHelpers.handle(router, HTTP.Request("GET","/test_post"))
     @test res.status == 404
-    
-    res = Dash.HttpHelpers.handle(router, HTTP.Request("POST","/test_post")) 
+
+    res = Dash.HttpHelpers.handle(router, HTTP.Request("POST","/test_post"))
     @test res.status == 200
     @test String(res.body) == "test_post"
 
-    res = Dash.HttpHelpers.handle(router, HTTP.Request("POST","/var/")) 
+    res = Dash.HttpHelpers.handle(router, HTTP.Request("POST","/var/"))
     @test res.status == 404
 
-    res = Dash.HttpHelpers.handle(router, HTTP.Request("POST","/var/ass")) 
+    res = Dash.HttpHelpers.handle(router, HTTP.Request("POST","/var/ass"))
     @test res.status == 200
     @test String(res.body) == "var1=ass"
-    res = Dash.HttpHelpers.handle(router, HTTP.Request("POST","/var/ass/")) 
+    res = Dash.HttpHelpers.handle(router, HTTP.Request("POST","/var/ass/"))
     @test res.status == 200
     @test String(res.body) == "var1=ass"
 
-    res = Dash.HttpHelpers.handle(router, HTTP.Request("POST","/var/ass/fff")) 
+    res = Dash.HttpHelpers.handle(router, HTTP.Request("POST","/var/ass/fff"))
     @test res.status == 200
     @test String(res.body) == "var1=ass,var2=fff"
-    res = Dash.HttpHelpers.handle(router, HTTP.Request("POST","/var/ass/fff/")) 
+    res = Dash.HttpHelpers.handle(router, HTTP.Request("POST","/var/ass/fff/"))
     @test res.status == 200
     @test String(res.body) == "var1=ass,var2=fff"
-    res = Dash.HttpHelpers.handle(router, HTTP.Request("POST","/var/ass/fff/dd")) 
+    res = Dash.HttpHelpers.handle(router, HTTP.Request("POST","/var/ass/fff/dd"))
     @test res.status == 404
 
-    add_route!((req, param;var1) -> HTTP.Response(200, "$param, var1=$var1"), 
-        router, "POST", "/<var1>")    
-        
-    res = Dash.HttpHelpers.handle(router, HTTP.Request("POST","/test_post")) 
+    add_route!((req, param;var1) -> HTTP.Response(200, "$param, var1=$var1"),
+        router, "POST", "/<var1>")
+
+    res = Dash.HttpHelpers.handle(router, HTTP.Request("POST","/test_post"))
     @test res.status == 200
     @test String(res.body) == "test_post"
 
-    res = Dash.HttpHelpers.handle(router, HTTP.Request("POST","/test"), "aaa") 
+    res = Dash.HttpHelpers.handle(router, HTTP.Request("POST","/test"), "aaa")
     @test res.status == 200
     @test String(res.body) == "aaa, var1=test"
 
-    res = Dash.HttpHelpers.handle(router, HTTP.Request("POST","/test/renderer/r.js"), "aaa") 
+    res = Dash.HttpHelpers.handle(router, HTTP.Request("POST","/test/renderer/r.js"), "aaa")
     @test res.status == 200
     @test String(res.body) == "aaa, var1=test/renderer/r.js"
-        
-end 
+
+end
 
 @testset "base_handler" begin
-	function structsequal(a::T, b::T)::Bool where T
-		for name in propertynames(a)
-			if getfield(a, name) != getfield(b, name)
-				return false
-			end
-		end
-		return true
-	end
+    function structsequal(a::T, b::T)::Bool where T
+        for name in propertynames(a)
+            if getfield(a, name) != getfield(b, name)
+                return false
+            end
+        end
+        return true
+    end
 
     base_handler = function(request, state)
-        @test request.target == "/test_path" 
+        @test request.target == "/test_path"
         @test state isa TestState
         @test state.setting
         return HTTP.Response(200, "test1")
@@ -185,31 +185,31 @@ end
     test_handler = state_handler(base_handler, state)
     test_request = HTTP.Request("GET", "/test_path")
     res = Dash.HttpHelpers.handle(test_handler, test_request)
-	 @test structsequal(res, test_handler(test_request)) 		#RequestHandlerFunction must be directly callable since HTTP.jl will use it
+     @test structsequal(res, test_handler(test_request))        #RequestHandlerFunction must be directly callable since HTTP.jl will use it
     @test res.status == 200
     @test String(res.body) == "test1"
     @test startswith(HTTP.header(res, "Content-Type", ""), "text/plain")
     @test parse(Int, HTTP.header(res, "Content-Length", "0")) == sizeof("test1")
 
     base_handler_http = function(request, state)
-        @test request.target == "/test_path2" 
+        @test request.target == "/test_path2"
         @test state isa TestState
         @test state.setting
         return HTTP.Response(200, "<html></html>")
     end
-    
+
     state = TestState(true)
     test_handler = state_handler(base_handler_http, state)
     test_request = HTTP.Request("GET", "/test_path2")
     res = Dash.HttpHelpers.handle(test_handler, test_request)
-	 @test structsequal(res, test_handler(test_request)) 
-	 @test res.status == 200
+     @test structsequal(res, test_handler(test_request))
+     @test res.status == 200
     @test String(res.body) == "<html></html>"
     @test startswith(HTTP.header(res, "Content-Type", ""), "text/html")
     @test parse(Int, HTTP.header(res, "Content-Length", "0")) == sizeof("<html></html>")
 
     base_handler_js = function(request, state)
-        @test request.target == "/test_path3" 
+        @test request.target == "/test_path3"
         @test state isa TestState
         @test state.setting
         return HTTP.Response(200, ["Content-Type"=>"text/javascript"], body = "<html></html>")
@@ -218,8 +218,8 @@ end
     test_handler = state_handler(base_handler_js, state)
     test_request = HTTP.Request("GET", "/test_path3")
     res = Dash.HttpHelpers.handle(test_handler, test_request)
-	 @test structsequal(res, test_handler(test_request)) 
-	 @test res.status == 200
+     @test structsequal(res, test_handler(test_request))
+     @test res.status == 200
     @test String(res.body) == "<html></html>"
     @test startswith(HTTP.header(res, "Content-Type", ""), "text/javascript")
     @test parse(Int, HTTP.header(res, "Content-Length", "0")) == sizeof("<html></html>")
@@ -227,12 +227,12 @@ end
 @testset "compression" begin
 
     base_handler = function(request, state)
-        @test request.target == "/test_path" 
+        @test request.target == "/test_path"
         @test state isa TestState
         @test state.setting
         return HTTP.Response(200, "test1")
     end
-    
+
     state = TestState(true)
     handler = compress_handler(state_handler(base_handler, state))
     test_request = HTTP.Request("GET", "/test_path")
@@ -243,7 +243,7 @@ end
     @test !HTTP.hasheader(res, "Content-Encoding")
 
     base_handler = function(request, state)
-        @test request.target == "/test_big" 
+        @test request.target == "/test_big"
         @test state isa TestState
         @test state.setting
         return HTTP.Response(200, repeat("<html></html>", 500))
@@ -290,7 +290,7 @@ end
                     dev_package_path = "dash-renderer/dash_renderer.js",
                 )
             ]
-        )    
+        )
     )
 
     test_app = dash()
@@ -319,7 +319,7 @@ end
     HTTP.setheader(request, "If-None-Match"=>etag)
     resp = Dash.HttpHelpers.handle(handler, request)
     @test resp.status == 304
-    
+
 
     request = HTTP.Request("GET", "/_dash-component-suites/dash_renderer/props.v1_2_3m2333123.min.js")
     resp = Dash.HttpHelpers.handle(handler, request)
@@ -327,6 +327,6 @@ end
     @test resp.status == 200
     @test String(resp.body) == "var string = \"fffffff\""
     @test HTTP.hasheader(resp, "Cache-Control")
-    
+
 end
 

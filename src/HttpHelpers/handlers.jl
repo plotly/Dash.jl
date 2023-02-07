@@ -1,35 +1,35 @@
 struct RequestHandlerFunction <: HTTP.Handler
-	func::Function # func(req)
+    func::Function # func(req)
 end
 (x::RequestHandlerFunction)(args...) = x.func(args...)
 
 function handle(h::RequestHandlerFunction, request::HTTP.Request, args...)
-	h(request, args...)
+    h(request, args...)
 end
 
 function handle(handler::Function, request::HTTP.Request, args...)
-	handler(request, args)
+    handler(request, args)
 end
 
 function handle(h::RequestHandlerFunction, request::HTTP.Request, state, args...)
-	h(request, state, args...)
+    h(request, state, args...)
 end
 
 function handle(handler::Function, request::HTTP.Request, state, args...)
-	handler(request, state, args)
+    handler(request, state, args)
 end
 
 function state_handler(base_handler, state)
-	return RequestHandlerFunction(
-		 function(request::HTTP.Request, args...)
-			  response = handle(base_handler, request, state, args...)
-			  if response.status == 200
-					HTTP.defaultheader!(response, "Content-Type" => HTTP.sniff(response.body))
-					HTTP.defaultheader!(response, "Content-Length" => string(sizeof(response.body)))
-			  end
-			  return response
-		 end
-	)
+    return RequestHandlerFunction(
+         function(request::HTTP.Request, args...)
+              response = handle(base_handler, request, state, args...)
+              if response.status == 200
+                    HTTP.defaultheader!(response, "Content-Type" => HTTP.sniff(response.body))
+                    HTTP.defaultheader!(response, "Content-Length" => string(sizeof(response.body)))
+              end
+              return response
+         end
+    )
 end
 
 state_handler(base_handler::Function, state) = state_handler(RequestHandlerFunction(base_handler), state)
