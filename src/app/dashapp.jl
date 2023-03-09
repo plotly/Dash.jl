@@ -42,7 +42,6 @@ end
 
 #only name, index_string and layout are available to set
 function Base.setproperty!(app::DashApp, property::Symbol, value)
-    property == :name && return set_name!(app, value)
     property == :index_string && return set_index_string!(app, value)
     property == :layout && return set_layout!(app::DashApp, value)
     property == :title && return set_title!(app::DashApp, value)
@@ -52,15 +51,9 @@ function Base.setproperty!(app::DashApp, property::Symbol, value)
     error("The property `$(property)` of `DashApp` does not exist.")
 end
 
-function set_name!(app::DashApp, name)
-    setfield!(app, :name, name)
-end
-
 function set_title!(app::DashApp, title)
     setfield!(app, :title, title)
 end
-
-get_name(app::DashApp) = app.name
 
 function set_layout!(app::DashApp, component::Union{Component,Function})
     setfield!(app, :layout, component)

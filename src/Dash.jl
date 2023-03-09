@@ -13,7 +13,7 @@ include("HttpHelpers/HttpHelpers.jl")
 
 using .HttpHelpers
 
-export dash, Component, Front, callback!,
+export dash, Component, callback!,
 enable_dev_tools!, ClientsideFunction,
 run_server, PreventUpdate, no_update, @var_str,
 Input, Output, State, make_handler, callback_context,
