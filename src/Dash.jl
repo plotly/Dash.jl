@@ -3,7 +3,10 @@ using DashBase
 import HTTP, JSON3, CodecZlib, MD5
 using Sockets
 using Pkg.Artifacts
+
+if !isdefined(Base, :get_extension)
 using Requires
+end
 
 const ROOT_PATH = realpath(joinpath(@__DIR__, ".."))
 #const RESOURCE_PATH = realpath(joinpath(ROOT_PATH, "resources"))
@@ -106,11 +109,12 @@ end
 @place_embedded_components
 const _metadata = load_all_metadata()
 function __init__()
-   setup_renderer_resources()
-   setup_dash_resources()
-   @require PlotlyJS="f0f68f2c-4968-5e81-91da-67840de0976a" include("plotly_js.jl")
+    setup_renderer_resources()
+    setup_dash_resources()
+    @static if !isdefined(Base, :get_extension)
+        @require PlotlyJS="f0f68f2c-4968-5e81-91da-67840de0976a" include("../ext/PlotlyJSExt.jl")
+    end
 end
-
 
 JSON3.StructTypes.StructType(::Type{DashBase.Component}) = JSON3.StructTypes.Struct()
 JSON3.StructTypes.excludes(::Type{DashBase.Component}) = (:name, :available_props, :wildcard_regex)

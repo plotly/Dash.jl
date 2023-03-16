@@ -17,6 +17,7 @@ JSON3 = "0f8b85d8-7281-11e9-16c2-39a750bddbf1"
 MD5 = "6ac74813-4b46-53a4-afec-0b5dc9d7885c"
 Pkg = "44cfe95a-1eb2-52ea-b672-e2afdf69b78f"
 PlotlyBase = "a03496cd-edff-5a9b-9e67-9cda94a718b5"
+PlotlyJS = "f0f68f2c-4968-5e81-91da-67840de0976a"
 Requires = "ae029012-a4dd-5104-9daa-d747884805df"
 Sockets = "6462fe0b-24de-5631-8697-dd941f90decc"
 Test = "8dfed614-e22c-5e08-85e1-65c5234f0b40"
@@ -36,9 +37,13 @@ JSON = "0.21"
 JSON3 = "1.9"
 MD5 = "0.2"
 PlotlyBase = "0.8.5, 0.8.6"
+PlotlyJS = "0.18"
 Requires = "1.3"
 YAML = "0.4.7"
 julia = "1.6"
+
+[extensions]
+PlotlyJSExt = "PlotlyJS"
 
 [extras]
 Aqua = "4c88cf16-eb10-579e-8560-4a9242c79595"
@@ -46,3 +51,6 @@ Test = "8dfed614-e22c-5e08-85e1-65c5234f0b40"
 
 [targets]
 test = ["Aqua", "Test"]
+
+[weakdeps]
+PlotlyJS = "f0f68f2c-4968-5e81-91da-67840de0976a"
