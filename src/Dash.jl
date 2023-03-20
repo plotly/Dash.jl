@@ -112,8 +112,4 @@ function __init__()
 end
 
 
-JSON3.StructTypes.StructType(::Type{DashBase.Component}) = JSON3.StructTypes.Struct()
-JSON3.StructTypes.excludes(::Type{DashBase.Component}) = (:name, :available_props, :wildcard_regex)
-
-
 end # module
