@@ -1,4 +1,4 @@
-name: Run Julia tests
+name: Julia tests
 
 on: [push, pull_request]
 
