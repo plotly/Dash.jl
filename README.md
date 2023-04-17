@@ -20,7 +20,7 @@ Please ensure that you are using a version of Julia >= 1.2.
 To install the most recently released version:
 
 ```julia
-pkg> add Dash DashCoreComponents DashHtmlComponents DashTable
+pkg> add Dash
 ```
 
 To install the latest (stable) development version instead:
