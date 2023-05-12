@@ -7,7 +7,9 @@
 
 ## Project Status
 
-As of v1.15.0 of Dash, Julia components can be generated in tandem with Python and R components. Interested in getting involved with the project? Sponsorship is a great way to accelerate the progress of open source projects like this one; please feel free to [reach out to us](https://plotly.com/consulting-and-oem/)! Just getting started? Check out the [Dash for Julia User Guide](https://dash.plotly.com/julia)!
+As of [v1.15.0](https://github.com/plotly/dash/releases/tag/v1.15.0) of Dash, Julia components can be generated in tandem with Python and R components. Interested in getting involved with the project? Sponsorship is a great way to accelerate the progress of open source projects like this one; please feel free to [reach out to us](https://plotly.com/consulting-and-oem/)!
+
+Just getting started? Check out the [Dash for Julia User Guide](https://dash.plotly.com/julia)! If you can't find documentation there, then check out the unofficial [contributed examples](https://github.com/plotly/Dash.jl/issues/50) or check out source code from [demo applications](https://dash.gallery) in Python and then reference the Julia syntax style.
 
 #### Create beautiful, analytic applications in Julia
 
@@ -35,8 +37,6 @@ pkg> add Dash#dev
 
 ```jldoctest
 julia> using Dash
-julia> using DashHtmlComponents
-julia> using DashCoreComponents
 
 julia> app = dash(external_stylesheets = ["https://codepen.io/chriddyp/pen/bWLwgP.css"])
 
@@ -74,8 +74,6 @@ __Once you have run the code to create the Dashboard, go to `http://127.0.0.1:80
 ```jldoctest
 
 julia> using Dash
-julia> using DashHtmlComponents
-julia> using DashCoreComponents
 
 julia> app = dash(external_stylesheets = ["https://codepen.io/chriddyp/pen/bWLwgP.css"])
 
@@ -99,8 +97,6 @@ julia> run_server(app, "0.0.0.0", 8080)
 
 ```jldoctest
 julia> using Dash
-julia> using DashHtmlComponents
-julia> using DashCoreComponents
 
 julia> app = dash(external_stylesheets = ["https://codepen.io/chriddyp/pen/bWLwgP.css"])
 
