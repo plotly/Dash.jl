@@ -48,10 +48,18 @@ function Base.getindex(component::DashBase.Component, id::AbstractString)
   component.id == id && return component
   hasproperty(component, :children) || return nothing
   cc = component.children
-  cc isa Union{VecChildTypes, DashBase.Component} ? cc[id] : nothing
+  cc isa Union{VecChildTypes, DashBase.Component, Vector{Any}} ? cc[id] : nothing
 end
 function Base.getindex(children::VecChildTypes, id::AbstractString)
   for element in children
+    element.id == id && return element
+    el = element[id]
+    el !== nothing && return el
+  end
+end
+function Base.getindex(children::AbstractVector, id::AbstractString)
+  for element in children
+    hasproperty(element, :id) || continue
     element.id == id && return element
     el = element[id]
     el !== nothing && return el
