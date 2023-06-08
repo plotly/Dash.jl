@@ -213,4 +213,5 @@ end
             html_div(id = "my-div2")
         end
     @test app["target"].id == "target"
+    @test app["ups"] === nothing
 end
