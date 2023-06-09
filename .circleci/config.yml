@@ -43,8 +43,9 @@ jobs:
           command: |
             python -m venv venv
             . venv/bin/activate
+            pip install --upgrade pip wheel
             git clone --depth 1 https://github.com/plotly/dash.git -b dev dash-main
-            cd dash-main && pip install -e .[dev,testing] --progress-bar off && cd ~/dashjl
+            cd dash-main && pip install -e .[ci,dev,testing] --progress-bar off && cd ..
             export PATH=$PATH:/home/circleci/.local/bin/
             pytest --headless --nopercyfinalize --junitxml=test-reports/dashjl.xml --percy-assets=test/assets/ test/integration/
       - store_artifacts:
