@@ -1,5 +1,5 @@
 FROM circleci/python:3.7-stretch-node-browsers
-MAINTAINER Ryan Patrick Kyle "ryan@plotly.com"
+MAINTAINER Etienne Tétreault-Pinard "code@etpinard.xyz"
 
 RUN sudo apt-get update \
  && sudo apt-get purge -y --auto-remove -o APT::AutoRemove::RecommendsImportant=false
