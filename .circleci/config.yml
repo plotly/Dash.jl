@@ -57,4 +57,3 @@ workflows:
   build:
     jobs:
       - "test"
-    when: false  # disable this workflow until Percy tests are functional again
