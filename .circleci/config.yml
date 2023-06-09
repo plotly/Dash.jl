@@ -17,6 +17,8 @@ jobs:
           PERCY_PARALLEL_TOTAL: '-1'
           PUPPETEER_SKIP_CHROMIUM_DOWNLOAD: 'True'
     steps:
+      - browser-tools/install-browser-tools
+
       - checkout
 
       - run:
