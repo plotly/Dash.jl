@@ -1,6 +1,7 @@
 version: 2.1
 
 orbs:
+  percy: percy/agent@0.1.3
   browser-tools: circleci/browser-tools@1.2.4
 
 jobs:
@@ -54,12 +55,11 @@ jobs:
       - store_artifacts:
           path: /tmp/dash_artifacts
 
-      - run:
-          name: 🦔 percy finalize
-          command: npx percy finalize --all
-
 workflows:
   version: 2
   build:
     jobs:
       - test
+      - percy/finalize_all:
+          requires:
+            - test
