@@ -20,7 +20,7 @@ def test_jlcbcx001_modified_response(dashjl):
     dashjl.wait_for_text_to_equal("#output", "abcd - output")
     cookie = dashjl.driver.get_cookie("dash_cookie")
     # cookie gets json encoded
-    assert cookie["value"] == 'abcd - cookie'
+    assert cookie["value"] == '"abcd - cookie"'
 
     assert not dashjl.get_logs()
 
