@@ -5,7 +5,7 @@ jobs:
   test:
     working_directory: ~/dashjl
     docker:
-      - image: plotly/julia:ci
+      - image: etpinard/dashjl-tests:0.3.0
         auth:
           username: dashautomation
           password: $DASH_PAT_DOCKERHUB
