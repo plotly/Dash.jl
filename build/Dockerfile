@@ -1,4 +1,4 @@
-FROM cimg/python:3.9.9-browsers
+FROM cimg/python:3.7.17-browsers
 MAINTAINER Etienne Tétreault-Pinard "code@etpinard.xyz"
 
 RUN sudo apt-get update \
