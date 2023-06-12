@@ -1,4 +1,7 @@
-version: 2
+version: 2.1
+
+orbs:
+  browser-tools: circleci/browser-tools@1.2.4
 
 jobs:
 
@@ -14,6 +17,8 @@ jobs:
           PUPPETEER_SKIP_CHROMIUM_DOWNLOAD: 'True'
     steps:
       - checkout
+
+      - browser-tools/install-browser-tools
 
       - run:
           name: ℹ️  CI Context
@@ -37,8 +42,9 @@ jobs:
           command: |
             python -m venv venv
             . venv/bin/activate
+            pip install --upgrade pip wheel
             git clone --depth 1 https://github.com/plotly/dash.git -b dev dash-main
-            cd dash-main && pip install -e .[dev,testing] --progress-bar off && cd ~/dashjl
+            cd dash-main && pip install -e .[ci,dev,testing] --progress-bar off && cd ..
             export PATH=$PATH:/home/circleci/.local/bin/
             pytest --headless --nopercyfinalize --junitxml=test-reports/dashjl.xml --percy-assets=test/assets/ test/integration/
       - store_artifacts:
@@ -56,4 +62,4 @@ workflows:
   version: 2
   build:
     jobs:
-      - "test"
+      - test
