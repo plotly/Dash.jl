@@ -10,7 +10,7 @@ const _github_auth = Ref{GitHub.Authorization}()
 function github_auth(;allow_anonymous::Bool=true)
     if !isassigned(_github_auth) || !allow_anonymous && isa(_github_auth[], GitHub.AnonymousAuth)
         # If the user is feeding us a GITHUB_TOKEN token, use it!
-        if length(get(ENV, "GITHUB_TOKEN", "")) == 40
+        if length(get(ENV, "GITHUB_TOKEN", "")) >= 40
             _github_auth[] = GitHub.authenticate(ENV["GITHUB_TOKEN"])
         else
             if allow_anonymous
