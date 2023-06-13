@@ -1,6 +1,6 @@
 [dash_resources]
-git-tree-sha1 = "c857e355d2c21dfc458fb315371431dda2506109"
+git-tree-sha1 = "4b4e8cbd2109dbb0f653f4a74bcc533cd28a4e69"
 
     [[dash_resources.download]]
-    sha256 = "4ff3910a8ff1f5420784397cfc6ad80341bbe03f1010eab38dcb9b8ce2423310"
-    url = "https://github.com/plotly/DashCoreResources/releases/download/v2.0.0+0/DashCoreResources.v2.0.0.tar.gz"
+    sha256 = "e3dd93831951d2b1047ed02a049c960b5e38c406a4650689e48d4d95ca4a7203"
+    url = "https://github.com/etpinard/DashCoreResources/releases/download/v2.10.2+1/DashCoreResources.v2.10.2.tar.gz"
