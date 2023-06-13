@@ -1,5 +1,5 @@
 [deploy]
-    repo = "plotly/DashCoreResources"
+    repo = "etpinard/DashCoreResources"
 [dash]
     url = "https://github.com/plotly/dash.git"
     tag = "v2.10.2"
