@@ -45,11 +45,12 @@ function setup_renderer_resources()
         )
     )
 
-    DashBase.main_registry().dash_renderer = dash_module_resource_pkg(
-            renderer_meta["deps"][1],
-            resource_path = renderer_resource_path,
-            version = renderer_meta["version"]
-            )
+    renderer_renderer_meta = renderer_meta["deps"][1]
+    DashBase.main_registry().dash_renderer = ResourcePkg(
+        "dash_renderer",
+        renderer_resource_path, version = renderer_meta["version"],
+        dash_module_resource.(renderer_renderer_meta["resources"])
+    )
 end
 
 function load_all_metadata()
