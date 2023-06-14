@@ -26,14 +26,14 @@ If using a fine-grained token, make sure to enable _Read and Write access to cod
 
 ### Step 2: expose your token into your shell
 
-```
+```sh
 # for example:
 export GITHUB_TOKEN="<your GitHub personal access token>"
 ```
 
 ### Step 3: run `generate.jl`
 
-```
+```sh
 cd Dash.jl/gen_resources
 
 # install `generate.jl` deps
@@ -56,7 +56,7 @@ julia --project generate.jl --deploy
 
 that is an error like:
 
-```
+```sh
 ERROR: LoadError: PyError (PyImport_ImportModule
 
 The Python package dash could not be imported by pyimport. Usually this means
