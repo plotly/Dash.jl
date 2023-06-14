@@ -23,32 +23,26 @@ dash_module_resource(meta) = Resource(
         async = haskey(meta, "async") ? string(meta["async"]) : nothing
     )
 
-dash_module_resource_pkg(meta; resource_path, version) = ResourcePkg(
-    meta["namespace"],
-    resource_path, version = version,
-    dash_module_resource.(meta["resources"])
-)
-
 function setup_renderer_resources()
     renderer_meta = _metadata.dash_renderer
     renderer_resource_path = joinpath(artifact"dash_resources", "dash_renderer_deps")
+    renderer_version = renderer_meta["version"]
     DashBase.main_registry().dash_dependency = (
         dev = ResourcePkg(
             "dash_renderer",
-            renderer_resource_path, version = renderer_meta["version"],
+            renderer_resource_path, version = renderer_version,
             dash_dependency_resource.(renderer_meta["js_dist_dependencies"]["dev"])
         ),
         prod = ResourcePkg(
             "dash_renderer",
-            renderer_resource_path, version = renderer_meta["version"],
+            renderer_resource_path, version = renderer_version,
             dash_dependency_resource.(renderer_meta["js_dist_dependencies"]["prod"])
         )
     )
-
     renderer_renderer_meta = renderer_meta["deps"][1]
     DashBase.main_registry().dash_renderer = ResourcePkg(
         "dash_renderer",
-        renderer_resource_path, version = renderer_meta["version"],
+        renderer_resource_path, version = renderer_version,
         dash_module_resource.(renderer_renderer_meta["resources"])
     )
 end
@@ -73,10 +67,11 @@ function setup_dash_resources()
     version = meta["version"]
     for dep in meta["deps"]
         DashBase.register_package(
-            dash_module_resource_pkg(
-                dep,
-                resource_path = path,
-                version = version
+            ResourcePkg(
+                dep["namespace"],
+                path,
+                version = version,
+                dash_module_resource.(dep["resources"])
             )
         )
     end
