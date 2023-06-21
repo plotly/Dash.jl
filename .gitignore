@@ -13,3 +13,4 @@ venv
 *.pyc
 tmp
 gen_resources/build
+dash-main
