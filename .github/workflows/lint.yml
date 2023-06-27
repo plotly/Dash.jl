@@ -13,3 +13,21 @@ jobs:
           node-version: '18'
       - run: npm install -g markdownlint-cli
       - run: markdownlint '**/*.md' --ignore-path=.gitignore
+      - name: "No trailing whitespaces at EOLs"
+        run: |
+          EXIT_CODE=0
+          git --no-pager grep --full-name -I -n -e ' $' . && EXIT_CODE=1
+          exit $EXIT_CODE
+      - name: "No tab characters"
+        run: |
+          EXIT_CODE=0
+          git --no-pager grep --full-name -I -n -P '\t' . && EXIT_CODE=1
+          exit $EXIT_CODE
+      - name: "Newline at EOF"
+        run: |
+          EXIT_CODE=0
+          for f in $(git --no-pager grep --full-name -I -l ''); do
+            tail -c1 "$f" | read -r _ || echo "$f"
+            tail -c1 "$f" | read -r _ || EXIT_CODE=1
+          done
+          exit $EXIT_CODE
