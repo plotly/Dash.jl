@@ -12,4 +12,4 @@ jobs:
         with:
           node-version: '18'
       - run: npm install -g markdownlint-cli
-      - run: markdownlint '**/*.md' --ignore node_modules
+      - run: markdownlint '**/*.md' --ignore-path=.gitignore
