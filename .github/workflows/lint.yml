@@ -1,4 +1,4 @@
-name: Lint Markdown
+name: Lint
 
 on: [push, pull_request]
 
@@ -11,8 +11,10 @@ jobs:
         uses: actions/setup-node@v3
         with:
           node-version: '18'
-      - run: npm install -g markdownlint-cli
-      - run: markdownlint '**/*.md' --ignore-path=.gitignore
+      - name: "Lint markdown files"
+        run: |
+          npm install -g markdownlint-cli
+          markdownlint '**/*.md' --ignore-path=.gitignore
       - name: "No trailing whitespaces at EOLs"
         run: |
           EXIT_CODE=0
