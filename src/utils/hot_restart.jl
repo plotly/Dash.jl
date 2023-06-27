@@ -1,5 +1,5 @@
 function is_hot_restart_available()
-    return !isinteractive() && !isempty(Base.PROGRAM_FILE) 
+    return !isinteractive() && !isempty(Base.PROGRAM_FILE)
 end
 function hot_restart(func::Function; check_interval = 1., env_key = "IS_HOT_RELOADABLE", suppress_warn = false)
     if !is_hot_restart_available()
@@ -23,7 +23,7 @@ function hot_restart(func::Function; check_interval = 1., env_key = "IS_HOT_RELO
                 wait(task)
             end
         catch e
-            if e isa InterruptException 
+            if e isa InterruptException
                 println("finished")
                 return
             else

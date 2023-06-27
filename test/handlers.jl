@@ -298,9 +298,9 @@ end
     request = HTTP.Request("GET", "/_dash-component-suites/dash_renderer/dash-renderer/dash_renderer.js")
     resp = Dash.HttpHelpers.handle(handler, request)
     @test resp.status == 200
-    @test String(resp.body) == "var a = [1,2,3,4,5,6]"
+    @test String(resp.body) == "var a = [1,2,3,4,5,6]\n"
     @test HTTP.hasheader(resp, "ETag")
-    @test HTTP.header(resp, "ETag") == bytes2hex(md5("var a = [1,2,3,4,5,6]"))
+    @test HTTP.header(resp, "ETag") == bytes2hex(md5("var a = [1,2,3,4,5,6]\n"))
     @test HTTP.header(resp, "Content-Type") == "application/javascript"
 
     etag = HTTP.header(resp, "ETag")
@@ -312,9 +312,9 @@ end
     resp = Dash.HttpHelpers.handle(handler, request)
     HTTP.setheader(request, "If-None-Match"=>bytes2hex(md5("var a = [1,2,3,4,5,6]")))
     @test resp.status == 200
-    @test String(resp.body) == "var string = \"fffffff\""
+    @test String(resp.body) == "var string = \"fffffff\"\n"
     @test HTTP.hasheader(resp, "ETag")
-    @test HTTP.header(resp, "ETag") == bytes2hex(md5("var string = \"fffffff\""))
+    @test HTTP.header(resp, "ETag") == bytes2hex(md5("var string = \"fffffff\"\n"))
     etag = HTTP.header(resp, "ETag")
     HTTP.setheader(request, "If-None-Match"=>etag)
     resp = Dash.HttpHelpers.handle(handler, request)
@@ -325,7 +325,7 @@ end
     resp = Dash.HttpHelpers.handle(handler, request)
     HTTP.setheader(request, "If-None-Match"=>bytes2hex(md5("var a = [1,2,3,4,5,6]")))
     @test resp.status == 200
-    @test String(resp.body) == "var string = \"fffffff\""
+    @test String(resp.body) == "var string = \"fffffff\"\n"
     @test HTTP.hasheader(resp, "Cache-Control")
 
 end

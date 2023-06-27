@@ -18,8 +18,8 @@ function process_resource(request::HTTP.Request, state::HandlerState; namespace:
         file_contents = read(joinpath(namespace_files.base_path, relative_path))
         mimetype = mime_by_path(relative_path)
         !isnothing(mimetype) && push!(headers, "Content-Type" => mimetype)
-        if is_fp 
-            push!(headers, 
+        if is_fp
+            push!(headers,
                 "Cache-Control" => "public, max-age=31536000" # 1 year
             )
         else
@@ -29,7 +29,7 @@ function process_resource(request::HTTP.Request, state::HandlerState; namespace:
             request_etag == etag && return HTTP.Response(304)
         end
         return HTTP.Response(200, headers; body = file_contents)
-        
+
     catch e
         !(e isa SystemError) && rethrow(e)
         #TODO print to log
