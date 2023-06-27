@@ -8,7 +8,7 @@ def jl_test_file_path(filename):
     return os.path.join(curr_path, "jl_test_meta", filename)
 
 def test_jltm001_test_meta(dashjl):
-    fp = jl_test_file_path("jltm001_test_meta.jl") 
+    fp = jl_test_file_path("jltm001_test_meta.jl")
     dashjl.start_server(fp)
     dashjl.wait_for_text_to_equal(
         "#hello-div",
@@ -20,7 +20,7 @@ def test_jltm001_test_meta(dashjl):
 
 
 def test_jltm002_test_meta(dashjl):
-    fp = jl_test_file_path("jltm002_test_meta.jl") 
+    fp = jl_test_file_path("jltm002_test_meta.jl")
     dashjl.start_server(fp)
     dashjl.wait_for_text_to_equal(
         "#hello-div",

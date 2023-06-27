@@ -6,7 +6,7 @@ using Dash: interpolate_string, build_fingerprint, parse_fingerprint_path
     blah blah blah blah blah blah blah blah blah blah
     {%middle%}
     da da da da da da da da da da da da da {%da%} da
-    end    
+    end
     """
     inter = interpolate_string(test_str, head="hd", middle = :mmmm, da = 10)
     @test inter == """
@@ -14,7 +14,7 @@ using Dash: interpolate_string, build_fingerprint, parse_fingerprint_path
     blah blah blah blah blah blah blah blah blah blah
     mmmm
     da da da da da da da da da da da da da 10 da
-    end    
+    end
     """
 end
 
@@ -27,7 +27,7 @@ end
     @test is_fp
     @test origin == test_url
 
-    
+
     test_url = "/test/test_test/file.2.3.js"
     fp = build_fingerprint(test_url, "1.3.4", 3112231)
     @test fp == "/test/test_test/file.v1_3_4m3112231.2.3.js"
@@ -36,7 +36,7 @@ end
     @test is_fp
     @test origin == test_url
 
-    (origin, is_fp) = parse_fingerprint_path(test_url) 
+    (origin, is_fp) = parse_fingerprint_path(test_url)
     @test !is_fp
     @test origin == test_url
 end
