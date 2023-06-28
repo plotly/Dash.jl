@@ -34,13 +34,9 @@ jobs:
             echo $CIRCLE_JOB > circlejob.txt
 
       - run:
-          name: 🔎 Unit tests
-          command: |
-            julia test/ci_prepare.jl
-
-      - run:
           name: ⚙️  Integration tests
           command: |
+            julia --project -e 'import Pkg; Pkg.instantiate(); Pkg.update();'
             python -m venv venv
             . venv/bin/activate
             pip install --upgrade pip wheel
