@@ -34,19 +34,14 @@ jobs:
             echo $CIRCLE_JOB > circlejob.txt
 
       - run:
-          name: 🔎 Unit tests
-          command: |
-            julia test/ci_prepare.jl
-
-      - run:
           name: ⚙️  Integration tests
           command: |
+            julia --project -e 'import Pkg; Pkg.instantiate(); Pkg.update();'
             python -m venv venv
             . venv/bin/activate
             pip install --upgrade pip wheel
             git clone --depth 1 https://github.com/plotly/dash.git -b dev dash-main
             cd dash-main && pip install -e .[ci,dev,testing] --progress-bar off && cd ..
-            export PATH=$PATH:/home/circleci/.local/bin/
             pytest --headless --nopercyfinalize --junitxml=test-reports/dashjl.xml --percy-assets=test/assets/ test/integration/
       - store_artifacts:
           path: test-reports
