@@ -4,7 +4,7 @@
     url = "https://github.com/plotly/dash.git"
     tag = "v2.0.0"
 [dash_renderer]
-    module = "dash_renderer"
+    module = "dash._dash_renderer"
     resources_path = "."
 [components]
     [components.dash_html_components]
