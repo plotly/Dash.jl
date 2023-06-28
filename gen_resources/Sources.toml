@@ -2,7 +2,7 @@
     repo = "plotly/DashCoreResources"
 [dash]
     url = "https://github.com/plotly/dash.git"
-    tag = "v2.0.0"
+    tag = "v2.10.2"
 [dash_renderer]
     module = "dash._dash_renderer"
     resources_path = "."
