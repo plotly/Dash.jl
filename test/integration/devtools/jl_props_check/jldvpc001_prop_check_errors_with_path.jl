@@ -13,12 +13,6 @@ test_cases = Dict(
         "component"=> dcc_checklist,
         "props"=> (options = [Dict("label" => "hello")], value = ["test"]),
     ),
-    "invalid-nested-prop"=> Dict(
-        "fail"=> true,
-        "name"=> "invalid nested prop",
-        "component"=> dcc_checklist,
-        "props"=> (options = [Dict("label"=> "hello", "value"=> true)], value = ["test"]),
-    ),
     "invalid-arrayOf"=> Dict(
         "fail"=> true,
         "name"=> "invalid arrayOf",
@@ -72,6 +66,12 @@ test_cases = Dict(
         "name"=> "returning a dictionary",
         "component"=> html_div,
         "props"=> (children = Dict("hello" => "world"),),
+    ),
+    "allow-nested-prop"=> Dict(
+        "fail"=> false,
+        "name"=> "allow nested prop",
+        "component"=> dcc_checklist,
+        "props"=> (options = [Dict("label"=> "hello", "value"=> true)], value = ["test"]),
     ),
     "allow-null-2"=> Dict(
         "fail"=> false,

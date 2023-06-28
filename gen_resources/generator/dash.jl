@@ -1,7 +1,7 @@
 """
     install_dash(url, tag)
 
-Clone python dash into `dash` folder and install (reinstall) it to current python enviroment
+Clone python dash into `dash` folder and install (reinstall) it to current python environment
 """
 function install_dash(url, tag)
     Conda.pip_interop(true)
