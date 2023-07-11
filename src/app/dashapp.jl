@@ -41,9 +41,7 @@ mutable struct DashApp
 end
 
 const VecChildTypes = Union{NTuple{N, DashBase.Component} where {N}, Vector{<:DashBase.Component}}
-function Base.getindex(app::Dash.DashApp, id::AbstractString)
-  app.layout[id]
-end
+
 function Base.getindex(component::DashBase.Component, id::AbstractString)
   component.id == id && return component
   hasproperty(component, :children) || return nothing
