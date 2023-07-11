@@ -212,6 +212,6 @@ end
             ]),
             html_div(id = "my-div2")
         end
-    @test app["target"].id == "target"
-    @test app["ups"] === nothing
+    @test app.layout["target"].id == "target"
+    @test app.layout["ups"] === nothing
 end
