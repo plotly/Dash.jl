@@ -200,3 +200,18 @@ end
     end
     @test_throws ErrorException make_handler(app)
 end
+
+@testset "Index by id" begin
+    app = dash()
+    app.layout = html_div() do
+            dcc_input(id = "my-id", value="initial value", type = "text"),
+            html_div(id = "my-div", children = [
+                html_div(),
+                "string",
+                html_div(id = "target")
+            ]),
+            html_div(id = "my-div2")
+        end
+    @test app.layout["target"].id == "target"
+    @test app.layout["ups"] === nothing
+end
