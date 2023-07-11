@@ -45,7 +45,7 @@ where `<x.y.z>` is the latest tag listed on <https://hub.docker.com/r/etpinard/d
 
 ## Local usage
 
-````sh
+```sh
 # grab a copy of the python (main) dash repo
 cd Dash.jl
 git clone --depth 1 https://github.com/plotly/dash.git -b dev dash-main
