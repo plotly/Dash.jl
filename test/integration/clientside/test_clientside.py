@@ -95,13 +95,13 @@ def test_jlclsd004_clientside_multiple_outputs(dashjl):
     ]:
         dashjl.wait_for_text_to_equal(selector, expected, timeout=10)
 
-def test_jlclsd005_clientside_fails_when_returning_a_promise(dashjl):
+def test_jlclsd005_clientside_when_returning_a_promise(dashjl):
     fp = jl_test_file_path("jlclsd005_clientside_fails_when_returning_a_promise.jl")
     dashjl.start_server(fp)
 
     dashjl.wait_for_text_to_equal("#input", "hello", timeout=10)
     dashjl.wait_for_text_to_equal("#side-effect", "side effect")
-    dashjl.wait_for_text_to_equal("#output", "output")
+    dashjl.wait_for_text_to_equal("#output", "foo")
 
 def test_jlclsd006_PreventUpdate(dashjl):
     fp = jl_test_file_path("jlclsd006_PreventUpdate.jl")

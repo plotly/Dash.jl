@@ -22,7 +22,7 @@ using Dash:DevTools
     @test tools.hot_reload == false
     @test tools.silence_routes_logging == false
     @test tools.prune_errors == false
-    
+
     @test tools.hot_reload_interval ≈ 3.
     @test tools.hot_reload_watch_interval ≈ 0.5
     @test tools.hot_reload_max_retry ≈ 8
@@ -34,7 +34,7 @@ using Dash:DevTools
     @test tools.hot_reload == true
     @test tools.silence_routes_logging == true
     @test tools.prune_errors == true
-    
+
     @test tools.hot_reload_interval ≈ 3.
     @test tools.hot_reload_watch_interval ≈ 0.5
     @test tools.hot_reload_max_retry ≈ 8
@@ -55,7 +55,7 @@ using Dash:DevTools
     @test tools.hot_reload == false
     @test tools.silence_routes_logging == true
     @test tools.prune_errors == false
-    
+
     @test tools.hot_reload_interval ≈ 2.2
     @test tools.hot_reload_watch_interval ≈ 0.1
     @test tools.hot_reload_max_retry ≈ 2
@@ -80,7 +80,7 @@ end
         @test tools.hot_reload == false
         @test tools.silence_routes_logging == false
         @test tools.prune_errors == false
-        
+
         @test tools.hot_reload_interval ≈ 2.8
         @test tools.hot_reload_watch_interval ≈ 0.34
         @test tools.hot_reload_max_retry ≈ 7

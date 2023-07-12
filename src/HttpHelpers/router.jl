@@ -8,7 +8,7 @@ struct DynamicRoute{ST,VT} <: AbstractRoute
     static_segments ::ST
     variables ::VT
     tailed::Bool
-    
+
     DynamicRoute(segments_length, static_segments::ST, variables::VT, tailed) where {ST, VT} = new{ST, VT}(segments_length, static_segments, variables, tailed)
 end
 
@@ -31,7 +31,7 @@ function DynamicRoute(url::AbstractString)
     tailed = false
     if url[end] != '/' && (isempty(segments_vector) || segments_vector[end][1] != length(parts))
         tailed = true
-    end 
+    end
     return DynamicRoute(
         segments_count,
         (segments_vector...,),
@@ -62,7 +62,7 @@ function try_handle(route_handler::RouteHandler{<:DynamicRoute, FT}, path::Abstr
     length(parts) != parts_length && return nothing
     for segment in route.static_segments
         parts[segment[1]] != segment[2] && return nothing
-    end    
+    end
     return route_handler.handler(request, args...;args_tuple(route, parts)...)
 end
 
@@ -80,8 +80,8 @@ struct Route{RH}
     method ::Union{Nothing,String}
     route_handler ::RH
     Route(method, route_handler::RH) where {RH} = new{RH}(method, route_handler)
-end 
-function Route(handler::Function, method, path::AbstractString) 
+end
+function Route(handler::Function, method, path::AbstractString)
     return Route(
         method,
         RouteHandler(
@@ -97,14 +97,14 @@ function try_handle(route::Route, path::AbstractString, request::HTTP.Request, a
     return try_handle(route.route_handler, path, request, args...)
 end
 
-@inline function _handle(route_tuple::Tuple, path::AbstractString, request::HTTP.Request, args...) 
+@inline function _handle(route_tuple::Tuple, path::AbstractString, request::HTTP.Request, args...)
     res = try_handle(route_tuple[1], path, request, args...)
-    return !isnothing(res) ? 
+    return !isnothing(res) ?
             res :
             _handle(Base.tail(route_tuple), path, request, args...)
 end
 
-@inline function _handle(route_tuple::Tuple{}, path::AbstractString, request::HTTP.Request, args...) 
+@inline function _handle(route_tuple::Tuple{}, path::AbstractString, request::HTTP.Request, args...)
     return HTTP.Response(404)
 end
 

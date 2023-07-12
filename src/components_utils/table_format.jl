@@ -4,7 +4,7 @@ module TableFormat
 
     struct NamedValue{Name, T}
         value::T
-        NamedValue{Name}(value::T) where {Name, Keys, T} = new{Name, T}(value)
+        NamedValue{Name}(value::T) where {Name, T} = new{Name, T}(value)
     end
 
     struct TupleWithNamedValues{Name, Keys}

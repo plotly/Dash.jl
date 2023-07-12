@@ -40,9 +40,30 @@ mutable struct DashApp
 
 end
 
+const VecChildTypes = Union{NTuple{N, DashBase.Component} where {N}, Vector{<:DashBase.Component}}
+
+function Base.getindex(component::DashBase.Component, id::AbstractString)
+  component.id == id && return component
+  hasproperty(component, :children) || return nothing
+  cc = component.children
+  return if cc isa Union{VecChildTypes, DashBase.Component}
+        cc[id]
+    elseif cc isa AbstractVector
+        identity.(filter(x->hasproperty(x, :id), cc))[id]
+    else
+        nothing
+    end
+end
+function Base.getindex(children::VecChildTypes, id::AbstractString)
+  for element in children
+    element.id == id && return element
+    el = element[id]
+    el !== nothing && return el
+  end
+end
+
 #only name, index_string and layout are available to set
 function Base.setproperty!(app::DashApp, property::Symbol, value)
-    property == :name && return set_name!(app, value)
     property == :index_string && return set_index_string!(app, value)
     property == :layout && return set_layout!(app::DashApp, value)
     property == :title && return set_title!(app::DashApp, value)
@@ -52,15 +73,9 @@ function Base.setproperty!(app::DashApp, property::Symbol, value)
     error("The property `$(property)` of `DashApp` does not exist.")
 end
 
-function set_name!(app::DashApp, name)
-    setfield!(app, :name, name)
-end
-
 function set_title!(app::DashApp, title)
     setfield!(app, :title, title)
 end
-
-get_name(app::DashApp) = app.name
 
 function set_layout!(app::DashApp, component::Union{Component,Function})
     setfield!(app, :layout, component)

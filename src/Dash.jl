@@ -13,7 +13,7 @@ include("HttpHelpers/HttpHelpers.jl")
 
 using .HttpHelpers
 
-export dash, Component, Front, callback!,
+export dash, Component, callback!,
 enable_dev_tools!, ClientsideFunction,
 run_server, PreventUpdate, no_update, @var_str,
 Input, Output, State, make_handler, callback_context,
@@ -110,10 +110,6 @@ function __init__()
    setup_dash_resources()
    @require PlotlyJS="f0f68f2c-4968-5e81-91da-67840de0976a" include("plotly_js.jl")
 end
-
-
-JSON3.StructTypes.StructType(::Type{DashBase.Component}) = JSON3.StructTypes.Struct()
-JSON3.StructTypes.excludes(::Type{DashBase.Component}) = (:name, :available_props, :wildcard_regex)
 
 
 end # module

@@ -13,9 +13,10 @@ callback!(app,
 ) do value
     cookie = HTTP.Cookie("dash_cookie", value * " - cookie")
 
-    println(String(cookie, false))
+    cookie_str = HTTP.Cookies.stringify(cookie)
+    println(cookie_str)
     http_response = callback_context().response
-    push!(http_response.headers, "Set-Cookie"=>String(cookie, false))
+    push!(http_response.headers, "Set-Cookie"=>cookie_str)
     return value * " - output"
 end
 

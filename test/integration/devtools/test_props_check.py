@@ -16,10 +16,6 @@ test_cases = {
         "fail": True,
         "name": 'missing required "value" inside options',
     },
-    "invalid-nested-prop": {
-        "fail": True,
-        "name": "invalid nested prop",
-    },
     "invalid-arrayOf": {
         "fail": True,
         "name": "invalid arrayOf",
@@ -55,6 +51,10 @@ test_cases = {
     "dict": {
         "fail": True,
         "name": "returning a dictionary",
+    },
+    "allow-nested-prop": {
+        "fail": False,
+        "name": "allow nested prop",
     },
     "allow-null-2": {
         "fail": False,
@@ -99,6 +99,7 @@ def test_jldvpc001_prop_check_errors_with_path(dashjl):
 
         if test_cases[tc]["fail"]:
             dashjl.wait_for_element(".test-devtools-error-toggle", timeout=10).click()
-            dashjl.wait_for_element(".dash-error-card")
+            dashjl.wait_for_element(".dash-fe-error__info")
         else:
             dashjl.wait_for_element("#new-component", timeout=2)
+            dashjl.wait_for_no_elements(".test-devtools-error-toggle")

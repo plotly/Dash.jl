@@ -2,10 +2,10 @@ const fp_version_clean = r"[^\w-]"
 const fp_cache_regex = r"^v[\w-]+m[0-9a-fA-F]+$"
 
 function build_fingerprint(path::AbstractString, version, hash_value)
-    path_parts = split(path, '/')    
+    path_parts = split(path, '/')
     (filename, extension) = split(path_parts[end], '.', limit = 2)
     return string(
-        join(vcat(path_parts[1:end-1], filename), '/'), 
+        join(vcat(path_parts[1:end-1], filename), '/'),
         ".v", replace(string(version), fp_version_clean=>"_"),
         'm', hash_value,
         '.', extension
@@ -13,7 +13,7 @@ function build_fingerprint(path::AbstractString, version, hash_value)
 end
 
 function parse_fingerprint_path(path::AbstractString)
-    path_parts = split(path, '/')        
+    path_parts = split(path, '/')
     name_parts = split(path_parts[end], '.')
     if length(name_parts) > 2 && occursin(fp_cache_regex, name_parts[2])
         origin_path = string(

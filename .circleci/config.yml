@@ -1,11 +1,15 @@
-version: 2
+version: 2.1
+
+orbs:
+  percy: percy/agent@0.1.3
+  browser-tools: circleci/browser-tools@1.2.4
 
 jobs:
 
   test:
     working_directory: ~/dashjl
     docker:
-      - image: plotly/julia:ci
+      - image: etpinard/dashjl-tests:0.3.0
         auth:
           username: dashautomation
           password: $DASH_PAT_DOCKERHUB
@@ -14,6 +18,8 @@ jobs:
           PUPPETEER_SKIP_CHROMIUM_DOWNLOAD: 'True'
     steps:
       - checkout
+
+      - browser-tools/install-browser-tools
 
       - run:
           name: ℹ️  CI Context
@@ -28,18 +34,14 @@ jobs:
             echo $CIRCLE_JOB > circlejob.txt
 
       - run:
-          name: 🔎 Unit tests
-          command: |
-            julia test/ci_prepare.jl
-
-      - run:
           name: ⚙️  Integration tests
           command: |
+            julia --project -e 'import Pkg; Pkg.instantiate(); Pkg.update();'
             python -m venv venv
             . venv/bin/activate
+            pip install --upgrade pip wheel
             git clone --depth 1 https://github.com/plotly/dash.git -b dev dash-main
-            cd dash-main && pip install -e .[dev,testing] --progress-bar off && cd ~/dashjl
-            export PATH=$PATH:/home/circleci/.local/bin/
+            cd dash-main && pip install -e .[ci,dev,testing] --progress-bar off && cd ..
             pytest --headless --nopercyfinalize --junitxml=test-reports/dashjl.xml --percy-assets=test/assets/ test/integration/
       - store_artifacts:
           path: test-reports
@@ -48,13 +50,11 @@ jobs:
       - store_artifacts:
           path: /tmp/dash_artifacts
 
-      - run:
-          name: 🦔 percy finalize
-          command: npx percy finalize --all
-
 workflows:
   version: 2
   build:
     jobs:
-      - "test"
-    when: false  # disable this workflow until Percy tests are functional again
+      - test
+      - percy/finalize_all:
+          requires:
+            - test
