@@ -2,7 +2,7 @@
 
 [![Juila tests](https://github.com/plotly/Dash.jl/actions/workflows/jl_test.yml/badge.svg)](https://github.com/plotly/Dash.jl/actions/workflows/jl_test.yml)
 [![CircleCI](https://circleci.com/gh/plotly/Dash.jl/tree/master.svg?style=svg)](https://circleci.com/gh/plotly/Dash.jl/tree/master)
-[![GitHub](https://img.shields.io/github/license/plotly/dashR.svg?color=dark-green)](https://github.com/plotly/Dash.jl/blob/master/LICENSE)
+[![GitHub](https://img.shields.io/github/license/plotly/Dash.jl.svg?color=dark-green)](https://github.com/plotly/Dash.jl/blob/master/LICENSE)
 [![GitHub commit activity](https://img.shields.io/github/commit-activity/y/plotly/Dash.jl.svg?color=dark-green)](https://github.com/plotly/Dash.jl/graphs/contributors)
 
 ## Project Status
