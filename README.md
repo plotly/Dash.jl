@@ -5,19 +5,17 @@
 [![GitHub](https://img.shields.io/github/license/plotly/Dash.jl.svg?color=dark-green)](https://github.com/plotly/Dash.jl/blob/master/LICENSE)
 [![GitHub commit activity](https://img.shields.io/github/commit-activity/y/plotly/Dash.jl.svg?color=dark-green)](https://github.com/plotly/Dash.jl/graphs/contributors)
 
-## Project Status
-
-As of [v1.15.0](https://github.com/plotly/dash/releases/tag/v1.15.0) of Dash, Julia components can be generated in tandem with Python and R components. Interested in getting involved with the project? Sponsorship is a great way to accelerate the progress of open source projects like this one; please feel free to [reach out to us](https://plotly.com/consulting-and-oem/)!
-
-Just getting started? Check out the [Dash for Julia User Guide](https://dash.plotly.com/julia)! If you can't find documentation there, then check out the unofficial [contributed examples](https://github.com/plotly/Dash.jl/issues/50) or check out source code from [demo applications](https://dash.gallery) in Python and then reference the Julia syntax style.
-
 #### Create beautiful, analytic applications in Julia
 
 Built on top of Plotly.js, React and HTTP.jl, [Dash](https://plotly.com/dash/) ties modern UI elements like dropdowns, sliders, and graphs directly to your analytical Julia code.
 
-## Installation
+Just getting started? Check out the [Dash for Julia User Guide](https://dash.plotly.com/julia)! If you can't find documentation there, then check out the unofficial [contributed examples](https://github.com/plotly/Dash.jl/issues/50) or check out source code from [demo applications](https://dash.gallery) in Python and then reference the Julia syntax style.
 
-Please ensure that you are using a version of Julia >= 1.2.
+## Project Status
+
+Julia components can be generated in tandem with Python and R components. Interested in getting involved with the project? Sponsorship is a great way to accelerate the progress of open source projects like this one; please feel free to [reach out to us](https://plotly.com/consulting-and-oem/)!
+
+## Installation
 
 To install the most recently released version:
 
@@ -35,151 +33,172 @@ pkg> add Dash#dev
 
 ### Basic application
 
-```jldoctest
-julia> using Dash
+```julia
+using Dash
 
-julia> app = dash(external_stylesheets = ["https://codepen.io/chriddyp/pen/bWLwgP.css"])
+app = dash(external_stylesheets = ["https://codepen.io/chriddyp/pen/bWLwgP.css"])
 
-julia> app.layout = html_div() do
-        html_h1("Hello Dash"),
-        html_div("Dash.jl: Julia interface for Dash"),
-        dcc_graph(
-            id = "example-graph",
-            figure = (
-                data = [
-                    (x = [1, 2, 3], y = [4, 1, 2], type = "bar", name = "SF"),
-                    (x = [1, 2, 3], y = [2, 4, 5], type = "bar", name = "Montréal"),
-                ],
-                layout = (title = "Dash Data Visualization",)
-            )
-        )
-    end
+app.layout = html_div() do
+    html_h1("Hello Dash"),
+    html_div("Dash.jl: Julia interface for Dash"),
+    dcc_graph(id = "example-graph",
+              figure = (
+                  data = [
+                      (x = [1, 2, 3], y = [4, 1, 2], type = "bar", name = "SF"),
+                      (x = [1, 2, 3], y = [2, 4, 5], type = "bar", name = "Montréal"),
+                  ],
+                  layout = (title = "Dash Data Visualization",)
+              ))
+end
 
-julia> run_server(app, "0.0.0.0", 8080)
+run_server(app)
 ```
 
-* The `DashApp` struct represents a dashboard application.
-* To make `DashApp` struct use `dash(layout_maker::Function, name::String;  external_stylesheets::Vector{String} = Vector{String}(), url_base_pathname="/", assets_folder::String = "assets")` where `layout_maker` is a function with signature ()::Component
-* Unlike the Python version where each Dash component is represented as a separate class, all components in Dash.jl are represented by struct `Component`.
-* You can create `Component` specific for concrete Dash component by the set of functions in the form ``lowercase(<component package>)_lowercase(<component name>)``. For example, in Python html `<div>` element is represented as `HTML.Div` in Dash.jl it is created using function `html_div`
-* The list of all supported components is available in docstring for Dash.jl module.
-* All functions for a component creation have the signature `(;kwargs...)::Component`. List of key arguments specific for the concrete component is available in the docstring for each function.
-* Functions for creation components which have `children` property have two additional methods ``(children::Any; kwargs...)::Component`` and ``(children_maker::Function; kwargs..)::Component``. `children` must by string or number or single component or collection of components.
-* ``make_handler(app::Dash; debug::Bool = false)`` makes a handler function for using in HTTP package.
-
-__Once you have run the code to create the Dashboard, go to `http://127.0.0.1:8080` in your browser to view the Dashboard!__
+__then go to `http://127.0.0.1:8050` in your browser to view the Dash app!__
 
 ### Basic Callback
 
-```jldoctest
+```julia
+using Dash
 
-julia> using Dash
+app = dash(external_stylesheets = ["https://codepen.io/chriddyp/pen/bWLwgP.css"])
 
-julia> app = dash(external_stylesheets = ["https://codepen.io/chriddyp/pen/bWLwgP.css"])
+app.layout = html_div() do
+    dcc_input(id = "my-id", value = "initial value", type = "text"),
+    html_div(id = "my-div")
+end
 
-julia> app.layout = html_div() do
-        dcc_input(id = "my-id", value="initial value", type = "text"),
-        html_div(id = "my-div")
-    end
-
-julia> callback!(app, Output("my-div", "children"), Input("my-id", "value")) do input_value
+callback!(app, Output("my-div", "children"), Input("my-id", "value")) do input_value
     "You've entered $(input_value)"
 end
 
-julia> run_server(app, "0.0.0.0", 8080)
+run_server(app)
 ```
 
-* You can make your dashboard interactive by register callbacks for changes in frontend with function ``callback!(func::Function, app::Dash, output, input, state)``
-* Inputs and outputs (and states, see below) of callback can be `Input`, `Output`, `State` objects or vectors of this objects
-* Callback function must have the signature(inputs..., states...), and provide a return value comparable (in terms of number of elements) to the outputs being updated.
+* You can make your Dash app interactive by registering callbacks with the `callback!` function.
+* Outputs and inputs (and states, see below) of callback can be `Output`, `Input`, `State` objects or splats / vectors of this objects.
+* Callback functions must have the signature ``(inputs..., states...)``, and provide a return value with the same number elements as the number of `Output`s to update.
 
 ### States and Multiple Outputs
 
-```jldoctest
-julia> using Dash
+```julia
+using Dash
 
-julia> app = dash(external_stylesheets = ["https://codepen.io/chriddyp/pen/bWLwgP.css"])
+app = dash(external_stylesheets = ["https://codepen.io/chriddyp/pen/bWLwgP.css"])
 
-julia> app.layout = html_div() do
-        dcc_input(id = "my-id", value="initial value", type = "text"),
-        html_div(id = "my-div"),
-        html_div(id = "my-div2")
-    end
-
-julia> callback!(app, [Output("my-div","children"), Output("my-div2","children")], Input("my-id", "value"), State("my-id", "type")) do input_value, state_value
-    "You've entered $(input_value) in input with type $(state_value)",
-    "You've entered $(input_value)"
+app.layout = html_div() do
+    dcc_input(id = "my-id", value = "initial value", type = "text"),
+    html_div(id = "my-div"),
+    html_div(id = "my-div2")
 end
-julia> run_server(app, "0.0.0.0", 8080)
+
+callback!(app,
+          Output("my-div","children"),
+          Output("my-div2","children"),
+          Input("my-id", "value"),
+          State("my-id", "type")) do input_value, state_value
+    return ("You've entered $(input_value) in input with type $(state_value)",
+            "You've entered $(input_value)")
+end
+
+run_server(app)
 ```
 
 ## Comparison with original Python syntax
 
-### component naming:
+### Component naming
 
-`html.Div` => `html_div`, `dcc.Graph` => `dcc_graph` and etc
+* Python:
 
-### component creation:
+```python
+import dash
 
-Just as in Python, functions for declaring components have keyword arguments, which are the same as in Python. ``html_div(id="my-id", children="Simple text")``.
-For components which declare `children`, two additional signatures are available. ``(children; kwargs..)`` and ``(children_maker::Function; kwargs...)`` so one can write ``html_div("Simple text", id="my-id")`` for simple elements, or choose an abbreviated syntax with `do` syntax for complex elements:
+dash.html.Div
+dash.dcc.Graph
+dash.dash_table.DataTable
+```
+
+* Dash.jl:
 
 ```julia
-html_div(id="outer-div") do
+using Dash
+
+html_div
+dcc_graph
+dash_datatable
+```
+
+### Component creation
+
+Just as in Python, functions for declaring components have keyword arguments, which are the same as in Python. ``html_div(id = "my-id", children = "Simple text")``.
+
+For components which declare `children`, two additional signatures are available:
+
+* ``(children; kwargs..)`` and
+* ``(children_maker::Function; kwargs...)``
+
+So one can write ``html_div("Simple text", id = "my-id")`` for simple elements, or choose an abbreviated syntax with `do` syntax for complex elements:
+
+```julia
+html_div(id = "outer-div") do
     html_h1("Welcome"),
-    html_div(id="inner-div") do
-    ......
+    html_div(id = "inner-div") do
+        #= inner content =#
     end
 end
 ```
 
-### application and layout:
+### Application and layout
 
-* python:
+* Python:
 
 ```python
-app = dash.Dash("Test", external_stylesheets=external_stylesheets)
+app = dash.Dash(external_stylesheets=["https://codepen.io/chriddyp/pen/bWLwgP.css"])
+
 app.layout = html.Div(children=[....])
 ```
 
 * Dash.jl:
 
 ```julia
-app = dash("Test", external_stylesheets=external_stylesheets)
+app = dash(external_stylesheets = ["https://codepen.io/chriddyp/pen/bWLwgP.css"])
 
 app.layout = html_div() do
-    ......
-   end
+    #= inner content =#
+end
 ```
 
-### callbacks:
+### Callbacks
 
 * Python:
 
 ```python
 @app.callback(Output('output', 'children'),
-              [Input('submit-button', 'n_clicks')],
-              [State('state-1', 'value'),
-               State('state-2', 'value')])
+              Input('submit-button', 'n_clicks')],
+              State('state-1', 'value'),
+              State('state-2', 'value'))
 def update_output(n_clicks, state1, state2):
-.....
-
+    # logic
 ```
 
 * Dash.jl:
 
 ```julia
-callback!(app, Output("output", "children"),
-              [Input("submit-button", "n_clicks")],
-              [State("state-1", "value"),
-               State("state-2", "value")]) do  n_clicks, state1, state2
-.....
+callback!(app,
+          Output("output", "children"),
+          Input("submit-button", "n_clicks")],
+          State("state-1", "value"),
+          State("state-2", "value")) do n_clicks, state1, state2
+    # logic
 end
 ```
 
-Be careful - in Dash.jl states come first in an arguments list.
+### JSON
 
-### JSON:
+Dash apps transfer data between the browser (aka the frontend) and the Julia process running the app (aka the backend) in JSON.
+Dash.jl uses [JSON3.jl](https://github.com/quinnj/JSON3.jl) for JSON serialization/deserialization.
 
-I use JSON3.jl for JSON serialization/deserialization.
-Note when declaring elements with a single properly that `layout = (title = "Test graph")` is not interpreted as a `NamedTuple` by Julia  - you'll need to add a comma when declaring the layout, e.g. `layout = (title = "Test graph",)`
+Note that JSON3.jl converts
+
+* `Vector`s and `Tuple`s to JSON arrays
+* `Dict`s and `NamedTuple`s to JSON objects
