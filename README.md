@@ -1,7 +1,7 @@
 # Dash for Julia
 
-[![Juila tests](https://github.com/plotly/Dash.jl/actions/workflows/jl_test.yml/badge.svg)](https://github.com/plotly/Dash.jl/actions/workflows/jl_test.yml)
-[![CircleCI](https://circleci.com/gh/plotly/Dash.jl/tree/master.svg?style=svg)](https://circleci.com/gh/plotly/Dash.jl/tree/master)
+[![Juila tests](https://github.com/plotly/Dash.jl/actions/workflows/jl_test.yml/badge.svg?query=branch%3Adev)](https://github.com/plotly/Dash.jl/actions/workflows/jl_test.yml?query=branch%3Adev)
+[![CircleCI](https://circleci.com/gh/plotly/Dash.jl/tree/dev.svg?style=svg)](https://circleci.com/gh/plotly/Dash.jl/tree/dev)
 [![GitHub](https://img.shields.io/github/license/plotly/Dash.jl.svg?color=dark-green)](https://github.com/plotly/Dash.jl/blob/master/LICENSE)
 [![GitHub commit activity](https://img.shields.io/github/commit-activity/y/plotly/Dash.jl.svg?color=dark-green)](https://github.com/plotly/Dash.jl/graphs/contributors)
 
