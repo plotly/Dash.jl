@@ -206,7 +206,7 @@ end
     app.layout = html_div() do
             dcc_input(id = "my-id", value="initial value", type = "text"),
             html_div(id = "my-div", children = [
-                html_div(),
+                html_div(children = []),
                 "string",
                 html_div(id = "target")
             ]),

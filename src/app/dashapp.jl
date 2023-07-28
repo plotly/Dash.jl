@@ -49,7 +49,8 @@ function Base.getindex(component::DashBase.Component, id::AbstractString)
   return if cc isa Union{VecChildTypes, DashBase.Component}
         cc[id]
     elseif cc isa AbstractVector
-        identity.(filter(x->hasproperty(x, :id), cc))[id]
+        fcc = identity.(filter(x->hasproperty(x, :id), cc))
+        isempty(fcc) ? nothing : fcc[id]
     else
         nothing
     end
