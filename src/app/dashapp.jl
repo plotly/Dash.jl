@@ -40,28 +40,6 @@ mutable struct DashApp
 
 end
 
-const VecChildTypes = Union{NTuple{N, DashBase.Component} where {N}, Vector{<:DashBase.Component}}
-
-function Base.getindex(component::DashBase.Component, id::AbstractString)
-  component.id == id && return component
-  hasproperty(component, :children) || return nothing
-  cc = component.children
-  return if cc isa Union{VecChildTypes, DashBase.Component}
-        cc[id]
-    elseif cc isa AbstractVector
-        fcc = identity.(filter(x->hasproperty(x, :id), cc))
-        isempty(fcc) ? nothing : fcc[id]
-    else
-        nothing
-    end
-end
-function Base.getindex(children::VecChildTypes, id::AbstractString)
-  for element in children
-    element.id == id && return element
-    el = element[id]
-    el !== nothing && return el
-  end
-end
 
 #only name, index_string and layout are available to set
 function Base.setproperty!(app::DashApp, property::Symbol, value)

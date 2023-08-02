@@ -26,7 +26,7 @@ YAML = "ddb6d928-2868-570f-bddf-ab3f9cf99eb6"
 [compat]
 Aqua = "0.6"
 CodecZlib = "0.6, 0.7"
-DashBase = "0.2"
+DashBase = "0.2.1"
 DashCoreComponents = "2.0.0"
 DashHtmlComponents = "2.0.0"
 DashTable = "5.0.0"
