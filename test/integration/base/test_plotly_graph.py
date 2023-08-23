@@ -27,5 +27,8 @@ def test_jlpg001_plotly_graph(dashjl):
 def test_jlpg002_plotlyjs_graph(dashjl):
     _run_test(dashjl, "jlpg002_plotlyjs_graph.jl", "PlotlyJS")
 
+def test_jlpg003_plots_plotly_graph(dashjl):
+    _run_test(dashjl, "jlpg003_plots_plotly_graph.jl", "Plots plotly")
 
-
+def test_jlpg004_plots_plotlyjs_graph(dashjl):
+    _run_test(dashjl, "jlpg004_plots_plotlyjs_graph.jl", "Plots plotlyjs")
