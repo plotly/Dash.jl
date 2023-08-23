@@ -1,5 +1,6 @@
 using Dash
 using PlotlyJS
+
 app = dash()
 app.layout = html_div() do
     dcc_graph(id = "graph",

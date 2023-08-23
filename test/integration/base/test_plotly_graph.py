@@ -24,6 +24,8 @@ def _run_test(dashjl, filename, percy_snapshot_prefix):
 def test_jlpg001_plotly_graph(dashjl):
     _run_test(dashjl, "jlpg001_plotly_graph.jl", "PlotlyBase")
 
+def test_jlpg002_plotlyjs_graph(dashjl):
+    _run_test(dashjl, "jlpg002_plotlyjs_graph.jl", "PlotlyJS")
 
 
 
