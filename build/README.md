@@ -80,6 +80,9 @@ ORB_PARAM_DRIVER_INSTALL_DIR=/usr/local/bin/ ./install-chromedriver.sh
 cd /home/circleci/project/test/integration
 julia --project -e 'import Pkg; Pkg.develop(path="../../"); Pkg.instantiate()'
 
+# [optionally] if you want to use an unreleased version of DashBase
+julia --project -e 'import Pkg; Pkg.add(name="DashBase", rev="master")'
+
 # update julia deps then run integration tests
 cd /home/circleci/project/test/integration
 julia --project -e 'import Pkg; Pkg.update()'
