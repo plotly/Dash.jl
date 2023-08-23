@@ -51,7 +51,10 @@ cd Dash.jl
 git clone --depth 1 https://github.com/plotly/dash.git -b dev dash-main
 
 # start `dashjl-tests`
+# [on 1st session]
 docker run -t -d --name dashjl-tests -v .:/home/circleci/project etpinard/dashjl-tests:<x.y.z>
+# [otherwise]
+docker start dashjl-tests
 
 # ssh into it as root (some python deps need that unfortunately)
 docker exec -u 0 -it dashjl-tests bash
