@@ -41,8 +41,10 @@ cd Dash.jl
 git clone --depth 1 https://github.com/plotly/dash.git -b dev dash-main
 python3 -m venv venv
 pip install --upgrade pip wheel
-cd dash-main && pip install -e .[ci,dev,testing] && cd ..dash
-pytest --headless --nopercyfinalize --percy-assets=test/assets/ test/integration/
+cd dash-main && pip install -e .[ci,dev,testing] && cd ..
+cd test/integration
+julia --project -e 'import Pkg; Pkg.develop(path="../../"); Pkg.instantiate(); Pkg.update();'
+pytest --headless --nopercyfinalize --percy-assets=../assets/ .
 ```
 
 Alternatively, one can run the integration tests using the same Docker

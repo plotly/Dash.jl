@@ -77,11 +77,11 @@ chmod +x ./install-chromedriver.sh
 ORB_PARAM_DRIVER_INSTALL_DIR=/usr/local/bin/ ./install-chromedriver.sh
 
 # [on 1st session] instantiate julia deps
-cd /home/circleci/project/
-julia --project -e 'import Pkg; Pkg.instantiate()'
+cd /home/circleci/project/test/integration
+julia --project -e 'import Pkg; Pkg.develop(path="../../"); Pkg.instantiate()'
 
 # update julia deps then run integration tests
-cd /home/circleci/project/
+cd /home/circleci/project/test/integration
 julia --project -e 'import Pkg; Pkg.update()'
-pytest --headless --nopercyfinalize --percy-assets=test/assets/ test/integration/
+pytest --headless --nopercyfinalize --percy-assets=../assets/ .
 ```
