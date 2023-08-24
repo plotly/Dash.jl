@@ -3,7 +3,6 @@ using DashBase
 import HTTP, JSON3, CodecZlib, MD5
 using Sockets
 using Pkg.Artifacts
-using Requires
 
 const ROOT_PATH = realpath(joinpath(@__DIR__, ".."))
 #const RESOURCE_PATH = realpath(joinpath(ROOT_PATH, "resources"))
@@ -28,7 +27,6 @@ include("handlers.jl")
 include("server.jl")
 include("init.jl")
 include("components_utils/_components_utils.jl")
-include("plotly_base.jl")
 
 @doc """
     module Dash
@@ -108,7 +106,6 @@ const _metadata = load_all_metadata()
 function __init__()
    setup_renderer_resources()
    setup_dash_resources()
-   @require PlotlyJS="f0f68f2c-4968-5e81-91da-67840de0976a" include("plotly_js.jl")
 end
 
 
