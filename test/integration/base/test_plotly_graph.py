@@ -10,6 +10,8 @@ def jl_test_file_path(filename):
 
 def _run_test(dashjl, filename, percy_snapshot_prefix):
     fp = jl_test_file_path(filename)
+    name = f"{percy_snapshot_prefix} figure callback"
+
     dashjl.start_server(fp)
     dashjl.wait_for_element_by_css_selector("#graph", timeout=20)
 
@@ -18,7 +20,7 @@ def _run_test(dashjl, filename, percy_snapshot_prefix):
 
     dashjl.find_element("#draw").click()
     dashjl.wait_for_text_to_equal("#status", "second", timeout=10)
-    dashjl.percy_snapshot(name="f{percy_snapshot_prefix} figure callback")
+    dashjl.percy_snapshot(name=name)
 
 
 def test_jlpg001_plotly_graph(dashjl):
