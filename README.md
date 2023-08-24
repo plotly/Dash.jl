@@ -13,8 +13,8 @@ Just getting started? Check out the [Dash for Julia User Guide](https://dash.plo
 
 ## Other resources
 
-- <https://community.plotly.com/c/plotly-r-matlab-julia-net/julia/23>
-- <https://discourse.julialang.org/tag/dash>
+* <https://community.plotly.com/c/plotly-r-matlab-julia-net/julia/23>
+* <https://discourse.julialang.org/tag/dash>
 
 ## Project Status
 
