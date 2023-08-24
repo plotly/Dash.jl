@@ -11,6 +11,11 @@ Built on top of Plotly.js, React and HTTP.jl, [Dash](https://plotly.com/dash/) t
 
 Just getting started? Check out the [Dash for Julia User Guide](https://dash.plotly.com/julia)! If you can't find documentation there, then check out the unofficial [contributed examples](https://github.com/plotly/Dash.jl/issues/50) or check out source code from [demo applications](https://dash.gallery) in Python and then reference the Julia syntax style.
 
+## Other resources
+
+* <https://community.plotly.com/c/plotly-r-matlab-julia-net/julia/23>
+* <https://discourse.julialang.org/tag/dash>
+
 ## Project Status
 
 Julia components can be generated in tandem with Python and R components. Interested in getting involved with the project? Sponsorship is a great way to accelerate the progress of open source projects like this one; please feel free to [reach out to us](https://plotly.com/consulting-and-oem/)!
