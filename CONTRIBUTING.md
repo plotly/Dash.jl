@@ -41,8 +41,10 @@ cd Dash.jl
 git clone --depth 1 https://github.com/plotly/dash.git -b dev dash-main
 python3 -m venv venv
 pip install --upgrade pip wheel
-cd dash-main && pip install -e .[ci,dev,testing] && cd ..dash
-pytest --headless --nopercyfinalize --percy-assets=test/assets/ test/integration/
+cd dash-main && pip install -e .[ci,dev,testing] && cd ..
+cd test/integration
+julia --project -e 'import Pkg; Pkg.develop(path="../../"); Pkg.instantiate(); Pkg.update();'
+pytest --headless --nopercyfinalize --percy-assets=../assets/ .
 ```
 
 Alternatively, one can run the integration tests using the same Docker
@@ -76,7 +78,7 @@ releasing.
 ### step 1
 
 Make sure the [unit tests][jltest] and [CircleCI integration tests][circlecI]
-are passing.
+are passing off the `dev` branch.
 
 ### step 2
 
@@ -89,7 +91,10 @@ For consistency, name the PR: "Release X.Y.Z"
 Bump the `version` field in the `Project.toml` (following [semver][semver]) and then
 
 ```sh
+git checkout dev
+git pull origin dev
 git commit -m "X.Y.Z"
+git push
 ```
 
 **N.B.** use `X.Y.Z` not `vX.Y.Z` in the commit message, the leading `v` is
@@ -131,8 +136,8 @@ git push --tags
 Go the [release page][releases] and create a new release,
 name it "Version X.Y.Z" for consistency and fill out sections:
 
-- _What's Changed_, which should include items for all the PRs merged since the last release
-- _New Contributor_, which should include mention of all the first-time contributors
+- (usually) _Added_, _Changed_, _Fixed_ while including links to the PRs merged since the last release
+- _New Contributor_, which should include mentions for all the first-time contributors
 
 finally, place a [GitHub compare link][compare] between the last release and X.Y.Z
 e.g. this [one][ex-diff].
