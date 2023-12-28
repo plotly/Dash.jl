@@ -9,7 +9,7 @@ jobs:
   test:
     working_directory: ~/dashjl
     docker:
-      - image: etpinard/dashjl-tests:0.3.0
+      - image: etpinard/dashjl-tests:0.4.0
         auth:
           username: dashautomation
           password: $DASH_PAT_DOCKERHUB
