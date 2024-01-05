@@ -17,7 +17,9 @@ struct TraitInput end
 struct TraitOutput end
 struct TraitState end
 
-struct Dependency{Trait, IdT <: Union{String, NamedTuple}}
+const IdTypes = Union{String,NamedTuple}
+
+struct Dependency{Trait, IdT<:IdTypes}
     id ::IdT
     property ::String
     Dependency{Trait}(id::T, property::String) where {Trait, T} = new{Trait, T}(id, property)
@@ -95,7 +97,9 @@ struct CallbackDeps
     CallbackDeps(output::Vector{<:Output}, input, state = State[]) = new(output, input, state, true)
 end
 
-Base.convert(::Type{Vector{<:T}}, v::T) where {T<:Dependency} = [v]
+Base.convert(::Type{Vector{<:Output}}, v::Output{<:IdTypes}) = [v]
+Base.convert(::Type{Vector{<:Input}}, v::Input{<:IdTypes}) = [v]
+Base.convert(::Type{Vector{<:State}}, v::State{<:IdTypes}) = [v]
 
 struct ClientsideFunction
     namespace ::String
