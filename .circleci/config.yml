@@ -2,7 +2,7 @@ version: 2.1
 
 orbs:
   percy: percy/agent@0.1.3
-  browser-tools: circleci/browser-tools@1.4.6
+  browser-tools: circleci/browser-tools@1.5.1
 
 jobs:
 
@@ -19,8 +19,7 @@ jobs:
     steps:
       - checkout
 
-      - browser-tools/install-browser-tools:
-         chrome-version: 120.0.6099.71
+      - browser-tools/install-browser-tools
 
       - run:
           name: ℹ️  CI Context
