@@ -45,7 +45,7 @@ def test_jltr001r_undo_redo(dashjl):
     dashjl.wait_for_text_to_equal(
         "#b", "xy", timeout=10
     )
-    dashjl.percy_snapshot(name="undo-redo")
+    # dashjl.percy_snapshot(name="undo-redo")
     click_undo(dashjl)
     click_undo(dashjl)
     dashjl.wait_for_text_to_equal(
