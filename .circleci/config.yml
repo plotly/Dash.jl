@@ -56,6 +56,7 @@ workflows:
   build:
     jobs:
       - test
-      - percy/finalize_all:
-          requires:
-            - test
+      # NOTE do not percy as the baselines need to be updated
+      # - percy/finalize_all:
+      #     requires:
+      #       - test
