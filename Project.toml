@@ -1,7 +1,7 @@
 name = "Dash"
 uuid = "1b08a953-4be3-4667-9a23-3db579824955"
-authors = ["Chris Parmer <chris@plotly.com>", "Alexandr Romanenko <waralex@gmail.com>"]
 version = "1.5.1"
+authors = ["Chris Parmer <chris@plotly.com>", "Alexandr Romanenko <waralex@gmail.com>"]
 
 [deps]
 Base64 = "2a0f44e3-6c83-55bd-87e4-b1978d98bd5f"
@@ -22,7 +22,7 @@ UUIDs = "cf7118a7-6976-5b1a-9a39-7adc72f591a4"
 YAML = "ddb6d928-2868-570f-bddf-ab3f9cf99eb6"
 
 [compat]
-Aqua = "0.6"
+Aqua = "0.6, 0.8"
 CodecZlib = "0.6, 0.7"
 DashBase = "1"
 DashCoreComponents = "2.0.0"
