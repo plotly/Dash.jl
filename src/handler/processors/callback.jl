@@ -123,7 +123,7 @@ end
 function validate_return_item(callback_id, i, value, spec::Vector)
     throw(InvalidCallbackReturnValue(
             """
-            The callback $callback_id ouput $i is a wildcard multi-output.
+            The callback $callback_id output $i is a wildcard multi-output.
             Expected the output type to be a list or tuple but got:
             $value.
             output spec: $spec

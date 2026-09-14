@@ -31,7 +31,7 @@ function generate(ARGS, sources, build_dir, artifact_file)
     @info "cloning dash..."
     v = install_dash(sources["dash"]["url"], sources["dash"]["tag"])
     dash_version = VersionNumber(v)
-    @info "dash succefully installed" dash_version
+    @info "dash successfully installed" dash_version
 
     deploy_repo = sources["deploy"]["repo"]
 
@@ -58,9 +58,9 @@ function generate(ARGS, sources, build_dir, artifact_file)
         push_repo(deploy_repo, deploy_dir, deploy_tagname(new_info))
         @info "repo pushed"
 
-        @info "creating tagball..."
+        @info "creating tarball..."
         tarball_hash = archive_artifact(artifact_hash, joinpath(build_dir, tarball_name(new_info)))
-        @info "tagball created" tarball_hash
+        @info "tarball created" tarball_hash
 
         @info "binding artifact..."
         download_info = (
@@ -68,7 +68,7 @@ function generate(ARGS, sources, build_dir, artifact_file)
             tarball_hash
         )
         bind_artifact!(artifact_file, "dash_resources",  artifact_hash, force = true, download_info = [download_info])
-        @info "artifact binding succefully to" artifact_file
+        @info "artifact binding successfully to" artifact_file
 
         cd(deploy_dir) do
             upload_to_releases(deploy_repo,
@@ -79,7 +79,7 @@ function generate(ARGS, sources, build_dir, artifact_file)
     else
         unbind_artifact!(artifact_file, "dash_resources")
         bind_artifact!(artifact_file, "dash_resources",  artifact_hash, force = true, download_info = nothing)
-        @info "artifact binding succefully to" artifact_file
+        @info "artifact binding successfully to" artifact_file
     end
     @info "resource generation done!"
 

@@ -35,7 +35,7 @@ end
 
 function make_new_info(dash_version, old_info)
     if old_info.dash_version > dash_version
-        error("You try to generate resources for dash $(dash_version), but $(deploy_repo) alredy contains version $(old_info.dash_version)")
+        error("You try to generate resources for dash $(dash_version), but $(deploy_repo) already contains version $(old_info.dash_version)")
     end
     build_n = old_info.dash_version == dash_version ? old_info.build + 1 : 0
     return (dash_version = dash_version, build = build_n)
